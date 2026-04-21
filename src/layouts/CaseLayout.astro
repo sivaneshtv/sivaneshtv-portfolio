@@ -124,7 +124,7 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);z-index:40;
     display:flex;align-items:center;gap:14px;
     background:rgba(26,26,28,.94);color:#f5ede0;
-    padding:8px 10px 8px 16px;
+    padding:8px;
     font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     white-space:nowrap;
     box-shadow:0 8px 24px rgba(40,35,25,.3);
@@ -139,9 +139,11 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   .return-pill-btn:hover{background:#b82b22}
   .return-pill-close{
     display:flex;align-items:center;justify-content:center;
-    width:26px;height:26px;background:transparent;
+    background:transparent;
     border:1px solid rgba(245,237,224,.2);color:rgba(245,237,224,.7);
-    font-size:16px;line-height:1;cursor:pointer;transition:border-color .2s,color .2s;
+    font-family:var(--fm);font-size:10px;letter-spacing:.14em;
+    padding:7px 12px;
+    cursor:pointer;transition:border-color .2s,color .2s;
   }
   .return-pill-close:hover{border-color:rgba(245,237,224,.5);color:#f5ede0}
   @media(max-width:640px){
