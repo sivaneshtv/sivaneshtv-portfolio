@@ -316,8 +316,8 @@ import {
   .help-key{font-family:var(--fm);font-size:11px;letter-spacing:.1em;padding:5px 10px;background:rgba(255,240,200,.08);border:1px solid rgba(255,240,200,.2);display:inline-flex;align-items:center;gap:6px}
   .help-key kbd{font-family:var(--fm);background:rgba(255,240,200,.12);padding:2px 6px;border-radius:2px;font-size:10px}
   .help-dismiss{margin-top:20px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:10px 20px;background:var(--marker-red);color:#fff;cursor:pointer}
-  .mobile-hint{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:25;background:#1a1a1c;color:#f5ede0;padding:10px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;box-shadow:0 4px 16px rgba(40,35,25,.25);white-space:nowrap;animation:mobFloat 2s infinite ease-in-out}
-  @keyframes mobFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+  .mobile-hint{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:25;background:#1a1a1c;color:#f5ede0;padding:10px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;box-shadow:0 4px 16px rgba(40,35,25,.25);white-space:nowrap;opacity:0;transition:opacity .4s ease;pointer-events:none}
+  .mobile-hint.on{opacity:1}
   @media(max-width:820px){
     .topbar{padding:14px 16px;flex-wrap:wrap;gap:10px}
     .tb-logo{padding:6px 10px;font-size:12px}
@@ -399,4 +399,17 @@ import {
     help.classList.remove('on');
     engine.dismissHelp();
   });
+
+  // Mobile hint: show briefly on first mobile visit, then auto-hide
+  const mobileHint = document.getElementById('mobileHint');
+  if (mobileHint && sessionStorage.getItem('sivanesh.mobileHintSeen') !== '1') {
+    const mq = matchMedia('(max-width:820px)');
+    if (mq.matches) {
+      setTimeout(() => mobileHint.classList.add('on'), 800);
+      setTimeout(() => {
+        mobileHint.classList.remove('on');
+        sessionStorage.setItem('sivanesh.mobileHintSeen', '1');
+      }, 5000);
+    }
+  }
 </script>

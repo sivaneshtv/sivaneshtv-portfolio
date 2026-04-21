@@ -69,10 +69,11 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
 
   <!-- Return pill (margin-ref jump feedback) -->
   <div class="return-pill" id="returnPill" role="status" aria-live="polite">
-    <span class="return-pill-label">Viewing: <span id="returnPillArtifact">—</span></span>
     <button class="return-pill-btn" id="returnPillBtn">Return to study</button>
     <button class="return-pill-close" id="returnPillClose" aria-label="Dismiss">×</button>
   </div>
+  <!-- Hidden span for engine to write label into (used by data-label toast logic) -->
+  <span id="returnPillArtifact" hidden></span>
 </BaseLayout>
 
 <style is:global>
@@ -100,8 +101,8 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   .minimap-dot.work{background:var(--marker-red);opacity:.75}
   .minimap-viewport{position:absolute;border:1.5px solid var(--marker-red);background:rgba(216,53,42,.08);pointer-events:none;transition:none}
   .minimap-label{position:absolute;top:4px;left:8px;font-family:var(--fm);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);pointer-events:none}
-  .mobile-hint{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:25;background:#1a1a1c;color:#f5ede0;padding:10px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;box-shadow:0 4px 16px rgba(40,35,25,.25);white-space:nowrap;animation:mobFloat 2s infinite ease-in-out}
-  @keyframes mobFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+  .mobile-hint{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:25;background:#1a1a1c;color:#f5ede0;padding:10px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;box-shadow:0 4px 16px rgba(40,35,25,.25);white-space:nowrap;opacity:0;transition:opacity .4s ease;pointer-events:none}
+  .mobile-hint.on{opacity:1}
   @media(max-width:820px){
     .topbar{padding:14px 16px;flex-wrap:wrap;gap:10px}
     .tb-logo{padding:6px 10px;font-size:12px}
@@ -131,8 +132,6 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     transition:opacity .3s ease,transform .3s ease;
   }
   .return-pill.on{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
-  .return-pill-label{color:rgba(245,237,224,.75)}
-  .return-pill-label #returnPillArtifact{color:#f5ede0;font-weight:500}
   .return-pill-btn{
     font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     color:#fff;background:var(--red);border:none;padding:7px 12px;cursor:pointer;transition:background .2s;
@@ -147,7 +146,6 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   .return-pill-close:hover{border-color:rgba(245,237,224,.5);color:#f5ede0}
   @media(max-width:640px){
     .return-pill{bottom:72px;padding:6px 8px 6px 12px;gap:8px;font-size:9px}
-    .return-pill-label{max-width:140px;overflow:hidden;text-overflow:ellipsis}
     .return-pill-btn{padding:6px 10px;font-size:9px}
   }
 </style>
@@ -206,4 +204,17 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     engine.hideReturnPill();
     // Does NOT clear preJumpState — R key still works as silent fallback
   });
+
+  // Mobile hint: show briefly on first mobile visit, then auto-hide
+  const mobileHint = document.getElementById('mobileHint');
+  if (mobileHint && sessionStorage.getItem('sivanesh.mobileHintSeen') !== '1') {
+    const mq = matchMedia('(max-width:820px)');
+    if (mq.matches) {
+      setTimeout(() => mobileHint.classList.add('on'), 800);
+      setTimeout(() => {
+        mobileHint.classList.remove('on');
+        sessionStorage.setItem('sivanesh.mobileHintSeen', '1');
+      }, 5000);
+    }
+  }
 </script>
