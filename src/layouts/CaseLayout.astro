@@ -66,6 +66,9 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
 
   <!-- Reading hint -->
   <ReadingHint />
+
+  <!-- Jump toast (margin-ref cross-link feedback) -->
+  <div class="jump-toast" id="jumpToast"></div>
 </BaseLayout>
 
 <style is:global>
@@ -145,4 +148,14 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   document.getElementById('btnZoomOut')?.addEventListener('click', () => engine.zoomOut());
   document.getElementById('btnFit')?.addEventListener('click', () => engine.fit());
   document.getElementById('btnReset')?.addEventListener('click', () => engine.reset());
+
+  // Margin-ref click → jumpToArtifact (MARGIN-REF-SPEC.md §4)
+  document.querySelectorAll<HTMLElement>('.r-margin-ref[data-jump]').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const slug = link.dataset.jump;
+      if (!slug) return;
+      engine.jumpToArtifact(slug);
+    });
+  });
 </script>

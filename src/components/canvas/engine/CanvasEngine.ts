@@ -80,6 +80,7 @@ export class CanvasEngine {
   private readerLeft = 1960;
   private readingScale = 0.55;
   private firstPanHintShown = false;
+  private jumpToastTimer = 0;
 
   constructor(config: CanvasEngineConfig) {
     this.canvas = config.canvasEl;
@@ -315,9 +316,65 @@ export class CanvasEngine {
     this.firstPanHintShown = true;
     const hint = document.querySelector<HTMLElement>('.reading-hint');
     if (hint) {
+      this.hideJumpToast();
       hint.classList.add('on');
       setTimeout(() => hint.classList.remove('on'), 4000);
     }
+  }
+
+  // MARGIN-REF-SPEC — jumpToArtifact
+  jumpToArtifact(slug: string): void {
+    const el = document.getElementById(`obj-${slug}`);
+    if (!el) {
+      console.warn(`[canvas] no artifact found with id="obj-${slug}"`);
+      return;
+    }
+
+    // Exit reading mode so user sees the canvas
+    this.readingMode = false;
+
+    // Compute artifact center in canvas coords
+    const targetCX = el.offsetLeft + el.offsetWidth / 2;
+    const targetCY = el.offsetTop + el.offsetHeight / 2;
+
+    // Viewport-aware zoom
+    const vw = innerWidth;
+    let targetScale: number;
+    if (vw <= 420)       targetScale = 0.55;
+    else if (vw <= 640)  targetScale = 0.65;
+    else if (vw <= 1100) targetScale = 0.75;
+    else                 targetScale = 0.85;
+
+    this.flyTo(targetCX, targetCY, targetScale, 800);
+
+    // Pulse the artifact
+    el.classList.add('artifact-pulse');
+    setTimeout(() => el.classList.remove('artifact-pulse'), 1400);
+
+    // Show jump toast (hide reading-hint if showing)
+    const label = el.dataset.label || slug;
+    this.showJumpToast(`Viewing: ${label} · press R to return to reading`);
+  }
+
+  private showJumpToast(text: string): void {
+    // Hide reading-hint if active
+    const readingHint = document.querySelector<HTMLElement>('.reading-hint');
+    if (readingHint) readingHint.classList.remove('on');
+
+    const toast = document.querySelector<HTMLElement>('.jump-toast');
+    if (!toast) return;
+    toast.textContent = text;
+    toast.classList.add('on');
+
+    // Auto-hide after 5s if user doesn't press R
+    clearTimeout(this.jumpToastTimer);
+    this.jumpToastTimer = window.setTimeout(() => this.hideJumpToast(), 5000);
+  }
+
+  private hideJumpToast(): void {
+    const toast = document.querySelector<HTMLElement>('.jump-toast');
+    if (toast) toast.classList.remove('on');
+    clearTimeout(this.jumpToastTimer);
   }
 
   // §3.5 — Inertia
@@ -536,7 +593,11 @@ export class CanvasEngine {
         case 'ArrowUp': this.ty += 80; this.apply(); e.preventDefault(); break;
         case 'ArrowDown': this.ty -= 80; this.apply(); e.preventDefault(); break;
         case 'r': case 'R':
-          if (this.mode === 'case') { this.setReadingMode(true); e.preventDefault(); }
+          if (this.mode === 'case') {
+            this.hideJumpToast();
+            this.setReadingMode(true);
+            e.preventDefault();
+          }
           break;
       }
     });
