@@ -1,0 +1,14 @@
+---
+---
+<div class="r-body"><slot /></div>
+
+<style is:global>
+  /* §5.4 */
+  .r-body p{
+    font-family:var(--fs);font-size:calc(16px * var(--reader-fs, 1));line-height:1.75;color:var(--ink-2);
+    margin-bottom:18px;max-width:680px;
+  }
+  .r-body p:last-child{margin-bottom:0}
+  .r-body em{font-style:italic;color:var(--ink)}
+  .r-body strong{color:var(--ink);font-weight:600}
+</style>

@@ -1,0 +1,39 @@
+---
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'red' | 'blue' | 'black';
+  rotation?: number;
+  pos?: { x: number; y: number };
+  compact?: boolean;
+  style?: string;
+}
+
+const { size = 'md', variant = 'red', rotation = 0, pos, compact = false, style: extraStyle } = Astro.props;
+
+const style = [
+  'position:absolute',
+  pos ? `left:${pos.x}px;top:${pos.y}px` : '',
+  `transform:rotate(${rotation}deg)`,
+  extraStyle ?? '',
+].filter(Boolean).join(';');
+---
+
+<div class:list={['marker', size, variant]} style={style}>
+  <slot />
+</div>
+
+<style>
+  /* §4.5 — portfolio-workbench.html lines 278–289 */
+  .marker{
+    position:absolute;
+    font-family:var(--fh);font-weight:700;
+    line-height:1.1;
+    pointer-events:none;
+  }
+  .marker.sm{font-size:24px}
+  .marker.md{font-size:38px}
+  .marker.lg{font-size:54px}
+  .marker.red{color:var(--marker-red)}
+  .marker.blue{color:var(--marker-blue)}
+  .marker.black{color:var(--marker-black)}
+</style>

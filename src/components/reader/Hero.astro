@@ -1,0 +1,27 @@
+---
+interface Props { eyebrow: string; title: string; sub: string }
+const { eyebrow, title, sub } = Astro.props;
+---
+<div class="r-eyebrow">{eyebrow}</div>
+<h1 class="r-title" set:html={title} />
+<p class="r-sub" set:html={sub} />
+
+<style>
+  /* §5.2 */
+  .r-eyebrow{
+    font-family:var(--fh);font-weight:500;font-size:calc(24px * var(--reader-fs, 1));color:var(--red);
+    transform:rotate(-1deg);display:inline-block;margin-bottom:4px;
+  }
+  .r-title{
+    font-family:var(--fs);font-weight:700;font-size:calc(84px * var(--reader-fs, 1));line-height:.95;letter-spacing:-.04em;
+    color:var(--ink);margin-bottom:24px;
+  }
+  .r-title :global(em){
+    font-family:var(--fh);font-weight:700;font-style:italic;color:var(--red);
+    display:inline-block;transform:translateY(6px);font-size:1.05em;
+  }
+  .r-sub{
+    font-family:var(--fk);font-weight:400;font-size:calc(24px * var(--reader-fs, 1));line-height:1.45;color:var(--ink-2);
+    margin-bottom:40px;max-width:720px;
+  }
+</style>

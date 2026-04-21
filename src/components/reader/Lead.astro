@@ -1,0 +1,12 @@
+---
+---
+<p class="r-lead"><slot /></p>
+
+<style>
+  /* §5.4 */
+  .r-lead{
+    font-family:var(--fs);font-weight:400;font-size:calc(21px * var(--reader-fs, 1));line-height:1.55;color:var(--ink);
+    margin-bottom:24px;max-width:680px;
+  }
+  .r-lead :global(em){font-style:italic;color:var(--red)}
+</style>

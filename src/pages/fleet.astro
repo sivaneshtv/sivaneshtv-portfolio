@@ -1,0 +1,393 @@
+---
+import CaseLayout from '../layouts/CaseLayout.astro';
+import ReaderColumn from '../components/reader/ReaderColumn.astro';
+import Back from '../components/reader/Back.astro';
+import Hero from '../components/reader/Hero.astro';
+import MetaRow from '../components/reader/MetaRow.astro';
+import Section from '../components/reader/Section.astro';
+import SectionLabel from '../components/reader/SectionLabel.astro';
+import H2 from '../components/reader/H2.astro';
+import Lead from '../components/reader/Lead.astro';
+import Body from '../components/reader/Body.astro';
+import Callout from '../components/reader/Callout.astro';
+import PullQuote from '../components/reader/PullQuote.astro';
+import MarginRef from '../components/reader/MarginRef.astro';
+import Hr from '../components/reader/Hr.astro';
+import Outcome from '../components/reader/Outcome.astro';
+import EndRow from '../components/reader/EndRow.astro';
+import ImgSlot from '../components/reader/ImgSlot.astro';
+---
+
+<CaseLayout title="Fleet View — Sivanesh TV" caseNum="02" caseName="Fleet View">
+  <Fragment slot="reader">
+    <ReaderColumn>
+      <Back href="/" />
+
+      <Hero
+        eyebrow="case study · 02"
+        title='Fleet <em>View.</em>'
+        sub="Designing the interface that made it possible for one operator to safely manage an entire drone fleet — and giving regulators the evidence they needed to allow it."
+      />
+
+      <MetaRow items={[
+        { k: 'Role', v: 'Co-designer · with Arpita' },
+        { k: 'Year', v: '2024–25' },
+        { k: 'Scope', v: 'Product Design · Design System' },
+        { k: 'Domain', v: 'Drone Autonomy · ROC Operations' },
+      ]} />
+
+      <ImgSlot variant="hero"
+        label="Image slot 01 · Hero shot"
+        title="Fleet View in live operation"
+        desc={"Full screenshot of Fleet View with multiple active drones, live video feeds from several, the map showing all positions, and the alert panel with a few mixed-severity alerts. The \"one operator, many drones\" moment."}
+        dims="16 : 10 · ideally 2400 × 1500 px"
+        cap="Fleet View — 8 drones, 2 sites, 13 alerts · live"
+        capMeta="the interface"
+      />
+
+      <!-- § 01 Context -->
+      <Section>
+        <SectionLabel text="The project" num="§ 01" />
+        <H2>Fleet View is the <em>command environment</em> for operators running many drones at once.</H2>
+        <Lead>The business problem was simple: more drones, same number of pilots. The design problem was harder — <em>how do you keep one person genuinely safe across ten simultaneous flights?</em></Lead>
+        <Body>
+          <p>As FlytBase deployments scaled — more docks, fewer pilots per site, alarm integrations firing at any hour — operators found themselves responsible for fleets their existing interface wasn't built for. Fleet View was the product response: a dedicated environment where one operator could observe, manage, and execute safety controls across every active flight simultaneously.</p>
+          <p>And because CAA bodies were beginning to grant <strong>One-to-Many waivers</strong> — permitting a single licensed pilot to command multiple armed drones concurrently — the design also had to function as <em>regulatory evidence</em> of adequate situational awareness. The interface wasn't just a product. It was part of a safety case.</p>
+        </Body>
+      </Section>
+
+      <!-- § 02 The challenge -->
+      <Section>
+        <SectionLabel text="The challenge" num="§ 02" />
+        <PullQuote>Two different people. Completely different needs. One interface that couldn't afford to <em>fail either of them.</em></PullQuote>
+        <Body>
+          <p>Every ROC (Remote Operations Centre) has two roles that need Fleet View, and they need it differently. The <strong>pilot</strong> is operational — dispatching drones, responding to alarms, taking control under pressure. They need the ability to go deep on one drone without losing awareness of the rest.</p>
+          <p>The <strong>supervisor</strong> is responsible for the complete operation — fleet state, pilot assignments, brief telemetry across every drone in the air. They're watching, not commanding — until a critical situation demands otherwise.</p>
+        </Body>
+        <Callout><p>One interface. Two mental models. Zero tolerance for losing sight of a drone — because at any moment, either role might need to <em>step into</em> what the other was doing.</p></Callout>
+        <MarginRef jump="persona-pilot">↗ see the pilot persona</MarginRef>
+
+        <ImgSlot variant="wide"
+          label="Image slot 02 · Personas"
+          title="Pilot & supervisor side-by-side"
+          desc="A persona card layout showing the two roles with their key needs, pressures, and the moments where their workflows diverge. Could be a Figma export of persona cards, or an annotated diagram showing both workflows overlaid."
+          dims="16 : 9 · ideally 2200 × 1240 px"
+          cap="Two roles · pilot and supervisor"
+          capMeta="the users"
+        />
+      </Section>
+
+      <Hr />
+
+      <!-- § 03 The central decision -->
+      <Section>
+        <SectionLabel text="The central decision" num="§ 03" />
+        <H2>Group, don't <em>filter.</em></H2>
+        <Lead>Standard data tables let you filter rows out. In a drone fleet dashboard, that's the wrong instinct.</Lead>
+        <Body>
+          <p>The obvious move when an interface gets crowded is to let the user filter — show me only the drones at Site A, hide the idle ones, only show alerts. But filtering <em>removes drones from awareness</em>. And in a regulated environment, that's exactly what a CAA evaluator does not want to see. An operator can't claim situational awareness over a drone they filtered off their screen.</p>
+          <p>So we took a different approach: <strong>grouping instead of filtering</strong>. Every drone stays visible. Every drone stays in the operator's field of attention. Grouping lets the operator collapse and expand without ever losing a drone from the count. Armed drones? Grouped, but the group count and status indicator remain prominent. Idle fleet? Collapsed, but the number of idle drones is explicit at the header level.</p>
+        </Body>
+        <Callout><p>This was a product decision before it was a design decision. It required understanding what filtering <em>costs</em> in this domain — and being willing to challenge a pattern that works everywhere else.</p></Callout>
+        <MarginRef jump="grouping-diagram">↗ see the grouping architecture</MarginRef>
+
+        <ImgSlot variant="wide"
+          label="Image slot 03 · The grouping model"
+          title="Grouping vs filtering"
+          desc="Side-by-side comparison showing how standard filtering removes rows vs how grouping keeps drones visible with collapsed summaries. Ideally shows the actual Fleet View list with a group collapsed, the header count still visible."
+          dims="16 : 9 · ideally 2000 × 1125 px"
+          cap="Grouping preserves awareness — filtering destroys it"
+          capMeta="the rule"
+        />
+      </Section>
+
+      <!-- § 04 The interface -->
+      <Section>
+        <SectionLabel text="The interface" num="§ 04" />
+        <H2>Four panels, <em>always on.</em> Every panel talking to every other panel.</H2>
+        <Lead>Fleet View is organised around four simultaneous panels — list, map, video wall, and alerts — each answering a different question but all sharing state.</Lead>
+        <Body>
+          <p>The <strong>list</strong> is the spine: every drone, grouped by state. The <strong>map</strong> shows where they are. The <strong>video wall</strong> tiles live feeds by group priority. The <strong>alerts panel</strong> surfaces everything that needs attention, sorted by severity.</p>
+          <p>Crucially: selecting a drone in any panel highlights it everywhere. Clicking an alert highlights the affected drone on the map, lights the border of its video feed, and scrolls the list to it. This cross-panel synchronisation is what makes <em>one</em> interface function for both pilot and supervisor — the depth of focus is up to the operator, but the fleet never disappears.</p>
+        </Body>
+
+        <ImgSlot variant="wide"
+          label="Image slot 04 · Four-panel layout"
+          title="The always-on fleet environment"
+          desc="Annotated Fleet View screenshot calling out the four panels — list, map, video wall, alerts — with arrows showing one cross-panel sync moment (e.g., operator clicks an alert, map highlights drone, video border lights up)."
+          dims="16 : 9 · ideally 2200 × 1240 px"
+          cap="Four panels, synchronised state · every drone always visible"
+          capMeta="the layout"
+        />
+      </Section>
+
+      <!-- § 05 Alarm dispatch -->
+      <Section>
+        <SectionLabel text="The alarm flow" num="§ 05" />
+        <H2>The hardest scenario in fleet ops — designed as a <em>first-class workflow.</em></H2>
+        <Lead>Alarm dispatch — an emergency on one drone while nine others are flying — is the moment everything in the interface has to work at once. It couldn't be a side path from the main monitoring view. It had to be a native, ergonomic workflow.</Lead>
+        <Body>
+          <p>When an alarm fires, Fleet View does three things simultaneously: the alert slides into the panel with its severity already encoded; the affected drone glows on the map and its video border lights; and the pilot gets a one-click path to take direct control without losing the fleet overview behind them. No modal dialog swallowing the screen. No context-switch where the rest of the fleet disappears.</p>
+          <p>The supervisor sees the same event unfold in real time — same highlights, same state, same clock. If they need to intervene, the same controls are one click away. The interface never hides the fact that the rest of the fleet is still flying.</p>
+        </Body>
+        <MarginRef jump="alarm-flow">↗ see the alarm dispatch flow</MarginRef>
+
+        <ImgSlot variant="square"
+          label="Image slot 05 · Alarm dispatch"
+          title="The emergency workflow"
+          desc={"A sequence or flow diagram showing the moment an alarm fires: alert panel state, map highlight, video feed border, the \"take control\" action surface. Ideally 3–4 frames showing the flow over time, or a single annotated screenshot."}
+          dims="4 : 3 · ideally 1600 × 1200 px"
+          cap="Alarm dispatch — first-class, not a side path"
+          capMeta="the moment"
+        />
+      </Section>
+
+      <Hr />
+
+      <!-- § 06 Outcomes -->
+      <Section>
+        <SectionLabel text="What it enabled" num="§ 06" />
+        <H2>The receipts.</H2>
+
+        <ImgSlot variant="wide"
+          label="Image slot 06 · In production"
+          title="Fleet View, deployed"
+          desc={"One of: (a) photo of Fleet View on an actual ROC operator's workstation, (b) a Loom thumbnail showing a demo flight, (c) a redacted screenshot from a CAA waiver submission showing Fleet View as evidence."}
+          dims="16 : 9 · ideally 2000 × 1125 px"
+          cap="Fleet View — the primary environment in enterprise deployments"
+          capMeta="evidence"
+        />
+
+        <Outcome items={[
+          { n: 'Live', l: 'Deployed', d: 'Fleet View shipped as the primary multi-drone interface across FlytBase enterprise deployments, replacing improvised multi-tab workflows entirely.' },
+          { n: 'CAA', l: 'Waivers approved', d: 'The grouping architecture was specifically part of the evidence case for One-to-Many regulatory approvals — demonstrating that operators cannot accidentally remove an armed drone from their field of awareness.' },
+          { n: '1→N', l: 'New operational standard', d: 'One pilot. Multiple armed drones. Full situational awareness. What required multiple operators — or improvised workarounds — became a designed, compliant, scalable workflow for enterprise ROC teams.' },
+        ]} />
+      </Section>
+
+      <!-- § 07 Reflection -->
+      <Section>
+        <SectionLabel text="What I took away" num="§ 07" />
+        <Body>
+          <p><strong>Challenging a universal pattern is a product decision, not a design one.</strong> "Grouping not filtering" wasn't a visual choice. It required understanding what filtering would cost in this domain — and being willing to challenge a pattern that works everywhere else. That's a product call, and it had to be made before any interface was designed.</p>
+          <p><strong>Design can be regulatory infrastructure.</strong> When a CAA evaluator asks whether an operator has adequate situational awareness, the interface is the answer. Knowing that changed the stakes of every structural decision — the grouping model, the priority hierarchy, the always-visible safety controls all had to work as proof, not just as features.</p>
+          <p><strong>The most important moment in a product is the one you design for first.</strong> Building the alarm dispatch workflow as a first-class, integrated flow — not as a side path from the main monitoring view — shaped every subsequent layout and panel decision. Design the hardest moment first. Everything else will fit around it.</p>
+        </Body>
+      </Section>
+
+      <EndRow note="— end of case · § 02 / 03 —" nextLabel="Next: Asset Management ↗" nextHref="/asset" />
+    </ReaderColumn>
+  </Fragment>
+
+  <Fragment slot="artifacts">
+    <!-- §00 HERO — wayfinding -->
+    <div class="marker md red artifact" data-anchor="0" data-anchor-offset="-80" data-side="left" data-gap="60" data-width="200" style="position:absolute;transform:rotate(-8deg);font-family:var(--fh);font-weight:700;font-size:34px;line-height:1.1;color:var(--marker-red)">↓ read straight through</div>
+    <div class="marker sm black artifact" data-anchor="0" data-anchor-offset="-40" data-side="right" data-gap="40" data-width="180" style="position:absolute;transform:rotate(4deg);font-family:var(--fh);font-weight:700;font-size:18px;line-height:1.1;color:var(--ink)">drag around to<br>explore →</div>
+
+    <!-- §01 PROJECT — dark CAA context card (the regulatory framing) -->
+    <div class="context-card artifact" id="obj-caa-context" data-anchor="0" data-anchor-offset="380" data-side="left" data-gap="60" data-width="380" style="position:absolute;transform:rotate(-2deg);width:380px;padding:24px;background:var(--ink);color:var(--paper);box-shadow:3px 5px 0 rgba(40,35,25,.06),6px 14px 28px rgba(40,35,25,.2)">
+      <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px">— CAA context · one-to-many waivers —</div>
+      <div style="font-family:var(--fs);font-weight:700;font-size:20px;line-height:1.25;margin-bottom:10px">This wasn't just a product. It was part of a <em style="font-style:italic;color:var(--red)">safety case.</em></div>
+      <div style="font-family:var(--fs);font-size:13px;line-height:1.55;color:rgba(255,255,255,.7)">CAAs worldwide were beginning to grant One-to-Many waivers — a single licensed pilot commanding multiple armed drones. Fleet View had to function as <em style="font-style:italic;color:rgba(255,255,255,.9)">evidence</em> that the operator maintained genuine situational awareness across every drone at once.</div>
+    </div>
+
+    <!-- §01 — stakes sticky -->
+    <div class="sticky artifact" id="obj-stakes" data-anchor="0" data-anchor-offset="760" data-side="left" data-gap="60" data-width="260" style="position:absolute;transform:rotate(3deg);width:260px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— the operational pressure —</div>
+      More drones, <em style="font-style:normal;color:var(--red);font-weight:700">same pilots.</em> Alarm integrations firing at any hour. The interface hadn't caught up.
+    </div>
+
+    <!-- §02 CHALLENGE — the REAL 4K workaround quote -->
+    <div class="sticky pink artifact" id="obj-workaround" data-anchor="1" data-anchor-offset="40" data-side="left" data-gap="60" data-width="300" style="position:absolute;transform:rotate(-4deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#ff8fa3;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— observed workaround —</div>
+      Some pilots split their 4K monitor into <em style="font-style:normal;color:var(--red);font-weight:700">four sections</em> — separate browsers, separate tabs, one per drone. That's the workflow we were trying to end.
+    </div>
+
+    <!-- §02 — pilot persona -->
+    <div class="sticky artifact" id="obj-persona-pilot" data-anchor="1" data-anchor-offset="380" data-side="left" data-gap="60" data-width="260" style="position:absolute;transform:rotate(2deg);width:260px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— primary persona · pilot —</div>
+      Ex-drone pilot. <em style="font-style:normal;color:var(--red);font-weight:700">In command</em> of many armed drones. Needs safety controls in reach. Dispatches, responds, takes over.
+    </div>
+
+    <!-- §02 — supervisor persona -->
+    <div class="sticky blue artifact" id="obj-persona-supervisor" data-anchor="1" data-anchor-offset="700" data-side="left" data-gap="60" data-width="260" style="position:absolute;transform:rotate(-3deg);width:260px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#a8d0f0;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— secondary persona · supervisor —</div>
+      Oversees the complete ROC operation. Needs <em style="font-style:normal;color:var(--red);font-weight:700">a high-level overview</em>, pilot-in-control info, brief telemetry across every drone.
+    </div>
+
+    <!-- §03 CENTRAL DECISION — THE principle card -->
+    <div class="principle artifact" id="obj-group-not-filter" data-anchor="2" data-anchor-offset="30" data-side="right" data-gap="80" data-width="380" style="position:absolute;transform:rotate(1.5deg);width:380px;padding:32px 32px 28px;background:var(--paper);box-shadow:3px 5px 0 rgba(40,35,25,.06),6px 14px 28px rgba(40,35,25,.2);border:1px solid rgba(40,35,25,.08)">
+      <div style="position:absolute;top:-12px;right:10%;width:90px;height:22px;background:var(--tape);opacity:.85;transform:rotate(3deg);box-shadow:0 2px 6px rgba(40,35,25,.1)"></div>
+      <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:14px;display:flex;align-items:center;gap:8px"><span>◆</span>the rule the entire case rests on</div>
+      <div style="font-family:var(--fs);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin-bottom:10px">Grouping, <em style="font-style:italic;color:var(--red)">not filtering.</em></div>
+      <div style="font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--ink-2);margin-bottom:14px">Filtering removes drones from awareness — which means removing them from the <em style="font-style:italic;color:var(--ink)">safety case.</em> Grouping collapses them while keeping every drone counted, visible, and auditable.</div>
+      <div style="font-family:var(--fh);font-weight:600;font-size:17px;color:var(--ink-3);padding-top:12px;border-top:1px dashed rgba(40,35,25,.18)">— quoted from the PRD</div>
+    </div>
+
+    <!-- §03 — grouping diagram with REAL column-based grouping examples -->
+    <div class="diagram artifact" id="obj-grouping" data-anchor="2" data-anchor-offset="560" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(-1deg);padding:24px;background:var(--paper);box-shadow:2px 3px 0 rgba(40,35,25,.04),4px 8px 20px rgba(40,35,25,.18)">
+      <div style="position:absolute;top:-10px;left:40%;width:60px;height:20px;background:var(--tape);opacity:.85;transform:rotate(-3deg)"></div>
+      <div style="font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ink);margin-bottom:4px">Column-based grouping</div>
+      <div style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px">— select a column · drones group by its values —</div>
+      <svg viewBox="0 0 420 260" width="100%">
+        <!-- Group by Site -->
+        <g transform="translate(10 10)">
+          <text x="0" y="0" font-family="JetBrains Mono" font-size="9" fill="#d8352a" letter-spacing="1">GROUP BY: SITE</text>
+          <rect x="0" y="8" width="180" height="15" fill="#f5c84a" opacity=".3"/>
+          <text x="6" y="19" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c">▾ SITE-A · 4 drones</text>
+          <g fill="#1a1a1c"><rect x="12" y="27" width="160" height="5"/><rect x="12" y="34" width="160" height="5"/><rect x="12" y="41" width="160" height="5"/><rect x="12" y="48" width="160" height="5"/></g>
+          <rect x="0" y="58" width="180" height="15" fill="#a8d0f0" opacity=".3"/>
+          <text x="6" y="69" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c">▸ SITE-B · 3 drones</text>
+          <rect x="0" y="76" width="180" height="15" fill="#b5e0b5" opacity=".3"/>
+          <text x="6" y="87" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c">▸ SITE-C · 2 drones</text>
+        </g>
+
+        <!-- Group by Pilot -->
+        <g transform="translate(230 10)">
+          <text x="0" y="0" font-family="JetBrains Mono" font-size="9" fill="#d8352a" letter-spacing="1">GROUP BY: PILOT</text>
+          <rect x="0" y="8" width="180" height="15" fill="#f5c84a" opacity=".3"/>
+          <text x="6" y="19" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c">▾ SARAH · 4 drones</text>
+          <g fill="#1a1a1c"><rect x="12" y="27" width="160" height="5"/><rect x="12" y="34" width="160" height="5"/><rect x="12" y="41" width="160" height="5"/><rect x="12" y="48" width="160" height="5"/></g>
+          <rect x="0" y="58" width="180" height="15" fill="#a8d0f0" opacity=".3"/>
+          <text x="6" y="69" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c">▸ RAJ · 3 drones</text>
+          <rect x="0" y="76" width="180" height="15" fill="#b5e0b5" opacity=".3"/>
+          <text x="6" y="87" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c">▸ UNASSIGNED · 2</text>
+        </g>
+
+        <!-- Key insight -->
+        <g transform="translate(0 130)">
+          <line x1="20" y1="0" x2="400" y2="0" stroke="#1a1a1c" stroke-width=".5" stroke-dasharray="3 2"/>
+          <text x="210" y="24" text-anchor="middle" font-family="Caveat" font-size="16" fill="#1a1a1c" font-weight="700">every drone is still counted.</text>
+          <text x="210" y="46" text-anchor="middle" font-family="Caveat" font-size="16" fill="#d8352a" font-weight="700">collapsed ≠ hidden.</text>
+          <text x="210" y="75" text-anchor="middle" font-family="Inter" font-size="10" fill="#4a4945">Pinned drones override sort. Spotlit drones override pin. Specificity hierarchy.</text>
+          <text x="210" y="95" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#7a7770" letter-spacing="1">§ CORE INTERACTION PRINCIPLES</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- §04 INTERFACE — real 4-panel printout -->
+    <div class="printout artifact" id="obj-four-panel" data-anchor="3" data-anchor-offset="80" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(2deg);padding:12px;background:#fbfaf4;box-shadow:2px 3px 0 rgba(40,35,25,.05),5px 10px 22px rgba(40,35,25,.22)">
+      <div style="position:absolute;top:-12px;left:30%;width:70px;height:24px;background:var(--tape);opacity:.85;transform:rotate(-4deg);box-shadow:0 2px 5px rgba(40,35,25,.12)"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 4px 10px;border-bottom:1px dashed rgba(40,35,25,.15);margin-bottom:10px"><div style="display:flex;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span></div><div style="font-family:var(--fm);font-size:9px;color:var(--ink-3);letter-spacing:.1em">— fleet view · layer 0 —</div></div>
+      <div style="aspect-ratio:16/10;background:var(--board);display:flex;align-items:center;justify-content:center;overflow:hidden">
+        <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+          <rect width="400" height="250" fill="#f5ede0"/>
+          <!-- Drone list (left, tall) -->
+          <rect x="10" y="10" width="120" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <!-- Map (big, middle-right) -->
+          <rect x="136" y="10" width="220" height="170" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <!-- Live stream wall (bottom right) -->
+          <rect x="136" y="186" width="220" height="54" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <!-- Application drawer (right skinny) -->
+          <rect x="362" y="10" width="28" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <g fill="#d8352a" font-family="JetBrains Mono" font-size="8" letter-spacing="1">
+            <text x="18" y="28">DRONE LIST</text>
+            <text x="146" y="28">MAP (3D)</text>
+            <text x="146" y="204">LIVE STREAM WALL</text>
+          </g>
+          <text x="376" y="120" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#d8352a" transform="rotate(90 376 120)" letter-spacing="1">APP DRAWER</text>
+          <!-- Sync lines -->
+          <g stroke="#d8352a" stroke-width=".5" stroke-dasharray="3 2" opacity=".6">
+            <line x1="70" y1="100" x2="240" y2="100"/>
+            <line x1="70" y1="213" x2="240" y2="213"/>
+            <line x1="240" y1="100" x2="240" y2="213"/>
+          </g>
+          <text x="200" y="250" text-anchor="middle" font-family="Caveat" font-size="12" fill="#d8352a" font-weight="700"></text>
+        </svg>
+      </div>
+      <div style="margin-top:10px;font-family:var(--fh);font-weight:700;font-size:18px;color:var(--ink);display:flex;justify-content:space-between;align-items:baseline"><span>Fleet View <em style="font-style:italic;color:var(--marker-red)">layout</em></span><small style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:normal">— resizable boundaries</small></div>
+    </div>
+
+    <!-- §04 — Spotlight mode explainer -->
+    <div class="sticky artifact" id="obj-spotlight" data-anchor="3" data-anchor-offset="420" data-side="left" data-gap="60" data-width="300" style="position:absolute;transform:rotate(-3deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— key feature · by name —</div>
+      <em style="font-style:normal;color:var(--red);font-weight:700">Spotlight mode:</em> one drone gets the map, live feeds, altitude visualiser — while the rest of the fleet stays counted in the list.
+    </div>
+
+    <!-- §04 — Layer 0 / Layer 1 architectural sticky -->
+    <div class="sticky green artifact" id="obj-layers" data-anchor="3" data-anchor-offset="720" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(2deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#b5e0b5;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— the layer grammar —</div>
+      App drawer hosts two kinds of tools. <em style="font-style:normal;color:var(--red);font-weight:700">Layer 0</em> squeezes the body. <em style="font-style:normal;color:var(--red);font-weight:700">Layer 1</em> overlays it. Never both at once.
+    </div>
+
+    <!-- §05 ALARM FLOW — timeline diagram -->
+    <div class="diagram artifact" id="obj-alarm-flow" data-anchor="4" data-anchor-offset="40" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(-1deg);padding:24px;background:var(--paper);box-shadow:2px 3px 0 rgba(40,35,25,.04),4px 8px 20px rgba(40,35,25,.18)">
+      <div style="position:absolute;top:-10px;left:40%;width:60px;height:20px;background:var(--tape);opacity:.85;transform:rotate(-3deg)"></div>
+      <div style="font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ink);margin-bottom:4px">Alarm dispatch flow</div>
+      <div style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px">— selection drives everything —</div>
+      <svg viewBox="0 0 420 260" width="100%">
+        <line x1="40" y1="40" x2="380" y2="40" stroke="#1a1a1c" stroke-width=".5" stroke-dasharray="2 3"/>
+        <circle cx="60" cy="40" r="8" fill="#d8352a"/>
+        <text x="60" y="65" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c" font-weight="700">T=0</text>
+        <text x="60" y="80" text-anchor="middle" font-family="Inter" font-size="9" fill="#4a4945">Alarm fires</text>
+        <circle cx="160" cy="40" r="7" fill="#f5a524"/>
+        <text x="160" y="65" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c" font-weight="700">T + 0.5s</text>
+        <text x="160" y="80" text-anchor="middle" font-family="Inter" font-size="9" fill="#4a4945">Source on map</text>
+        <text x="160" y="94" text-anchor="middle" font-family="Inter" font-size="9" fill="#4a4945">Alarm widget</text>
+        <circle cx="260" cy="40" r="7" fill="#f5a524"/>
+        <text x="260" y="65" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c" font-weight="700">select</text>
+        <text x="260" y="80" text-anchor="middle" font-family="Inter" font-size="9" fill="#4a4945">Review GTL</text>
+        <text x="260" y="94" text-anchor="middle" font-family="Inter" font-size="9" fill="#4a4945">Pick drone</text>
+        <circle cx="360" cy="40" r="8" fill="#4a9d5f"/>
+        <text x="360" y="65" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c" font-weight="700">dispatch</text>
+        <text x="360" y="80" text-anchor="middle" font-family="Inter" font-size="9" fill="#4a4945">Drone moves</text>
+        <text x="360" y="94" text-anchor="middle" font-family="Inter" font-size="9" fill="#4a4945">Control transfers</text>
+        <g transform="translate(0 130)">
+          <rect x="40" y="0" width="70" height="32" fill="none" stroke="#1a1a1c" stroke-width=".5"/>
+          <text x="75" y="20" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#7a7770">LIST</text>
+          <rect x="120" y="0" width="70" height="32" fill="none" stroke="#1a1a1c" stroke-width=".5"/>
+          <text x="155" y="20" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#7a7770">MAP</text>
+          <rect x="200" y="0" width="70" height="32" fill="none" stroke="#1a1a1c" stroke-width=".5"/>
+          <text x="235" y="20" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#7a7770">VIDEO</text>
+          <rect x="280" y="0" width="70" height="32" fill="#d8352a"/>
+          <text x="315" y="19" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#fff">DRAWER</text>
+          <path d="M110 16 L120 16" stroke="#d8352a" stroke-width="1.5"/>
+          <path d="M190 16 L200 16" stroke="#d8352a" stroke-width="1.5"/>
+          <path d="M270 16 L280 16" stroke="#d8352a" stroke-width="1.5"/>
+          <text x="195" y="55" text-anchor="middle" font-family="Caveat" font-size="13" fill="#d8352a" font-weight="700">State is shared. Selection in one = highlight in all.</text>
+          <text x="195" y="80" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#7a7770" letter-spacing="1">§ 3.1 STATE SYNCHRONIZATION</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- §05 — fleet commands card — the REAL 5 commands -->
+    <div class="principle artifact" id="obj-commands" data-anchor="4" data-anchor-offset="440" data-side="left" data-gap="60" data-width="340" style="position:absolute;transform:rotate(-2deg);width:340px;padding:32px 32px 28px;background:var(--paper);box-shadow:3px 5px 0 rgba(40,35,25,.06),6px 14px 28px rgba(40,35,25,.2);border:1px solid rgba(40,35,25,.08)">
+      <div style="position:absolute;top:-12px;right:10%;width:90px;height:22px;background:var(--tape);opacity:.85;transform:rotate(3deg);box-shadow:0 2px 6px rgba(40,35,25,.1)"></div>
+      <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:14px;display:flex;align-items:center;gap:8px"><span>◆</span>fleet-wide safety controls</div>
+      <div style="font-family:var(--fs);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin-bottom:10px">Five commands. One click. <em style="font-style:italic;color:var(--red)">Multiple drones.</em></div>
+      <div style="font-family:var(--fm);font-size:11px;letter-spacing:.08em;line-height:1.9;color:var(--ink)">STOP<br>RTDS · return to dock station<br>GTSA · go to safe altitude<br>RTSL · return to safe location<br>FTS / PARACHUTE</div>
+      <div style="font-family:var(--fh);font-weight:600;font-size:17px;color:var(--ink-3);padding-top:12px;border-top:1px dashed rgba(40,35,25,.18)">— execute on any selection</div>
+    </div>
+
+    <!-- §06 OUTCOME — CAA receipt -->
+    <div class="sticky green artifact" id="obj-outcome" data-anchor="5" data-anchor-offset="40" data-side="right" data-gap="60" data-width="300" style="position:absolute;transform:rotate(-3deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#b5e0b5;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— what shipped —</div>
+      One operator. Many armed drones. <em style="font-style:normal;color:var(--red);font-weight:700">CAA-approvable</em> situational awareness. The One-to-Many mode.
+    </div>
+
+    <!-- §06 — VVM optimizer detail -->
+    <div class="sticky blue artifact" id="obj-vvm" data-anchor="5" data-anchor-offset="340" data-side="right" data-gap="60" data-width="280" style="position:absolute;transform:rotate(3deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#a8d0f0;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— a detail worth naming —</div>
+      <em style="font-style:normal;color:var(--red);font-weight:700">VVM optimizer:</em> feed resolution adapts to the screen area it's given. 720p in a quadrant. 4K full screen.
+    </div>
+
+    <!-- §07 REFLECTION — safety-first hierarchy + takeaway -->
+    <div class="sticky artifact" id="obj-priority" data-anchor="last" data-anchor-offset="40" data-side="left" data-gap="60" data-width="300" style="position:absolute;transform:rotate(-3deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— the hierarchy that ruled everything —</div>
+      Armed <em style="font-style:normal;color:var(--red);font-weight:700">&gt;</em> Disarmed <em style="font-style:normal;color:var(--red);font-weight:700">&gt;</em> Offline. Every sort starts here. Every alert respects this.
+    </div>
+
+    <div class="sticky green artifact" id="obj-reflection" data-anchor="last" data-anchor-offset="380" data-side="right" data-gap="60" data-width="300" style="position:absolute;transform:rotate(2deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#b5e0b5;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— takeaway —</div>
+      When the interface is <em style="font-style:normal;color:var(--red);font-weight:700">regulatory infrastructure</em>, every decision answers twice.
+    </div>
+  </Fragment>
+</CaseLayout>
+
+<style is:global>
+  .sticky.artifact::before{
+    content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%) rotate(-3deg);
+    width:80px;height:20px;background:var(--tape);opacity:.85;
+    box-shadow:0 2px 4px rgba(40,35,25,.1);
+  }
+</style>

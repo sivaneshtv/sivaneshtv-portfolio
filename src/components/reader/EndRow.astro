@@ -1,0 +1,23 @@
+---
+interface Props { note?: string; nextLabel: string; nextHref: string }
+const { note, nextLabel, nextHref } = Astro.props;
+---
+<div class="r-end">
+  {note && <div class="r-end-note">{note}</div>}
+  <a class="r-end-next" href={nextHref}>{nextLabel}</a>
+</div>
+
+<style>
+  /* §5.10 */
+  .r-end{
+    margin-top:80px;padding-top:36px;border-top:2px solid var(--ink);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;
+  }
+  .r-end-note{font-family:var(--fm);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+  .r-end-next{
+    font-family:var(--fh);font-weight:700;font-size:26px;color:var(--red);
+    border-bottom:2px solid var(--red);padding-bottom:4px;
+    transition:transform .3s;text-decoration:none;
+  }
+  .r-end-next:hover{transform:translate(4px,-4px)}
+</style>

@@ -1,0 +1,26 @@
+/* Tokens — verbatim from PROTOTYPE-REFERENCE.md §1 */
+:root{
+  --board:#e8e4db;
+  --board-2:#ddd8cd;
+  --board-shadow:rgba(40,35,25,.15);
+  --ink:#1a1a1c;
+  --ink-2:#4a4945;
+  --ink-3:#7a7770;
+  --ink-4:#a8a197;
+  --red:#d8352a;
+  --blue:#2b5fd8;
+  --yellow:#f5c84a;
+  --pink:#ff8fa3;
+  --green:#4a9d5f;
+  --purple:#9b7cd8;
+  --marker-red:#e84a3f;
+  --marker-blue:#3a7dd0;
+  --marker-black:#2a2a2c;
+  --tape:#f5e6a8;
+  --tape-2:#d8d2c0;
+  --paper:#fbfaf4;
+  --fs:'Inter',sans-serif;
+  --fm:'JetBrains Mono',monospace;
+  --fh:'Caveat',cursive;
+  --fk:'Kalam',cursive;
+}

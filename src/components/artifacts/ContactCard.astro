@@ -1,0 +1,76 @@
+---
+interface Props {
+  title: string;
+  body: string;
+  email: string;
+  emailHref: string;
+  socials: Array<{ label: string; url: string }>;
+  pos?: { x: number; y: number };
+}
+
+const { title, body, email, emailHref, socials, pos } = Astro.props;
+
+const style = [
+  'position:absolute',
+  pos ? `left:${pos.x}px;top:${pos.y}px` : '',
+].filter(Boolean).join(';');
+---
+
+<div class="contact-card" style={style}>
+  <h3 set:html={title} />
+  <p>{body}</p>
+  <a class="email" href={emailHref}>
+    <span>{email}</span>
+    <span class="arr">→</span>
+  </a>
+  <div class="socials">
+    {socials.map((s) => (
+      <a href={s.url} target="_blank" rel="noopener">{s.label} ↗</a>
+    ))}
+  </div>
+</div>
+
+<style>
+  /* §4.6 — portfolio-workbench.html lines 292–324 */
+  .contact-card{
+    position:absolute;
+    width:380px;
+    padding:32px 30px;
+    background:#1a1a1c;
+    color:#f5ede0;
+    box-shadow:
+      2px 3px 0 rgba(40,35,25,.08),
+      6px 12px 28px rgba(40,35,25,.3);
+    transform:rotate(2deg);
+  }
+  .contact-card::before{
+    content:"";position:absolute;top:-10px;left:40%;width:70px;height:22px;
+    background:var(--tape);opacity:.85;transform:rotate(3deg);
+    box-shadow:0 2px 5px rgba(40,35,25,.15);
+  }
+  h3{
+    font-family:var(--fh);font-weight:700;font-size:36px;line-height:1;
+    margin-bottom:14px;letter-spacing:-.02em;
+  }
+  h3 :global(em){font-style:italic;color:var(--marker-red)}
+  p{font-size:13px;line-height:1.55;opacity:.85;margin-bottom:18px}
+  .email{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 16px;background:rgba(255,240,200,.06);border:1px dashed rgba(255,240,200,.3);
+    font-family:var(--fm);font-size:13px;margin-bottom:14px;
+    transition:background .25s,border-color .25s;
+    color:inherit;text-decoration:none;
+  }
+  .email:hover{background:rgba(216,53,42,.12);border-color:var(--marker-red)}
+  .email .arr{color:var(--marker-red);font-size:18px}
+  .socials{
+    display:flex;gap:18px;
+    font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.8;
+  }
+  .socials a{
+    color:inherit;text-decoration:none;
+    border-bottom:1px solid rgba(255,240,200,.2);padding-bottom:2px;
+    transition:color .25s,border-color .25s;
+  }
+  .socials a:hover{color:var(--marker-red);border-color:var(--marker-red)}
+</style>

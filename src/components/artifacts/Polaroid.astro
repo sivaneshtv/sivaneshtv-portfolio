@@ -1,0 +1,79 @@
+---
+interface Props {
+  href?: string;
+  caption: string;
+  meta?: string;
+  rotation?: number;
+  pos?: { x: number; y: number };
+}
+
+const { href, caption, meta, rotation = 0, pos } = Astro.props;
+const Tag = href ? 'a' : 'div';
+
+const style = [
+  'position:absolute',
+  pos ? `left:${pos.x}px;top:${pos.y}px` : '',
+  `transform:rotate(${rotation}deg)`,
+].filter(Boolean).join(';');
+---
+
+<Tag class="polaroid" style={style} href={href || undefined}>
+  <div class="polaroid-img">
+    <slot />
+  </div>
+  <div class="polaroid-caption" set:html={caption} />
+  {meta && <div class="polaroid-meta">{meta}</div>}
+</Tag>
+
+<style>
+  /* §4.3 — portfolio-workbench.html lines 194–240 */
+  .polaroid{
+    position:absolute;
+    width:320px;
+    padding:16px 16px 60px;
+    background:#fbfaf4;
+    box-shadow:
+      2px 3px 0 rgba(40,35,25,.05),
+      5px 10px 22px rgba(40,35,25,.22),
+      12px 20px 40px rgba(40,35,25,.1);
+    cursor:pointer;
+    transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s;
+    display:block;
+    color:inherit;
+    text-decoration:none;
+  }
+  .polaroid:hover{
+    transform:translateY(-8px) rotate(0deg) !important;
+    box-shadow:
+      2px 3px 0 rgba(40,35,25,.05),
+      8px 16px 30px rgba(40,35,25,.28),
+      20px 28px 60px rgba(40,35,25,.15);
+    z-index:50;
+  }
+  .polaroid::before{
+    content:"";position:absolute;top:-10px;left:20%;width:60px;height:22px;
+    background:var(--tape);opacity:.85;transform:rotate(-6deg);
+    box-shadow:0 2px 5px rgba(40,35,25,.12);
+  }
+  .polaroid::after{
+    content:"";position:absolute;top:-8px;right:18%;width:50px;height:20px;
+    background:var(--tape-2);opacity:.75;transform:rotate(4deg);
+    box-shadow:0 2px 4px rgba(40,35,25,.1);
+  }
+  .polaroid-img{
+    aspect-ratio:4/3;background:var(--board-2);
+    display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;
+    margin-bottom:14px;
+  }
+  .polaroid-img :global(svg){width:100%;height:100%}
+  .polaroid-caption{
+    font-family:var(--fh);font-weight:700;font-size:24px;line-height:1.1;color:var(--ink);
+    text-align:center;
+  }
+  .polaroid-caption :global(em){font-style:italic;color:var(--marker-red)}
+  .polaroid-meta{
+    font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-3);text-align:center;margin-top:4px;
+  }
+</style>

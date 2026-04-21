@@ -1,0 +1,16 @@
+---
+interface Props { text: string; num: string }
+const { text, num } = Astro.props;
+---
+<div class="r-section-lbl">{text} <span class="num">{num}</span></div>
+
+<style>
+  /* §5.4 */
+  .r-section-lbl{
+    display:flex;align-items:center;gap:12px;
+    font-family:var(--fm);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);
+    margin-bottom:14px;
+  }
+  .r-section-lbl::before{content:"";width:20px;height:1px;background:var(--red)}
+  .num{color:var(--ink-3);margin-left:auto;font-size:9px}
+</style>

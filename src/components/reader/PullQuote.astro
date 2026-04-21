@@ -1,0 +1,15 @@
+---
+---
+<p class="r-pullquote"><slot /></p>
+
+<style>
+  /* §5.6 */
+  .r-pullquote{
+    margin:40px 0;padding:24px 0;
+    font-family:var(--fh);font-weight:600;font-size:calc(38px * var(--reader-fs, 1));line-height:1.15;letter-spacing:-.01em;color:var(--ink);
+    border-top:1px solid rgba(40,35,25,.15);
+    border-bottom:1px solid rgba(40,35,25,.15);
+    max-width:680px;
+  }
+  .r-pullquote :global(em){color:var(--red);font-style:italic}
+</style>

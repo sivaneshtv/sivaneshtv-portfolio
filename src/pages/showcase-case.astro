@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PrincipleCard from '../components/artifacts/PrincipleCard.astro';
+import ContextCard from '../components/artifacts/ContextCard.astro';
+import CutCard from '../components/artifacts/CutCard.astro';
+import Diagram from '../components/artifacts/Diagram.astro';
+import ReaderColumn from '../components/reader/ReaderColumn.astro';
+import Back from '../components/reader/Back.astro';
+import Hero from '../components/reader/Hero.astro';
+import MetaRow from '../components/reader/MetaRow.astro';
+import Section from '../components/reader/Section.astro';
+import SectionLabel from '../components/reader/SectionLabel.astro';
+import H2 from '../components/reader/H2.astro';
+import Lead from '../components/reader/Lead.astro';
+import Body from '../components/reader/Body.astro';
+import Callout from '../components/reader/Callout.astro';
+import PullQuote from '../components/reader/PullQuote.astro';
+import MarginRef from '../components/reader/MarginRef.astro';
+import Hr from '../components/reader/Hr.astro';
+import Outcome from '../components/reader/Outcome.astro';
+import EndRow from '../components/reader/EndRow.astro';
+import ImgSlot from '../components/reader/ImgSlot.astro';
+---
+
+<BaseLayout title="Case Component Showcase">
+  <div style="background:#e8e4db;min-height:100vh;overflow:auto;padding:60px 40px 200px;">
+
+    <h2 style="font-family:var(--fm);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);margin-bottom:60px;">Case Study Component Showcase — Phase 5 Gate</h2>
+
+    <!-- Canvas artifacts -->
+    <div style="position:relative;height:360px;margin-bottom:80px;">
+      <PrincipleCard
+        label="the interaction rule every tool obeys"
+        title='<em>Push</em> or <em>Overlay.</em> Every tool picks one.'
+        body="Tools that need ambient awareness push the body to make room. Tools that need focused attention overlay with scrim."
+        attr="— the IA of a complex cockpit"
+        rotation={1.5}
+      />
+    </div>
+
+    <div style="position:relative;height:280px;margin-bottom:80px;">
+      <ContextCard
+        label="— the regulatory pull —"
+        title='"The pilot must maintain situational awareness of <em>all airframes</em> under their supervision at all times."'
+        body="— CAA waiver applications, paraphrased across multiple programs."
+        rotation={-2}
+      />
+    </div>
+
+    <div style="position:relative;height:260px;margin-bottom:80px;">
+      <CutCard
+        meta="v1 → considered for v2"
+        title="Split-screen mode"
+        body="Two simultaneous drone views. Rejected: splits attention rather than focusing it. <em>Spotlight is the better answer.</em>"
+        rotation={1}
+      />
+    </div>
+
+    <div style="position:relative;height:300px;margin-bottom:80px;">
+      <Diagram title="The three-bucket sort" sub="INFORMATION ARCHITECTURE · THE SORT" rotation={-1} width={420}>
+        <svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="20" width="100" height="80" rx="4" fill="none" stroke="#1a1a1c" stroke-width="1.5"/>
+          <text x="70" y="65" fill="#1a1a1c" font-family="Caveat" font-size="14" text-anchor="middle" font-weight="700">Monitor</text>
+          <rect x="150" y="20" width="100" height="80" rx="4" fill="none" stroke="#e84a3f" stroke-width="1.5"/>
+          <text x="200" y="65" fill="#e84a3f" font-family="Caveat" font-size="14" text-anchor="middle" font-weight="700">Act</text>
+          <rect x="280" y="20" width="100" height="80" rx="4" fill="none" stroke="#3a7dd0" stroke-width="1.5"/>
+          <text x="330" y="65" fill="#3a7dd0" font-family="Caveat" font-size="14" text-anchor="middle" font-weight="700">Diagnose</text>
+        </svg>
+      </Diagram>
+    </div>
+
+    <!-- Reader column components in a mock paper container -->
+    <div style="position:relative;max-width:800px;margin:0 auto;background:var(--paper);padding:80px 60px;box-shadow:2px 4px 0 rgba(40,35,25,.04),8px 16px 40px rgba(40,35,25,.18);">
+
+      <Back />
+      <Hero
+        eyebrow="— case study · 01 —"
+        title='Cockpit <em>View</em> 2.0'
+        sub="Redesigning the primary control interface for autonomous drone operations — from the ground up."
+      />
+      <MetaRow items={[
+        { k: 'Role', v: 'Lead · with Prathamesh' },
+        { k: 'Year', v: '2024' },
+        { k: 'Scope', v: 'End-to-end UX · Design system' },
+        { k: 'Tools', v: 'Figma · Claude · Lovable' },
+      ]} />
+
+      <ImgSlot
+        variant="hero"
+        label="Image slot 01 · Hero shot"
+        title="Full Cockpit View 2.0 interface"
+        desc="A clean screenshot of the live UI — map, video feed, mission panel, system controls all visible."
+        dims="16 : 10 · ideally 2400 × 1500 px"
+        cap="Cockpit View 2.0 — in-flight, live telemetry"
+        capMeta="the interface"
+      />
+
+      <Section>
+        <SectionLabel text="Context" num="§ 01" />
+        <H2>Cockpit View is the <em>primary interface</em> operators live in all day.</H2>
+        <Lead>It runs entirely in a browser — no native app, no dedicated hardware.</Lead>
+        <Body>
+          <p>Professional drone operators use Cockpit View to control autonomous flights. Every moment of ambiguity in the interface translates into cognitive load the operator can't afford.</p>
+          <p>The v1 interface was built for a single drone. By the time I joined, operators were running multiple sites.</p>
+        </Body>
+        <MarginRef>↗ see the IA diagram</MarginRef>
+      </Section>
+
+      <Section>
+        <PullQuote>The interface was working. The <em>operators</em> were doing the work it should have been doing.</PullQuote>
+        <Body>
+          <p>When we sat in on CS calls and read the transcripts, a pattern emerged. Operators were compensating — memorising which panel held which control.</p>
+        </Body>
+        <Callout label="the hard part">
+          <p>Information architecture is the spine. Before we could fix any screen, we had to decide where everything should <em>live</em>, and why.</p>
+        </Callout>
+      </Section>
+
+      <Hr />
+
+      <Outcome items={[
+        { n: '42%', l: 'lower error rate', d: 'Operator-reported alert acknowledgement errors dropped significantly.' },
+        { n: '4', l: 'permanent zones', d: 'Map / video / mission / system. Nothing moves.' },
+        { n: 'v2', l: 'enterprise default', d: 'Shipped Q4 2024. Now the default UI across all deployments.' },
+      ]} />
+
+      <EndRow note="Cockpit View 2.0 · 2024" nextLabel="Next: Fleet View ↗" nextHref="/fleet" />
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style is:global>
+  body { overflow: auto !important; user-select: auto !important; -webkit-user-select: auto !important; touch-action: auto !important; }
+</style>

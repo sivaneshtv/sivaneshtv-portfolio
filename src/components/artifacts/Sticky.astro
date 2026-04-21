@@ -1,0 +1,82 @@
+---
+interface Props {
+  variant?: 'yellow' | 'pink' | 'blue' | 'green' | 'orange' | 'cream';
+  width?: number;
+  rotation?: number;
+  eyebrow?: string;
+  eyebrowColor?: string;
+  pos?: { x: number; y: number };
+  compact?: boolean;
+  class?: string;
+  style?: string;
+}
+
+const {
+  variant = 'yellow',
+  width = 260,
+  rotation = 0,
+  eyebrow,
+  eyebrowColor,
+  pos,
+  compact = false,
+  class: className,
+  style: extraStyle,
+} = Astro.props;
+
+const parts = [
+  'position:absolute',
+  `width:${width}px`,
+  pos ? `left:${pos.x}px;top:${pos.y}px` : '',
+  `transform:rotate(${rotation}deg)`,
+  extraStyle ?? '',
+].filter(Boolean).join(';');
+---
+
+<div class:list={['sticky', variant, className]} style={parts}>
+  {eyebrow && (
+    <div class="sticky-eyebrow" style={eyebrowColor ? `color:${eyebrowColor}` : ''}>{eyebrow}</div>
+  )}
+  <slot />
+</div>
+
+<style>
+  /* Workbench sticky — PROTOTYPE-REFERENCE §4.1, portfolio-workbench.html lines 132–159 */
+  .sticky{
+    position:absolute;
+    width:260px;min-height:200px;
+    padding:24px 22px 20px;
+    font-family:var(--fh);font-weight:500;font-size:21px;line-height:1.35;color:var(--ink);
+    background:var(--yellow);
+    box-shadow:
+      2px 4px 0 rgba(40,35,25,.05),
+      4px 8px 16px rgba(40,35,25,.18),
+      inset 0 0 40px rgba(255,255,255,.2);
+    border-radius:1px;
+  }
+  .sticky::before{
+    content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%) rotate(-3deg);
+    width:80px;height:20px;background:var(--tape);opacity:.85;
+    box-shadow:0 2px 4px rgba(40,35,25,.1);
+  }
+  .sticky-eyebrow{
+    font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-3);margin-bottom:8px;font-style:normal;
+  }
+  .sticky :global(em){
+    font-style:normal;color:var(--marker-red);font-weight:700;
+  }
+  .sticky :global(strong){ font-weight:700 }
+
+  .sticky.pink{background:var(--pink)}
+  .sticky.blue{background:#a8d0f0}
+  .sticky.green{background:#b5e0b5}
+
+  /* Inline icon layout (basketball, manhwa stickies) */
+  .sticky :global(.sticky-icon-row){
+    display:flex;align-items:flex-start;gap:12px;margin-top:4px;
+  }
+  .sticky :global(.sticky-icon-row svg){ flex-shrink:0;margin-top:2px }
+  .sticky :global(.sticky-icon-row > div){
+    font-family:var(--fh);font-weight:600;font-size:19px;line-height:1.35;
+  }
+</style>

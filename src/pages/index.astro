@@ -1,0 +1,402 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Sticky from '../components/artifacts/Sticky.astro';
+import IndexCard from '../components/artifacts/IndexCard.astro';
+import Polaroid from '../components/artifacts/Polaroid.astro';
+import Marker from '../components/artifacts/Marker.astro';
+import ContactCard from '../components/artifacts/ContactCard.astro';
+import PhotoFrame from '../components/artifacts/PhotoFrame.astro';
+import TodoList from '../components/artifacts/TodoList.astro';
+import ZoneLabel from '../components/artifacts/ZoneLabel.astro';
+import Masthead from '../components/artifacts/Masthead.astro';
+
+import {
+  zones, zoneBounds, zoneNav, zoneLabels,
+  masthead, photo, aboutStickies, howIWork,
+  workZone, contactZone,
+} from '../data/workbench';
+---
+
+<BaseLayout title="Sivanesh TV — Product Designer">
+  <div class="board-bg"></div>
+
+  <div class="canvas-wrap" id="canvasWrap">
+    <div class="canvas" id="canvas" style="width:6000px;height:4200px">
+
+      <!-- §7.1 — Zone labels -->
+      {zoneLabels.map((z) => (
+        <ZoneLabel pos={{x:z.x, y:z.y}} size={z.size} rotation={z.rotation}>
+          <Fragment set:html={z.html} />
+        </ZoneLabel>
+      ))}
+
+      <!-- §7.2 — Masthead -->
+      <Masthead pos={{x:2100, y:1600}} eyebrow={masthead.eyebrow} title={masthead.title} sub={masthead.sub} />
+
+      <!-- §7.3 — Photo -->
+      <PhotoFrame
+        pos={{x:photo.x, y:photo.y}}
+        rotation={photo.rotation}
+        caption={photo.caption}
+        char={photo.char}
+      />
+
+      <!-- §7.4 — Arrow 1 (masthead → work) -->
+      <svg style="position:absolute;left:2900px;top:2050px;width:340px;height:180px;pointer-events:none" viewBox="0 0 340 180" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 10 30 Q 150 10 200 90 T 320 140" stroke="#d8352a" stroke-width="3" fill="none" stroke-linecap="round" style="filter:url(#wobble)"/>
+        <path d="M 310 135 L 325 140 L 315 152" stroke="#d8352a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="40" y="175" font-family="Caveat" font-size="26" fill="#d8352a" font-weight="700" transform="rotate(-3 40 175)">the work →</text>
+      </svg>
+
+      <!-- §7.5 — About stickies -->
+      <Sticky variant={aboutStickies.whoIAm.variant} pos={{x:aboutStickies.whoIAm.x, y:aboutStickies.whoIAm.y}} rotation={aboutStickies.whoIAm.rotation} width={aboutStickies.whoIAm.width} eyebrow={aboutStickies.whoIAm.eyebrow}>
+        <Fragment set:html={aboutStickies.whoIAm.body} />
+      </Sticky>
+
+      <Sticky variant={aboutStickies.belief.variant} pos={{x:aboutStickies.belief.x, y:aboutStickies.belief.y}} rotation={aboutStickies.belief.rotation} width={aboutStickies.belief.width} eyebrow={aboutStickies.belief.eyebrow}>
+        <Fragment set:html={aboutStickies.belief.body} />
+      </Sticky>
+
+      <!-- Basketball (inline styles from prototype) -->
+      <Sticky pos={{x:800, y:2100}} rotation={-4} width={290} eyebrow="— off the bench —" eyebrowColor="#4a2a00" style="background:#f28c3f">
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-top:4px">
+          <svg width="44" height="44" viewBox="0 0 48 48" style="flex-shrink:0;margin-top:2px" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="20" fill="#d65f0f" stroke="#2a1400" stroke-width="2"/>
+            <path d="M 24 4 Q 24 24 24 44" stroke="#2a1400" stroke-width="1.8" fill="none"/>
+            <path d="M 4 24 Q 24 24 44 24" stroke="#2a1400" stroke-width="1.8" fill="none"/>
+            <path d="M 10 10 Q 22 22 38 38" stroke="#2a1400" stroke-width="1.8" fill="none"/>
+            <path d="M 38 10 Q 26 22 10 38" stroke="#2a1400" stroke-width="1.8" fill="none"/>
+          </svg>
+          <div style="font-family:var(--fh);font-weight:600;font-size:19px;line-height:1.35;color:#2a1400">
+            Shooting forward / small forward. State-level in college, <em style="color:#7a1a00;font-style:italic">Tamil Nadu.</em> Still play every week.
+          </div>
+        </div>
+      </Sticky>
+
+      <!-- Manhwa (inline styles from prototype) -->
+      <Sticky pos={{x:1280, y:2160}} rotation={3} width={280} eyebrow="— late nights —" eyebrowColor="#6a2a8a" style="background:#f5ede0;border:1px solid rgba(40,35,25,.08);box-shadow:2px 3px 0 rgba(40,35,25,.04), 4px 10px 24px rgba(40,35,25,.14)">
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-top:4px">
+          <svg width="40" height="48" viewBox="0 0 44 52" style="flex-shrink:0;margin-top:2px" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="6" width="34" height="42" fill="#fdf8ea" stroke="#1a1a1c" stroke-width="1.8" transform="rotate(-4 19 27)"/>
+            <rect x="6" y="4" width="34" height="42" fill="#fdf8ea" stroke="#1a1a1c" stroke-width="1.8"/>
+            <line x1="6" y1="18" x2="40" y2="18" stroke="#1a1a1c" stroke-width="1"/>
+            <line x1="22" y1="4" x2="22" y2="18" stroke="#1a1a1c" stroke-width="1"/>
+            <line x1="6" y1="32" x2="40" y2="32" stroke="#1a1a1c" stroke-width="1"/>
+            <circle cx="14" cy="11" r="2" fill="#d8352a"/>
+            <path d="M 8 26 L 20 26 M 8 38 L 38 38 M 8 42 L 30 42" stroke="#1a1a1c" stroke-width=".8"/>
+          </svg>
+          <div style="font-family:var(--fh);font-weight:600;font-size:19px;line-height:1.35;color:#1a1a1c">
+            Solo Leveling, Omniscient Reader, Tower of God. Nights belong to <em style="color:#6a2a8a;font-style:italic">manhwa.</em>
+          </div>
+        </div>
+      </Sticky>
+
+      <!-- Music -->
+      <Sticky variant={aboutStickies.music.variant} pos={{x:aboutStickies.music.x, y:aboutStickies.music.y}} rotation={aboutStickies.music.rotation} width={aboutStickies.music.width} eyebrow={aboutStickies.music.eyebrow}>
+        <Fragment set:html={aboutStickies.music.body} />
+      </Sticky>
+
+      <!-- §7.6 — How-I-work -->
+      <IndexCard
+        pos={{x:howIWork.card.x, y:howIWork.card.y}}
+        rotation={howIWork.card.rotation}
+        title={howIWork.card.title}
+        sub={howIWork.card.sub}
+        rows={howIWork.card.rows}
+      />
+
+      <TodoList
+        pos={{x:howIWork.todo.x, y:howIWork.todo.y}}
+        title={howIWork.todo.title}
+        sub={howIWork.todo.sub}
+        items={howIWork.todo.items}
+      />
+
+      <Sticky variant={howIWork.toolsSticky.variant} pos={{x:howIWork.toolsSticky.x, y:howIWork.toolsSticky.y}} rotation={howIWork.toolsSticky.rotation} width={howIWork.toolsSticky.width} eyebrow={howIWork.toolsSticky.eyebrow}>
+        <Fragment set:html={howIWork.toolsSticky.body} />
+      </Sticky>
+
+      <!-- What I bring (uses inline <ul> from prototype) -->
+      <Sticky variant={howIWork.whatIBring.variant} pos={{x:howIWork.whatIBring.x, y:howIWork.whatIBring.y}} rotation={howIWork.whatIBring.rotation} width={howIWork.whatIBring.width} eyebrow={howIWork.whatIBring.eyebrow}>
+        <ul style="padding-left:18px;margin:4px 0 0 0;font-family:var(--fh);font-weight:600;font-size:20px;line-height:1.5;color:var(--ink)">
+          <li>Structural thinking <em>before</em> pixel-pushing</li>
+          <li>Comfort with <em>ambiguity</em> early-stage</li>
+          <li>Clean handoffs — specs, rules, edge cases</li>
+          <li>Pair fluency with engineers</li>
+        </ul>
+      </Sticky>
+
+      <!-- Marker: tie-in -->
+      <Marker size="sm" variant="red" pos={{x:2850, y:3460}} rotation={-3} style="font-size:18px">
+        <Fragment set:html={'↖ this is what<br>gets shipped'} />
+      </Marker>
+
+      <!-- §7.7 — Work zone -->
+      <Marker size="sm" variant="red" pos={{x:workZone.clickHint.x, y:workZone.clickHint.y}} rotation={workZone.clickHint.rotation} style={`font-size:${workZone.clickHint.size}px`}>
+        click any to open ↓
+      </Marker>
+
+      <!-- Polaroid 1: Cockpit -->
+      <Polaroid pos={{x:workZone.polaroids[0].x, y:workZone.polaroids[0].y}} rotation={workZone.polaroids[0].rotation} href={workZone.polaroids[0].href} caption={workZone.polaroids[0].caption} meta={workZone.polaroids[0].meta}>
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#1a1a1c"/>
+          <g stroke="#d8352a" stroke-width="1" fill="none" opacity=".7"><circle cx="200" cy="150" r="100"/><circle cx="200" cy="150" r="70" stroke-dasharray="2 4"/><circle cx="200" cy="150" r="40"/><line x1="200" y1="50" x2="200" y2="250"/><line x1="100" y1="150" x2="300" y2="150"/></g>
+          <circle cx="200" cy="150" r="6" fill="#d8352a"/>
+          <g fill="#c8f560" opacity=".8"><rect x="20" y="20" width="60" height="12"/><rect x="20" y="38" width="90" height="8"/><rect x="320" y="20" width="60" height="12"/></g>
+          <g font-family="JetBrains Mono" font-size="8" fill="#c8f560" opacity=".6"><text x="30" y="270">ALT 120M · HDG 247°</text></g>
+        </svg>
+      </Polaroid>
+
+      <!-- Polaroid 2: Fleet -->
+      <Polaroid pos={{x:workZone.polaroids[1].x, y:workZone.polaroids[1].y}} rotation={workZone.polaroids[1].rotation} href={workZone.polaroids[1].href} caption={workZone.polaroids[1].caption} meta={workZone.polaroids[1].meta}>
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#f5ede0"/>
+          <g stroke="#1a1a1c" stroke-width=".5" fill="none" opacity=".2"><rect x="40" y="40" width="80" height="60"/><rect x="130" y="40" width="80" height="60"/><rect x="220" y="40" width="80" height="60"/><rect x="310" y="40" width="50" height="60"/><rect x="40" y="110" width="80" height="60"/><rect x="130" y="110" width="80" height="60"/><rect x="220" y="110" width="80" height="60"/><rect x="310" y="110" width="50" height="60"/></g>
+          <g fill="#d8352a"><circle cx="80" cy="70" r="4"/><circle cx="170" cy="70" r="4"/><circle cx="260" cy="70" r="4"/><circle cx="80" cy="140" r="4"/><circle cx="170" cy="140" r="4"/><circle cx="260" cy="140" r="4"/></g>
+          <g stroke="#d8352a" stroke-width=".5" opacity=".4"><path d="M 80 70 Q 125 40 170 70" fill="none"/><path d="M 170 70 Q 215 40 260 70" fill="none"/><path d="M 80 140 L 260 140" fill="none"/></g>
+          <rect x="40" y="200" width="320" height="36" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <text x="200" y="222" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#d8352a" letter-spacing="1">8 ACTIVE · 13 ALERTS</text>
+        </svg>
+      </Polaroid>
+
+      <!-- Polaroid 3: Asset -->
+      <Polaroid pos={{x:workZone.polaroids[2].x, y:workZone.polaroids[2].y}} rotation={workZone.polaroids[2].rotation} href={workZone.polaroids[2].href} caption={workZone.polaroids[2].caption} meta={workZone.polaroids[2].meta}>
+        <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="300" fill="#f5ede0"/>
+          <rect x="20" y="20" width="32" height="260" fill="none" stroke="#1a1a1c" stroke-width=".7" opacity=".35"/>
+          <g fill="#d8352a"><circle cx="36" cy="48" r="5"/></g>
+          <g fill="none" stroke="#d8352a" stroke-width=".8" opacity=".55"><circle cx="36" cy="86" r="5"/><circle cx="36" cy="124" r="5"/><circle cx="36" cy="162" r="5"/><circle cx="36" cy="200" r="5"/></g>
+          <g stroke="#1a1a1c" stroke-width=".4" fill="none" opacity=".3"><line x1="66" y1="44" x2="170" y2="44"/><line x1="66" y1="62" x2="170" y2="62"/><line x1="66" y1="80" x2="170" y2="80"/><line x1="66" y1="98" x2="170" y2="98"/><line x1="66" y1="116" x2="170" y2="116"/><line x1="66" y1="134" x2="170" y2="134"/><line x1="66" y1="152" x2="170" y2="152"/><line x1="66" y1="170" x2="170" y2="170"/></g>
+          <text x="66" y="200" font-family="JetBrains Mono" font-size="8" fill="#1a1a1c" opacity=".45" letter-spacing=".5">1443 ASSETS</text>
+          <rect x="190" y="30" width="190" height="240" fill="#e8e4db" stroke="#1a1a1c" stroke-width=".5" opacity=".6"/>
+          <g fill="#d8352a"><circle cx="220" cy="80" r="4"/><circle cx="260" cy="110" r="4"/><circle cx="300" cy="70" r="4"/><circle cx="340" cy="130" r="4"/><circle cx="360" cy="180" r="4"/><circle cx="230" cy="200" r="4"/><circle cx="290" cy="220" r="4"/><circle cx="340" cy="240" r="4"/></g>
+          <polygon points="245 150, 320 145, 330 205, 255 210" fill="#f5c84a" fill-opacity=".25" stroke="#f5a524" stroke-width="1" stroke-dasharray="3 2"/>
+          <text x="287" y="178" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#d8352a" letter-spacing="1">ZONE APEX</text>
+        </svg>
+      </Polaroid>
+
+      <!-- Work note sticky -->
+      <Sticky variant={workZone.workNote.variant} pos={{x:workZone.workNote.x, y:workZone.workNote.y}} rotation={workZone.workNote.rotation} width={workZone.workNote.width} eyebrow={workZone.workNote.eyebrow}>
+        <Fragment set:html={workZone.workNote.body} />
+      </Sticky>
+
+      <!-- §7.8 — Contact zone -->
+      <ContactCard
+        pos={{x:contactZone.card.x, y:contactZone.card.y}}
+        title={contactZone.card.title}
+        body={contactZone.card.body}
+        email={contactZone.card.email}
+        emailHref={contactZone.card.emailHref}
+        socials={contactZone.card.socials}
+      />
+
+      <Sticky pos={{x:contactZone.availSticky.x, y:contactZone.availSticky.y}} rotation={contactZone.availSticky.rotation} width={contactZone.availSticky.width} eyebrow={contactZone.availSticky.eyebrow}>
+        <Fragment set:html={contactZone.availSticky.body} />
+      </Sticky>
+
+      <!-- Arrow from "say hi" zone label to contact card -->
+      <svg style="position:absolute;left:3800px;top:3360px;width:140px;height:90px;pointer-events:none" viewBox="0 0 140 90" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 30 10 Q 25 55 100 70" stroke="#d8352a" stroke-width="3" fill="none" stroke-linecap="round" style="filter:url(#wobble)"/>
+        <path d="M 92 62 L 104 72 L 92 80" stroke="#d8352a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+
+      <!-- Footer credit -->
+      <div class="marker sm black" style="position:absolute;left:2450px;top:3850px;transform:rotate(-1deg);font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:500">
+        © 2026 Sivanesh TV · hand-built · last updated apr 2026
+      </div>
+
+    </div>
+  </div>
+
+  <!-- UI chrome (§7.9) -->
+  <div class="topbar">
+    <div class="tb-logo-wrap">
+      <button class="tb-logo" id="menuToggle" aria-expanded="false" aria-label="Open layers panel">
+        <span class="menu-ic"><span></span><span></span><span></span></span>
+        <span>Sivanesh.tv</span>
+        <span class="tb-logo-sub">— the workbench</span>
+        <span class="menu-chev">▾</span>
+      </button>
+      <div class="nav-menu" id="layersPanel" role="menu">
+        {zoneNav.map((z) => (
+          <button class="nav-row" role="menuitem" data-zone={z.id}>
+            <span class="nav-ic">◎</span><span class="nav-name">{z.label}</span><span class="nav-ar">↗</span>
+          </button>
+        ))}
+      </div>
+    </div>
+    <div class="tb-status">
+      <div class="avail"><span class="avail-dot"></span><span>Taking briefs</span></div>
+      <span class="sep">·</span>
+      <span id="clock">—:— IST</span>
+      <span class="sep">·</span>
+      <span>Pune, IN</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="tb-btn" id="btnZoomOut" title="Zoom out (−)">−</button>
+    <div class="tb-zoom" id="zoomVal">100%</div>
+    <button class="tb-btn" id="btnZoomIn" title="Zoom in (+)">+</button>
+    <div class="tb-divider"></div>
+    <button class="tb-btn" id="btnFit" title="Fit to screen (F)">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M2 6h12M6 2v12"/></svg>
+    </button>
+    <button class="tb-btn" id="btnReset" title="Home (H or 0)">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5L8 4l5 4.5M4.5 7.5V13h2.5v-3h2v3H11.5V7.5"/></svg>
+    </button>
+  </div>
+
+  <div class="minimap" id="minimap" title="Click to jump">
+    <div class="minimap-label">Board</div>
+    <div class="minimap-canvas" id="minimapCanvas"></div>
+    <div class="minimap-viewport" id="minimapViewport"></div>
+  </div>
+
+  <div class="mobile-hint" id="mobileHint">pinch to zoom · drag to pan</div>
+
+  <div class="help" id="help">
+    <div class="help-title">this is a <em>whiteboard.</em></div>
+    <p style="margin-bottom:6px">Scroll to pan around. Click any sketch, sticky, or polaroid to open the full work.</p>
+    <div class="help-keys">
+      <span class="help-key"><kbd>scroll</kbd> pan</span>
+      <span class="help-key"><kbd>⌘</kbd> + <kbd>scroll</kbd> zoom</span>
+      <span class="help-key"><kbd>space</kbd> + <kbd>drag</kbd> pan fast</span>
+      <span class="help-key"><kbd>F</kbd> fit</span>
+    </div>
+    <button class="help-dismiss" id="helpDismiss">got it</button>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  /* All UI chrome CSS verbatim from §6 — same as Phase 3 */
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:20px 28px;pointer-events:none}
+  .topbar > *{pointer-events:auto}
+  .tb-logo-wrap{position:relative}
+  .tb-logo{display:flex;align-items:center;gap:10px;font-family:var(--fs);font-weight:600;font-size:14px;color:var(--ink);background:rgba(232,228,219,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:8px 12px 8px 10px;border:1px solid rgba(40,35,25,.12);box-shadow:0 4px 14px rgba(40,35,25,.08);cursor:pointer;transition:background .2s,border-color .2s}
+  .tb-logo:hover{background:rgba(232,228,219,1);border-color:rgba(40,35,25,.25)}
+  .tb-logo[aria-expanded="true"]{background:rgba(232,228,219,1);border-color:rgba(40,35,25,.3)}
+  .tb-logo[aria-expanded="true"] .menu-chev{transform:rotate(180deg)}
+  .tb-logo-sub{color:var(--ink-3);font-weight:400;font-size:12px}
+  .menu-ic{display:flex;flex-direction:column;gap:3px;width:14px}
+  .menu-ic span{display:block;height:1.5px;background:currentColor;border-radius:1px}
+  .menu-ic span:nth-child(1){width:100%}.menu-ic span:nth-child(2){width:65%}.menu-ic span:nth-child(3){width:80%}
+  .menu-chev{font-size:9px;color:currentColor;opacity:.65;transition:transform .25s;margin-left:4px}
+  .tb-status{display:flex;align-items:center;gap:14px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);background:rgba(232,228,219,.85);backdrop-filter:blur(10px);padding:10px 14px;border:1px solid rgba(40,35,25,.1)}
+  .tb-status .avail{display:flex;align-items:center;gap:6px}
+  .tb-status .avail-dot{width:6px;height:6px;background:#4a9d5f;border-radius:50%;animation:pulse 2.4s infinite ease-in-out}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}}
+  .tb-status .sep{color:rgba(40,35,25,.3)}
+  .nav-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:200px;background:rgba(232,228,219,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(40,35,25,.14);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08);opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .2s ease,transform .2s ease;z-index:31}
+  .nav-menu.on{opacity:1;pointer-events:auto;transform:translateY(0)}
+  .nav-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 14px;border-radius:2px;font-family:var(--fs);font-size:13px;font-weight:500;color:var(--ink-2);transition:background .18s,color .18s}
+  .nav-row:hover{background:rgba(40,35,25,.08);color:var(--ink)}
+  .nav-row .nav-ic{display:inline-flex;align-items:center;justify-content:center;width:14px;color:var(--ink-3);transition:color .18s}
+  .nav-row:hover .nav-ic{color:var(--marker-red)}
+  .nav-row .nav-name{flex:1;line-height:1}
+  .nav-row .nav-ar{font-family:var(--fm);font-size:11px;color:var(--ink-4);transition:color .18s,transform .2s}
+  .nav-row:hover .nav-ar{color:var(--marker-red);transform:translate(2px,-2px)}
+  .toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:2px;background:rgba(232,228,219,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(40,35,25,.12);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08)}
+  .tb-divider{width:1px;height:22px;background:rgba(40,35,25,.15);margin:0 4px;flex-shrink:0}
+  .tb-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);transition:background .2s,color .2s;border-radius:2px}
+  .tb-btn:hover{background:rgba(40,35,25,.08);color:var(--ink)}
+  .tb-btn svg{display:block}
+  .tb-zoom{font-family:var(--fm);font-size:11px;letter-spacing:.08em;color:var(--ink-2);padding:0 12px;min-width:58px;text-align:center}
+  .minimap{position:fixed;bottom:20px;right:20px;z-index:30;width:160px;height:112px;background:rgba(232,228,219,.92);backdrop-filter:blur(12px);border:1px solid rgba(40,35,25,.15);box-shadow:0 4px 16px rgba(40,35,25,.12);overflow:hidden;cursor:pointer}
+  .minimap-canvas{position:absolute;inset:4px;background:transparent}
+  .minimap-dot{position:absolute;background:var(--ink);border-radius:1px;opacity:.55}
+  .minimap-dot.work{background:var(--marker-red);opacity:.75}
+  .minimap-viewport{position:absolute;border:1.5px solid var(--marker-red);background:rgba(216,53,42,.08);pointer-events:none;transition:none}
+  .minimap-label{position:absolute;top:4px;left:8px;font-family:var(--fm);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);pointer-events:none}
+  .help{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:50;background:#1a1a1c;color:#f5ede0;padding:28px 32px;max-width:400px;text-align:center;font-family:var(--fs);font-size:14px;line-height:1.5;box-shadow:0 20px 60px rgba(40,35,25,.4);opacity:0;pointer-events:none;transition:opacity .4s,transform .4s}
+  .help.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+  .help-title{font-family:var(--fh);font-weight:700;font-size:38px;margin-bottom:10px;line-height:1}
+  .help-title em{font-style:italic;color:var(--marker-red)}
+  .help-keys{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .help-key{font-family:var(--fm);font-size:11px;letter-spacing:.1em;padding:5px 10px;background:rgba(255,240,200,.08);border:1px solid rgba(255,240,200,.2);display:inline-flex;align-items:center;gap:6px}
+  .help-key kbd{font-family:var(--fm);background:rgba(255,240,200,.12);padding:2px 6px;border-radius:2px;font-size:10px}
+  .help-dismiss{margin-top:20px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:10px 20px;background:var(--marker-red);color:#fff;cursor:pointer}
+  .mobile-hint{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:25;background:#1a1a1c;color:#f5ede0;padding:10px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;box-shadow:0 4px 16px rgba(40,35,25,.25);white-space:nowrap;animation:mobFloat 2s infinite ease-in-out}
+  @keyframes mobFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+  @media(max-width:820px){
+    .topbar{padding:14px 16px;flex-wrap:wrap;gap:10px}
+    .tb-logo{padding:6px 10px;font-size:12px}
+    .tb-logo-sub{display:none}
+    .tb-status{font-size:9px;padding:8px 12px;gap:10px}
+    .tb-status .avail span:not(.avail-dot){display:none}
+    .nav-menu{min-width:calc(100vw - 32px);max-width:280px}
+    .toolbar{bottom:12px;padding:4px;gap:1px}
+    .tb-btn{width:32px;height:32px}
+    .tb-zoom{padding:0 6px;min-width:46px;font-size:10px}
+    .tb-divider{height:18px;margin:0 2px}
+    .minimap{width:96px;height:68px;bottom:62px;right:12px}
+    .mobile-hint{display:block}
+    .help-title{font-size:28px}
+    .help{padding:22px;max-width:88vw}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  }
+</style>
+
+<script>
+  import { CanvasEngine } from '../components/canvas/engine/CanvasEngine';
+  import { zones, zoneBounds } from '../data/workbench';
+
+  const engine = new CanvasEngine({
+    canvasEl: document.getElementById('canvas')!,
+    canvasWrap: document.getElementById('canvasWrap')!,
+    minimap: document.getElementById('minimap')!,
+    minimapCanvas: document.getElementById('minimapCanvas')!,
+    minimapViewport: document.getElementById('minimapViewport')!,
+    zoomLabel: document.getElementById('zoomVal')!,
+    zones: { ...zones },
+    zoneBounds: { ...zoneBounds },
+    canvasWidth: 6000,
+    canvasHeight: 4200,
+    mode: 'workbench',
+    onZoneChange: (zone) => {
+      document.querySelectorAll<HTMLElement>('[data-zone]').forEach((el) => {
+        el.classList.toggle('active', el.dataset.zone === zone);
+      });
+    },
+  });
+
+  (window as any).__canvas = engine;
+
+  document.getElementById('btnZoomIn')?.addEventListener('click', () => engine.zoomIn());
+  document.getElementById('btnZoomOut')?.addEventListener('click', () => engine.zoomOut());
+  document.getElementById('btnFit')?.addEventListener('click', () => engine.fit());
+  document.getElementById('btnReset')?.addEventListener('click', () => engine.reset());
+
+  const menuToggle = document.getElementById('menuToggle')!;
+  const layersPanel = document.getElementById('layersPanel')!;
+  menuToggle.addEventListener('click', () => {
+    const open = layersPanel.classList.toggle('on');
+    menuToggle.setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', (e) => {
+    if (!menuToggle.contains(e.target as Node) && !layersPanel.contains(e.target as Node)) {
+      layersPanel.classList.remove('on');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-zone]').forEach((el) => {
+    el.addEventListener('click', () => {
+      engine.goToZone(el.dataset.zone!);
+      layersPanel.classList.remove('on');
+      menuToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  const help = document.getElementById('help')!;
+  const helpDismiss = document.getElementById('helpDismiss')!;
+  if (sessionStorage.getItem('sivanesh.helpSeen') !== '1') {
+    help.classList.add('on');
+  }
+  helpDismiss.addEventListener('click', () => {
+    help.classList.remove('on');
+    engine.dismissHelp();
+  });
+</script>

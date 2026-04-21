@@ -1,0 +1,53 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  sub: string;
+  pos?: { x: number; y: number };
+}
+
+const { eyebrow, title, sub, pos } = Astro.props;
+
+const style = pos ? `left:${pos.x}px;top:${pos.y}px` : '';
+---
+
+<div class="masthead" style={style}>
+  <span class="mh-eyebrow">{eyebrow}</span>
+  <h1 class="mh-title" set:html={title} />
+  <p class="mh-sub" set:html={sub} />
+</div>
+
+<style>
+  /* §4.10 — portfolio-workbench.html lines 90–123 */
+  .masthead{
+    position:absolute;
+    width:900px;
+    transform:rotate(-1deg);
+  }
+  .mh-eyebrow{
+    font-family:var(--fh);font-weight:500;font-size:28px;color:var(--marker-red);
+    transform:rotate(-2deg);display:inline-block;margin-bottom:4px;
+  }
+  .mh-title{
+    font-family:var(--fs);font-weight:700;font-size:96px;line-height:.95;letter-spacing:-.035em;
+    color:var(--ink);margin-bottom:24px;
+  }
+  .mh-title :global(em){
+    font-style:italic;font-family:var(--fh);font-weight:700;font-size:1.05em;
+    color:var(--marker-red);display:inline-block;transform:translateY(6px);
+  }
+  .mh-title :global(.strike){position:relative;display:inline-block}
+  .mh-title :global(.strike)::after{
+    content:"";position:absolute;left:-4%;right:-4%;top:48%;height:8px;
+    background:var(--marker-red);transform:skewY(-3deg);opacity:.85;
+    border-radius:2px;
+  }
+  .mh-sub{
+    font-family:var(--fk);font-weight:400;font-size:22px;line-height:1.45;
+    color:var(--ink-2);max-width:640px;
+  }
+  .mh-sub :global(em){
+    font-style:normal;color:var(--marker-red);font-weight:700;
+    background:rgba(245,200,74,.5);padding:0 4px;transform:skewX(-5deg);display:inline-block;
+  }
+</style>

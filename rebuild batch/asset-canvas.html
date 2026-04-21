@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Asset Management — Case Study · Sivanesh TV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   COCKPIT VIEW 2.0 — case study on a canvas
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --board:#e8e4db;
+  --board-2:#ddd8cd;
+  --ink:#1a1a1c;
+  --ink-2:#4a4945;
+  --ink-3:#7a7770;
+  --ink-4:#a8a197;
+  --red:#d8352a;
+  --marker-red:#e84a3f;
+  --marker-blue:#3a7dd0;
+  --yellow:#f5c84a;
+  --tape:#f5e6a8;
+  --tape-2:#d8d2c0;
+  --paper:#fbfaf4;
+  --fs:'Inter',sans-serif;
+  --fm:'JetBrains Mono',monospace;
+  --fh:'Caveat',cursive;
+  --fk:'Kalam',cursive;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+body{
+  background:var(--board);
+  color:var(--ink);
+  font-family:var(--fs);
+  font-weight:400;
+  font-size:14px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:none;
+}
+a{color:inherit;text-decoration:none}
+button{background:none;border:none;color:inherit;font:inherit;cursor:pointer}
+
+/* ── BOARD TEXTURE ── */
+.board-bg{
+  position:fixed;inset:0;z-index:0;
+  background:linear-gradient(135deg,var(--board),var(--board-2));
+}
+.board-bg::before{
+  content:"";position:absolute;inset:0;opacity:.25;mix-blend-mode:multiply;pointer-events:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 .4  0 0 0 0 .37  0 0 0 0 .3  0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+/* corner-vignette removed so dot pattern reads uniformly across the viewport */
+
+/* ── CANVAS ── */
+.canvas-wrap{position:fixed;inset:0;z-index:1;cursor:grab;overflow:hidden}
+.canvas-wrap.grabbing{cursor:grabbing}
+.canvas-wrap.space-pan{cursor:grab}
+.canvas-wrap.space-pan.grabbing{cursor:grabbing}
+.canvas{
+  position:absolute;top:50%;left:50%;
+  width:5000px;height:6800px;
+  transform-origin:0 0;
+  will-change:transform;
+  background-image:radial-gradient(circle at 1px 1px,rgba(40,35,25,.22) 1px,transparent 1px);
+  background-size:28px 28px;
+  background-position:0 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   READING COLUMN (the main narrative, pinned in middle)
+   Responsive: JS sets --reader-width and --reader-scale
+   ═══════════════════════════════════════════════════════════ */
+.reader{
+  position:absolute;
+  left:var(--reader-left,1400px);
+  top:600px;
+  width:var(--reader-width,2200px);
+  padding:var(--reader-pad,120px 160px 140px);
+  font-size:calc(16px * var(--reader-fs, 1));
+  background:var(--paper);
+  box-shadow:
+    2px 4px 0 rgba(40,35,25,.04),
+    8px 16px 40px rgba(40,35,25,.18),
+    20px 32px 80px rgba(40,35,25,.12);
+}
+.reader::before{
+  content:"";position:absolute;top:-14px;left:50%;transform:translateX(-50%) rotate(-2deg);
+  width:120px;height:26px;background:var(--tape);opacity:.85;
+  box-shadow:0 2px 6px rgba(40,35,25,.12);
+}
+.reader::after{
+  content:"";position:absolute;bottom:-14px;right:10%;transform:rotate(3deg);
+  width:80px;height:22px;background:var(--tape-2);opacity:.85;
+  box-shadow:0 2px 6px rgba(40,35,25,.1);
+}
+
+/* ── Reader content styles ── */
+.r-back{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+  margin-bottom:36px;transition:color .25s;
+}
+.r-back::before{content:"←";transition:transform .25s}
+.r-back:hover{color:var(--red)}
+.r-back:hover::before{transform:translateX(-3px)}
+
+.r-eyebrow{
+  font-family:var(--fh);font-weight:500;font-size:calc(24px * var(--reader-fs, 1));color:var(--red);
+  transform:rotate(-1deg);display:inline-block;margin-bottom:4px;
+}
+.r-title{
+  font-family:var(--fs);font-weight:700;font-size:calc(84px * var(--reader-fs, 1));line-height:.95;letter-spacing:-.04em;
+  color:var(--ink);margin-bottom:24px;
+}
+.r-title em{
+  font-family:var(--fh);font-weight:700;font-style:italic;color:var(--red);
+  display:inline-block;transform:translateY(6px);font-size:1.05em;
+}
+.r-sub{
+  font-family:var(--fk);font-weight:400;font-size:calc(24px * var(--reader-fs, 1));line-height:1.45;color:var(--ink-2);
+  margin-bottom:40px;max-width:720px;
+}
+
+.r-meta{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+  padding:18px 0;margin-bottom:60px;
+  border-top:1px dashed rgba(40,35,25,.2);
+  border-bottom:1px dashed rgba(40,35,25,.2);
+}
+.r-meta-item{padding:4px 16px;border-left:1px dashed rgba(40,35,25,.15)}
+.r-meta-item:first-child{border-left:none;padding-left:0}
+.r-meta-k{font-family:var(--fm);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+.r-meta-v{font-family:var(--fs);font-size:13px;color:var(--ink);font-weight:500}
+
+.r-section{margin-bottom:72px}
+.r-section:last-child{margin-bottom:0}
+
+.r-section-lbl{
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--fm);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);
+  margin-bottom:14px;
+}
+.r-section-lbl::before{content:"";width:20px;height:1px;background:var(--red)}
+.r-section-lbl .num{color:var(--ink-3);margin-left:auto;font-size:9px}
+
+.r-h2{
+  font-family:var(--fs);font-weight:700;font-size:calc(36px * var(--reader-fs, 1));line-height:1.15;letter-spacing:-.025em;
+  color:var(--ink);margin-bottom:20px;max-width:680px;
+}
+.r-h2 em{font-style:italic;color:var(--red);font-weight:700}
+
+.r-lead{
+  font-family:var(--fs);font-weight:400;font-size:calc(21px * var(--reader-fs, 1));line-height:1.55;color:var(--ink);
+  margin-bottom:24px;max-width:680px;
+}
+.r-lead em{font-style:italic;color:var(--red)}
+
+.r-body p{
+  font-family:var(--fs);font-size:calc(16px * var(--reader-fs, 1));line-height:1.75;color:var(--ink-2);
+  margin-bottom:18px;max-width:680px;
+}
+.r-body p:last-child{margin-bottom:0}
+.r-body em{font-style:italic;color:var(--ink)}
+.r-body strong{color:var(--ink);font-weight:600}
+
+.r-callout{
+  margin:24px 0;padding:20px 24px;
+  background:rgba(245,200,74,.18);
+  border-left:3px solid var(--yellow);
+  position:relative;
+}
+.r-callout::before{
+  content:"the hard part";position:absolute;top:-9px;left:16px;
+  font-family:var(--fm);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);
+  background:var(--paper);padding:0 8px;
+}
+.r-callout p{font-family:var(--fk);font-weight:400;font-size:17px;line-height:1.55;color:var(--ink);margin:0;max-width:none}
+.r-callout p em{color:var(--red)}
+
+.r-pullquote{
+  margin:40px 0;padding:24px 0;
+  font-family:var(--fh);font-weight:600;font-size:calc(38px * var(--reader-fs, 1));line-height:1.15;letter-spacing:-.01em;color:var(--ink);
+  border-top:1px solid rgba(40,35,25,.15);
+  border-bottom:1px solid rgba(40,35,25,.15);
+  max-width:680px;
+}
+.r-pullquote em{color:var(--red);font-style:italic}
+
+.r-margin-ref{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);
+  margin-top:12px;cursor:pointer;
+  border-bottom:1px dashed var(--red);padding-bottom:2px;
+  transition:color .25s;
+}
+.r-margin-ref:hover{color:var(--ink)}
+
+.r-hr{border:none;border-top:1px dashed rgba(40,35,25,.25);margin:48px 0}
+
+.r-outcome{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;
+  margin:32px 0;padding:28px 0;
+  border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);
+}
+.r-outcome-item{display:flex;flex-direction:column;gap:6px}
+.r-outcome-n{font-family:var(--fh);font-weight:700;font-size:56px;line-height:.9;color:var(--red);letter-spacing:-.02em}
+.r-outcome-l{font-family:var(--fm);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3)}
+.r-outcome-d{font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--ink-2)}
+
+.r-end{
+  margin-top:80px;padding-top:36px;border-top:2px solid var(--ink);
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;
+}
+.r-end-note{font-family:var(--fm);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.r-end-next{
+  font-family:var(--fh);font-weight:700;font-size:26px;color:var(--red);
+  border-bottom:2px solid var(--red);padding-bottom:4px;
+  transition:transform .3s;
+}
+.r-end-next:hover{transform:translate(4px,-4px)}
+
+/* ═══════════════════════════════════════════════════════════
+   SCATTERED BOARD OBJECTS (around the reader column)
+   ═══════════════════════════════════════════════════════════ */
+
+.sticky{
+  position:absolute;
+  width:260px;min-height:180px;
+  padding:22px 20px 18px;
+  font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);
+  background:var(--yellow);
+  box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18);
+}
+.sticky::before{
+  content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%) rotate(-3deg);
+  width:80px;height:20px;background:var(--tape);opacity:.85;
+  box-shadow:0 2px 4px rgba(40,35,25,.1);
+}
+.sticky.pink{background:#ff8fa3}
+.sticky.blue{background:#a8d0f0}
+.sticky.green{background:#b5e0b5}
+.sticky-eyebrow{
+  font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:8px;font-style:normal;
+}
+.sticky em{font-style:normal;color:var(--red);font-weight:700}
+
+/* ── PRINCIPLE CARD — the "big idea" artifact ── */
+.principle{
+  position:absolute;width:380px;padding:32px 32px 28px;
+  background:var(--paper);
+  box-shadow:3px 5px 0 rgba(40,35,25,.06), 6px 14px 28px rgba(40,35,25,.2);
+  border:1px solid rgba(40,35,25,.08);
+}
+.principle::before{
+  content:"";position:absolute;top:-12px;right:10%;
+  width:90px;height:22px;background:var(--tape);opacity:.85;
+  transform:rotate(3deg);
+  box-shadow:0 2px 6px rgba(40,35,25,.1);
+}
+.principle-lbl{
+  font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--red);margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+.principle-lbl::before{content:"◆";font-size:11px}
+.principle-title{
+  font-family:var(--fs);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-.02em;
+  color:var(--ink);margin-bottom:10px;
+}
+.principle-title em{font-style:italic;color:var(--red)}
+.principle-body{
+  font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--ink-2);margin-bottom:14px;
+}
+.principle-body em{font-style:italic;color:var(--ink)}
+.principle-attr{
+  font-family:var(--fh);font-weight:600;font-size:17px;color:var(--ink-3);
+  padding-top:12px;border-top:1px dashed rgba(40,35,25,.18);
+}
+
+/* ── CUT ARTIFACT — "what didn't ship" ── */
+.cut{
+  position:absolute;width:320px;padding:20px;
+  background:var(--paper);
+  box-shadow:2px 3px 0 rgba(40,35,25,.04), 4px 8px 18px rgba(40,35,25,.15);
+  border:1px solid rgba(40,35,25,.1);
+}
+.cut::before{
+  content:"";position:absolute;top:-8px;left:15%;width:70px;height:18px;
+  background:var(--tape-2);opacity:.8;transform:rotate(-4deg);
+}
+.cut-hd{
+  display:flex;align-items:center;gap:10px;margin-bottom:12px;
+  padding-bottom:10px;border-bottom:1px dashed rgba(40,35,25,.15);
+}
+.cut-stamp{
+  font-family:var(--fs);font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--red);border:1.5px solid var(--red);padding:4px 8px;
+  transform:rotate(-2deg);
+}
+.cut-meta{font-family:var(--fm);font-size:9px;letter-spacing:.1em;color:var(--ink-3);flex:1}
+.cut-title{
+  font-family:var(--fs);font-weight:600;font-size:15px;color:var(--ink);margin-bottom:6px;
+}
+.cut-body{
+  font-family:var(--fs);font-size:12px;line-height:1.55;color:var(--ink-2);
+}
+.cut-body em{font-style:italic;color:var(--ink)}
+
+.printout{
+  position:absolute;
+  width:460px;
+  padding:12px;
+  background:var(--paper);
+  box-shadow:2px 3px 0 rgba(40,35,25,.05),5px 10px 22px rgba(40,35,25,.22);
+}
+.printout::before{
+  content:"";position:absolute;top:-12px;left:30%;width:70px;height:24px;
+  background:var(--tape);opacity:.85;transform:rotate(-4deg);
+}
+.printout-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:4px 4px 10px;border-bottom:1px dashed rgba(40,35,25,.15);margin-bottom:10px;
+}
+.printout-dots{display:flex;gap:5px}
+.printout-dots span{width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2)}
+.printout-url{font-family:var(--fm);font-size:9px;color:var(--ink-3);letter-spacing:.1em}
+.printout-frame{aspect-ratio:16/10;background:var(--board);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.printout-frame svg{width:100%;height:100%}
+.printout-label{
+  margin-top:10px;font-family:var(--fh);font-weight:700;font-size:18px;color:var(--ink);
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.printout-label em{font-style:italic;color:var(--red)}
+.printout-label small{font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:normal}
+
+.marker{
+  position:absolute;
+  font-family:var(--fh);font-weight:700;line-height:1.1;pointer-events:none;
+}
+.marker.sm{font-size:22px}.marker.md{font-size:34px}.marker.lg{font-size:48px}
+.marker.red{color:var(--marker-red)}.marker.blue{color:var(--marker-blue)}.marker.black{color:var(--ink)}
+
+.diagram{
+  position:absolute;padding:24px;background:var(--paper);
+  box-shadow:2px 3px 0 rgba(40,35,25,.04),4px 8px 20px rgba(40,35,25,.18);
+}
+.diagram::before{
+  content:"";position:absolute;top:-10px;left:40%;width:60px;height:20px;
+  background:var(--tape);opacity:.85;transform:rotate(-3deg);
+}
+.diagram-title{
+  font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ink);
+  margin-bottom:4px;
+}
+.diagram-sub{
+  font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px;
+}
+.diagram svg{display:block}
+
+/* ═══════════════════════════════════════════════════════════
+   UI CHROME (same as main workbench)
+   ═══════════════════════════════════════════════════════════ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 28px;pointer-events:none;
+}
+.topbar > *{pointer-events:auto}
+
+.tb-logo-wrap{position:relative}
+.tb-logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--fs);font-weight:600;font-size:14px;color:var(--ink);
+  background:rgba(232,228,219,.92);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  padding:8px 12px 8px 10px;
+  border:1px solid rgba(40,35,25,.12);
+  box-shadow:0 4px 14px rgba(40,35,25,.08);
+  cursor:pointer;transition:background .2s,border-color .2s;
+}
+.tb-logo:hover{background:rgba(232,228,219,1)}
+.tb-logo-sub{color:var(--ink-3);font-weight:400;font-size:12px}
+.menu-ic{display:flex;flex-direction:column;gap:3px;width:14px}
+.menu-ic span{display:block;height:1.5px;background:currentColor;border-radius:1px}
+.menu-ic span:nth-child(1){width:100%}
+.menu-ic span:nth-child(2){width:65%}
+.menu-ic span:nth-child(3){width:80%}
+.back-ic{display:inline-flex;align-items:center;justify-content:center;width:14px;color:var(--ink-2);transition:transform .2s, color .2s}
+.tb-logo:hover .back-ic{transform:translateX(-2px);color:var(--red)}
+
+.tb-status{
+  display:flex;align-items:center;gap:14px;
+  font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);
+  background:rgba(232,228,219,.85);backdrop-filter:blur(10px);
+  padding:10px 14px;border:1px solid rgba(40,35,25,.1);
+}
+.tb-status .case-lbl{color:var(--red);font-weight:500}
+.tb-status .sep{color:rgba(40,35,25,.3)}
+
+.toolbar{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:30;
+  display:flex;align-items:center;gap:2px;
+  background:rgba(232,228,219,.92);backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(40,35,25,.12);padding:6px;
+  box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08);
+}
+.tb-divider{width:1px;height:22px;background:rgba(40,35,25,.15);margin:0 4px;flex-shrink:0}
+.tb-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);
+  transition:background .2s,color .2s;border-radius:2px;
+}
+.tb-btn:hover{background:rgba(40,35,25,.08);color:var(--ink)}
+.tb-btn svg{display:block}
+.tb-zoom{
+  font-family:var(--fm);font-size:11px;letter-spacing:.08em;color:var(--ink-2);
+  padding:0 12px;min-width:58px;text-align:center;
+}
+
+/* ── INLINE IMAGE SLOTS (inside reader column) ── */
+.img-slot{
+  margin:32px 0 36px;
+  position:relative;
+  width:100%;
+  background:var(--board-2);
+  border:1.5px dashed rgba(40,35,25,.2);
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.img-slot.hero{aspect-ratio:16/10}
+.img-slot.wide{aspect-ratio:16/9}
+.img-slot.square{aspect-ratio:4/3}
+.img-slot.tall{aspect-ratio:3/4;max-height:640px}
+.img-slot.split{aspect-ratio:16/8;background:transparent;border:none;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.img-slot.split .is-half{
+  aspect-ratio:16/12;background:var(--board-2);border:1.5px dashed rgba(40,35,25,.2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  position:relative;padding:20px;
+}
+.img-slot-inner{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  padding:32px;text-align:center;
+}
+.img-slot-label{
+  font-family:var(--fm);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);
+  display:flex;align-items:center;gap:8px;
+}
+.img-slot-label::before{content:"◈";font-size:11px}
+.img-slot-title{
+  font-family:var(--fh);font-weight:700;font-size:28px;line-height:1.1;color:var(--ink-2);
+}
+.img-slot-desc{
+  font-family:var(--fs);font-size:12px;line-height:1.55;color:var(--ink-3);max-width:360px;
+}
+.img-slot-dims{
+  font-family:var(--fm);font-size:9px;letter-spacing:.14em;color:var(--ink-4);
+  padding:4px 10px;background:rgba(40,35,25,.05);border:1px solid rgba(40,35,25,.1);
+  margin-top:4px;
+}
+.img-slot-cap{
+  padding:10px 16px;background:var(--paper);border-top:1.5px dashed rgba(40,35,25,.2);
+  font-family:var(--fm);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.img-slot-cap span:last-child{color:var(--red)}
+.img-slot.split .img-slot-title{font-size:22px}
+.img-slot.split .img-slot-desc{font-size:11px}
+
+.minimap{
+  position:fixed;bottom:20px;right:20px;z-index:30;
+  width:140px;height:190px;
+  background:rgba(232,228,219,.92);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(40,35,25,.15);
+  box-shadow:0 4px 16px rgba(40,35,25,.12);
+  overflow:hidden;cursor:pointer;
+}
+.minimap-canvas{position:absolute;inset:4px;background:transparent}
+.minimap-dot{position:absolute;background:var(--ink);opacity:.45}
+.minimap-dot.reader{background:transparent;border:1.5px solid rgba(40,35,25,.45);opacity:1}
+.minimap-dot.note{background:var(--ink-2);width:5px;height:5px}
+.minimap-viewport{
+  position:absolute;border:2px solid var(--red);
+  background:transparent;pointer-events:none;
+  box-shadow:0 0 0 1px rgba(253,248,234,.4) inset;
+}
+.minimap-label{
+  position:absolute;top:4px;left:8px;
+  font-family:var(--fm);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+  pointer-events:none;
+}
+
+.reading-hint{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:25;
+  background:rgba(26,26,28,.88);color:#fdf8ea;
+  padding:10px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  box-shadow:0 4px 16px rgba(40,35,25,.25);
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.reading-hint.on{opacity:.95}
+.reading-hint kbd{
+  font-family:var(--fm);background:rgba(253,248,234,.15);
+  padding:2px 6px;margin:0 2px;border-radius:2px;font-size:9px;
+}
+
+/* ── Opening transition overlay ── */
+#opening{
+  position:fixed;inset:0;z-index:500;background:var(--board);pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+}
+#opening.go{animation:openingZoom 1s cubic-bezier(.65,0,.35,1) forwards}
+@keyframes openingZoom{
+  0%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(4)}
+}
+.opening-polaroid{
+  width:320px;padding:16px 16px 60px;background:var(--paper);
+  box-shadow:4px 6px 0 rgba(40,35,25,.08),10px 20px 40px rgba(40,35,25,.3);
+  transform:rotate(-3deg);
+}
+.opening-polaroid-img{
+  aspect-ratio:4/3;background:#1a1a1c;display:flex;align-items:center;justify-content:center;
+}
+.opening-polaroid-cap{
+  font-family:var(--fh);font-weight:700;font-size:26px;color:var(--ink);text-align:center;margin-top:14px;
+}
+.opening-polaroid-cap em{font-style:italic;color:var(--red)}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+  #opening{display:none}
+}
+
+@media(max-width:820px){
+  .topbar{padding:14px 16px}
+  .tb-logo-sub{display:none}
+  .tb-status{font-size:9px;padding:8px 12px;gap:8px}
+  .tb-status .avail span:not(.avail-dot),.tb-status #clock{display:none}
+  .toolbar{bottom:12px;padding:4px}
+  .tb-btn{width:32px;height:32px}
+  .tb-zoom{padding:0 6px;min-width:46px;font-size:10px}
+  #btnFit{display:none}
+  .minimap{width:90px;height:120px;bottom:60px;right:12px}
+  .reading-hint{bottom:56px;font-size:9px}
+  .reading-hint kbd{display:none}
+  .reader{padding:64px 32px 80px}
+  .r-title{font-size:52px}
+  .r-sub{font-size:19px}
+  .r-h2{font-size:26px}
+  .r-lead{font-size:18px}
+  .r-body p{font-size:15px}
+  .r-pullquote{font-size:26px}
+  .r-meta{grid-template-columns:1fr 1fr}
+  .r-meta-item{border-left:none;padding:8px 0;border-top:1px dashed rgba(40,35,25,.15)}
+  .r-meta-item:nth-child(1),.r-meta-item:nth-child(2){border-top:none}
+  .r-outcome{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- BOARD BG -->
+<div class="board-bg"></div>
+
+<!-- OPENING TRANSITION (polaroid zooms to fill, then fades) -->
+<div id="opening">
+  <div class="opening-polaroid">
+    <div class="opening-polaroid-img">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" width="80%">
+        <g stroke="#d8352a" stroke-width="1" fill="none" opacity=".8">
+          <circle cx="200" cy="150" r="100"/>
+          <circle cx="200" cy="150" r="70" stroke-dasharray="2 4"/>
+          <circle cx="200" cy="150" r="40"/>
+          <line x1="200" y1="50" x2="200" y2="250"/>
+          <line x1="100" y1="150" x2="300" y2="150"/>
+        </g>
+        <circle cx="200" cy="150" r="6" fill="#d8352a"/>
+      </svg>
+    </div>
+    <div class="opening-polaroid-cap">Asset <em>Management</em></div>
+  </div>
+</div>
+
+<!-- CANVAS SURFACE -->
+<div class="canvas-wrap" id="canvasWrap">
+  <div class="canvas" id="canvas">
+
+    <!-- ZONE LABELS (big faded backdrop words) -->
+    <!-- Decorative zone labels removed - they were redundant with section eyebrows in column -->
+
+    <!-- ─── THE READER COLUMN (main narrative) ─── -->
+    <article class="reader" id="reader">
+      <a href="sivanesh-workbench.html" class="r-back">back to workbench</a>
+
+      <span class="r-eyebrow">case study · 03</span>
+      <h1 class="r-title">Asset <em>Management.</em></h1>
+      <p class="r-sub">Designing FlytBase's first product that isn't about the flight.</p>
+
+      <div class="r-meta">
+        <div class="r-meta-item"><div class="r-meta-k">Role</div><div class="r-meta-v">Lead Product Designer</div></div>
+        <div class="r-meta-item"><div class="r-meta-k">Year</div><div class="r-meta-v">2025</div></div>
+        <div class="r-meta-item"><div class="r-meta-k">Scope</div><div class="r-meta-v">Full module design · Reports page by Arpita</div></div>
+        <div class="r-meta-item"><div class="r-meta-k">Tools</div><div class="r-meta-v">Figma · Lovable · Claude Code</div></div>
+      </div>
+
+      <!-- IMAGE SLOT 01 — HERO -->
+      <figure class="img-slot hero">
+        <div class="img-slot-inner">
+          <div class="img-slot-label">Image slot 01 · Hero shot</div>
+          <div class="img-slot-title">The Assets dashboard</div>
+          <div class="img-slot-desc">Screenshot of the Assets page — left nav rail, asset tree with sector grouping, map with annotated zones and asset pins. The "this is what it is" frame.</div>
+          <div class="img-slot-dims">16 : 9 · ideally 2400 × 1350 px</div>
+        </div>
+        <div class="img-slot-cap"><span>Asset Management · the main view</span><span>the interface</span></div>
+      </figure>
+
+      <!-- ─── CONTEXT ─── -->
+      <section class="r-section">
+        <div class="r-section-lbl">Context <span class="num">§ 01</span></div>
+        <h2 class="r-h2">FlytBase had always been <em>flight-first.</em> This module wasn't.</h2>
+        <p class="r-lead">Cockpit, Fleet, Mission Planning, Scheduler — every surface FlytBase had shipped until now was about the flight. The path the drone takes. The waypoints. The commands. Asset Management was the first time we were building a product that <em>doesn't care about the flight.</em></p>
+        <div class="r-body">
+          <p>Sarah Martinez runs operations at Devon Energy. She's responsible for 45+ wellheads spread across 15 square miles in North Cowden Unit. She schedules inspections, coordinates with maintenance teams, and files monthly compliance reports to regulators. She uses drones because they're faster and safer than sending people, but drones aren't her job. <em>The wellheads</em> are her job.</p>
+          <p>On the existing FlytBase dashboard, she could fly missions. What she couldn't do was answer the question her boss asked her every week: <em>"when was wellhead NC-0217 last inspected?"</em> The answer existed, somewhere, in a mission log she'd have to find by name. The software she used every day didn't know what a wellhead was.</p>
+        </div>
+      </section>
+
+      <!-- ─── THE PROBLEM ─── -->
+      <section class="r-section">
+        <div class="r-section-lbl">The problem <span class="num">§ 02</span></div>
+        <p class="r-pullquote">You could fly missions. You couldn't track <em>places.</em></p>
+        <div class="r-body">
+          <p>The existing system recorded flights beautifully — every waypoint, every telemetry reading, every piece of captured media. But infrastructure only existed as a string inside a mission's name. "Wellhead NC-0217 - Monthly Inspection" was the only thread tying a place to a flight, and that thread broke the moment someone mistyped the name, changed the naming convention, or inspected the same asset under a different mission.</p>
+          <p>There was no list of Sarah's wellheads anywhere in the product. No inspection history per asset. No way to see how a wellhead's condition had changed over six months. No templates for "here's how you always inspect this type of thing." Every monthly report Sarah filed, she built from scratch by scavenging across dozens of mission logs.</p>
+        </div>
+        <div class="r-callout"><p>The gap wasn't missing features. It was a missing <em>abstraction.</em> The software didn't have a concept for the thing the user actually cared about.</p></div>
+      </section>
+
+      <hr class="r-hr">
+
+      <!-- ─── THE DECISION / SIGNATURE MOVE ─── -->
+      <section class="r-section">
+        <div class="r-section-lbl">The shift <span class="num">§ 03</span></div>
+        <h2 class="r-h2">Track the thing. <em>Not the flight.</em></h2>
+        <p class="r-lead">This sounds small. It wasn't. Every product surface FlytBase had shipped was flight-first — and this new module had to sit alongside them, in the same authentication, the same navigation, the same customer account, but operate on a <em>completely different axis.</em></p>
+        <div class="r-body">
+          <p>The move: create a second dashboard. Not a tab inside Operations. Not a new view. A separate product, launched from the FlytBase hamburger menu, with its own data model centred on <strong>Assets</strong>. An asset is a record — a wellhead, a power line, a pipeline, a generator — with its own ID, its own inspection history, its own media library, its own alert thresholds, its own reference imagery. Flights don't disappear. But they stop being the centre of the universe.</p>
+          <p>The Operations Dashboard continues to exist and continues to fly drones. But increasingly, <em>everything you do in Operations now references an asset.</em> You plan missions around assets. You launch GoToAsset instead of GoToLocation. You execute a Quick Asset Inspect instead of building a mission from scratch. The flight becomes a means. The asset is the end.</p>
+        </div>
+        <a class="r-margin-ref" data-jump="principle">↗ see the principle card</a>
+
+        <!-- IMAGE SLOT 02 — ASSET DETAIL OVERVIEW -->
+        <figure class="img-slot wide">
+          <div class="img-slot-inner">
+            <div class="img-slot-label">Image slot 02 · Asset detail</div>
+            <div class="img-slot-title">One asset, complete</div>
+            <div class="img-slot-desc">Screenshot of the Asset Detail page (Industrial Generator Unit). Shows the depth a single asset holds — category, status, inspection history, reference images, location on the map. This is the record that didn't exist before.</div>
+            <div class="img-slot-dims">16 : 9 · ideally 2200 × 1240 px</div>
+          </div>
+          <div class="img-slot-cap"><span>Asset Detail · Industrial Generator Unit</span><span>a first-class record</span></div>
+        </figure>
+      </section>
+
+      <!-- ─── TEMPLATIZATION ─── -->
+      <section class="r-section">
+        <div class="r-section-lbl">The payoff <span class="num">§ 04</span></div>
+        <h2 class="r-h2">Once assets exist, <em>templates become possible.</em></h2>
+        <p class="r-lead">Sarah has 45 wellheads. They're mostly the same. The drone needs to fly the same pattern around each — four viewpoints, a fixed altitude, the same lens at the same zoom, the same gimbal attitude. Without an asset abstraction, she'd configure 45 missions identically. With one, she configures a profile once and reuses it 45 times.</p>
+        <div class="r-body">
+          <p><strong>Inspection Profiles</strong> are reusable viewpoint definitions. Two types: <em>Grid</em> (for area-coverage inspections — area, GSD, overlap, photogrammetry settings) and <em>Viewpoints</em> (for discrete inspection points — waypoints, lens, zoom, gimbal attitude, per-waypoint actions). One profile, applied to dozens of similar assets, collapses setup time from hours to minutes.</p>
+          <p>The same templatization logic applies to <strong>Alert Profiles</strong> — a wellhead has different abnormal-temperature thresholds than a substation, which has different thresholds than a pipeline. Each asset type gets its own alert profile library. The software knows the rules by asset type, so Sarah doesn't have to re-teach it every time.</p>
+        </div>
+
+        <!-- IMAGE SLOT 03 — INSPECTION PROFILES -->
+        <figure class="img-slot wide">
+          <div class="img-slot-inner">
+            <div class="img-slot-label">Image slot 03 · Inspection profiles</div>
+            <div class="img-slot-title">Templates in action</div>
+            <div class="img-slot-desc">Screenshot of the Inspection Profiles tab — profile cards with named viewpoints (8th Avenue, 9th Drive, 10th Avenue), drone model, camera, distance, viewpoint count. Plus the asset map showing numbered viewpoints 1-4 around the asset. The payoff of the abstraction.</div>
+            <div class="img-slot-dims">16 : 9 · ideally 2200 × 1240 px</div>
+          </div>
+          <div class="img-slot-cap"><span>Inspection Profiles · reusable viewpoint definitions</span><span>templatization</span></div>
+        </figure>
+      </section>
+
+      <!-- ─── THE FIVE PAGES ─── -->
+      <section class="r-section">
+        <div class="r-section-lbl">The module <span class="num">§ 05</span></div>
+        <h2 class="r-h2">Five pages. <em>One coherent model.</em></h2>
+        <p class="r-lead">The dashboard has five top-level pages, organised as a left-rail navigation. Each is the same underlying data sliced a different way — by asset, by flight, by media, by report, by tag.</p>
+        <div class="r-body">
+          <p><strong>Assets</strong> — the inventory. Import 1000+ assets via KML or CSV. Organise by site, by sector, by tags. Search, filter, group. The map on the right reflects whatever selection is active.</p>
+          <p><strong>Inspection Logs</strong> — cross-asset flight history. Every flight that happened anywhere in the system, searchable and filterable. Click into one and see its media, its map path, its asset context.</p>
+          <p><strong>Media</strong> — every piece of captured imagery, chronologically, tagged, annotated. The Gallery tab for Sarah's team when they're reviewing evidence across dozens of flights.</p>
+          <p><strong>Reports</strong> — the stakeholder-facing surface. Compliance reports, maintenance reports, custom reports — generated from asset data, distributed as PDF, secure link, or QR code.</p>
+          <p><strong>Tag Management</strong> — tags aren't strings you type, they're records. A dedicated page to create them, merge them, rename them, retire them. Because when you have 1000+ assets, tag sprawl is a real operational problem.</p>
+        </div>
+
+        <!-- IMAGE SLOT 04 — INSPECTION LOGS -->
+        <figure class="img-slot wide">
+          <div class="img-slot-inner">
+            <div class="img-slot-label">Image slot 04 · Inspection Logs page</div>
+            <div class="img-slot-title">Cross-asset history, one surface</div>
+            <div class="img-slot-desc">Screenshot of the Inspection Logs page showing the list of recent Perimeter scan flights, with a selected log's media carousel and map view on the right. Shows the media-focused review workflow.</div>
+            <div class="img-slot-dims">16 : 9 · ideally 2200 × 1240 px</div>
+          </div>
+          <div class="img-slot-cap"><span>Inspection Logs · evidence-first review</span><span>the history</span></div>
+        </figure>
+      </section>
+
+      <!-- ─── OUTCOME ─── -->
+      <section class="r-section">
+        <div class="r-section-lbl">What shipped <span class="num">§ 06</span></div>
+        <h2 class="r-h2">M1 went live as a <em>second product.</em></h2>
+        <p class="r-lead">Asset Management shipped as a standalone dashboard inside the FlytBase ecosystem — same authentication, same customer account, separate surface. It's the first FlytBase module that isn't about flying a drone.</p>
+
+        <!-- IMAGE SLOT 05 — REPORTS PAGE (Arpita's work) -->
+        <figure class="img-slot wide">
+          <div class="img-slot-inner">
+            <div class="img-slot-label">Image slot 05 · Reports page</div>
+            <div class="img-slot-title">The compliance surface</div>
+            <div class="img-slot-desc">Screenshot of the Reports page — list of reports on the left, a preview of the "Asset Maintenance Report" on the right with executive summary and attached documentation. Designed by Arpita, prototyped in Lovable.</div>
+            <div class="img-slot-dims">16 : 9 · ideally 2200 × 1240 px</div>
+          </div>
+          <div class="img-slot-cap"><span>Reports · stakeholder distribution</span><span>the output</span></div>
+        </figure>
+
+        <div class="r-outcome">
+          <div class="r-outcome-item">
+            <div class="r-outcome-n">1000+</div>
+            <div class="r-outcome-l">Assets at import</div>
+            <div class="r-outcome-d">KML and CSV import handles the scale Devon Energy and enterprise customers actually have.</div>
+          </div>
+          <div class="r-outcome-item">
+            <div class="r-outcome-n">M1</div>
+            <div class="r-outcome-l">Shipped</div>
+            <div class="r-outcome-d">All five pages live with asset detail, inspection profiles, media gallery, and reports distribution.</div>
+          </div>
+          <div class="r-outcome-item">
+            <div class="r-outcome-n">2nd</div>
+            <div class="r-outcome-l">Product</div>
+            <div class="r-outcome-d">FlytBase is no longer a single-product company. Asset Management is the second, and the foundation for more.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── REFLECTION ─── -->
+      <section class="r-section">
+        <div class="r-section-lbl">What I learnt <span class="num">§ 07</span></div>
+        <div class="r-body">
+          <p><strong>Sometimes the problem isn't a feature. It's an abstraction.</strong> No number of improvements to mission logs would have solved Sarah's problem, because her problem was that the software didn't have a concept for the thing she cared about. Finding the right abstraction was the work. Everything downstream followed from it.</p>
+          <p><strong>Shifts like this compound.</strong> Once assets exist, templates become possible. Once templates exist, setup time collapses. Once data is structured by asset, reports become queries. Once Operations references assets, GoToAsset replaces GoToLocation. Each downstream win was free — we got it by making one decision correctly early.</p>
+          <p><strong>A product company can enter new categories from a strong base.</strong> Asset Management isn't a pivot. It's a second product that sits next to the first, serves the same customers, and expands what FlytBase is. That's a different kind of work — less refinement, more invention — and it's the kind I want to keep doing.</p>
+        </div>
+      </section>
+
+      <div class="r-end">
+        <span class="r-end-note">— end of case · § 03 / 03 —</span>
+        <a href="sivanesh-workbench.html#work" class="r-end-next">Back to workbench ↗</a>
+      </div>
+    </article>
+
+    <!-- ─── SCATTERED BOARD OBJECTS AROUND THE COLUMN ─── -->
+
+    <!-- §01 CONTEXT — wayfinding -->
+    <div class="marker md red artifact" data-anchor="0" data-anchor-offset="-80" data-side="left" data-gap="60" data-width="200" style="transform:rotate(-8deg)">↓ read straight through</div>
+    <div class="marker sm black artifact" data-anchor="0" data-anchor-offset="-40" data-side="right" data-gap="40" data-width="180" style="transform:rotate(4deg);font-size:18px">drag around to<br>explore →</div>
+
+    <!-- §01 CONTEXT — operational scale framed as a quiet context card -->
+    <div class="context-card artifact" id="obj-scale-context" data-anchor="0" data-anchor-offset="380" data-side="left" data-gap="60" data-width="380" style="transform:rotate(-2deg)">
+      <div class="context-lbl">— the operational reality —</div>
+      <div class="context-title">45 wellheads. 15 square miles. <em>One</em> Operations Manager.</div>
+      <div class="context-body">She's responsible for the inspections, the compliance reports, the maintenance coordination. She uses FlytBase every day — but the wellheads are her job, not the drones.</div>
+    </div>
+
+    <!-- §02 PROBLEM — Sarah's actual question -->
+    <div class="sticky pink artifact" id="obj-sarah-quote" data-anchor="1" data-anchor-offset="40" data-side="left" data-gap="60" data-width="300" style="transform:rotate(-4deg);width:300px">
+      <div class="sticky-eyebrow">— the question that doesn't have an answer —</div>
+      <em>"When was wellhead NC-0217 last inspected?"</em><br><br>She gets asked this every week. She spends thirty minutes every week finding out.
+    </div>
+
+    <!-- §02 — the missing abstraction pattern -->
+    <div class="sticky artifact" id="obj-missing-abstraction" data-anchor="1" data-anchor-offset="380" data-side="left" data-gap="60" data-width="280" style="transform:rotate(3deg);width:280px">
+      <div class="sticky-eyebrow">— the diagnosis —</div>
+      Infrastructure existed as a <em>string</em> inside a mission's name. Nothing more. The software didn't know what a wellhead <em>was.</em>
+    </div>
+
+    <!-- §03 THE SHIFT — THE PRINCIPLE CARD -->
+    <div class="principle artifact" id="obj-shift-principle" data-anchor="2" data-anchor-offset="20" data-side="right" data-gap="80" data-width="400" style="transform:rotate(1.5deg);width:400px">
+      <div class="principle-lbl">the shift that created a second product</div>
+      <div class="principle-title">Everything else FlytBase had built was about the flight. <em>This one was about the asset.</em></div>
+      <div class="principle-body">Cockpit, Fleet, Mission Planning — all flight-first. Asset Management was the first module that doesn't care about the path the drone takes. It cares about the <em>thing the drone was sent to look at.</em></div>
+      <div class="principle-attr">— the abstraction that unlocks the module</div>
+    </div>
+
+    <!-- §03 — the shift diagram: flight-first vs asset-first mental model -->
+    <div class="diagram artifact" id="obj-shift-diagram" data-anchor="2" data-anchor-offset="560" data-side="right" data-gap="60" data-width="460" style="width:460px;transform:rotate(-1deg)">
+      <div class="diagram-title">The mental-model shift</div>
+      <div class="diagram-sub">— what sits at the centre —</div>
+      <svg viewBox="0 0 420 260" width="100%">
+        <!-- Before: flight-first -->
+        <g transform="translate(10 20)">
+          <text x="90" y="0" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7770" letter-spacing="1">BEFORE — FLIGHT-FIRST</text>
+          <circle cx="90" cy="50" r="28" fill="#1a1a1c"/>
+          <text x="90" y="54" text-anchor="middle" font-family="Inter" font-size="10" fill="#fdf8ea" font-weight="700">FLIGHT</text>
+          <!-- children: waypoints, media, telemetry, asset as ghost -->
+          <circle cx="30" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="30" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">waypoints</text>
+          <circle cx="90" cy="130" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="90" y="133" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">media</text>
+          <circle cx="150" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="150" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">telemetry</text>
+          <line x1="90" y1="78" x2="30" y2="108" stroke="#1a1a1c" stroke-width=".7"/>
+          <line x1="90" y1="78" x2="90" y2="116" stroke="#1a1a1c" stroke-width=".7"/>
+          <line x1="90" y1="78" x2="150" y2="108" stroke="#1a1a1c" stroke-width=".7"/>
+          <!-- asset as ghost -->
+          <circle cx="90" cy="175" r="12" fill="none" stroke="#1a1a1c" stroke-width=".5" stroke-dasharray="2 2" opacity=".4"/>
+          <text x="90" y="178" text-anchor="middle" font-family="Inter" font-size="7" fill="#7a7770" opacity=".5">"asset"</text>
+          <text x="90" y="210" text-anchor="middle" font-family="Caveat" font-size="13" fill="#7a7770">asset = string in mission name</text>
+        </g>
+        <!-- divider -->
+        <line x1="210" y1="30" x2="210" y2="240" stroke="#1a1a1c" stroke-width=".5" stroke-dasharray="2 3" opacity=".5"/>
+        <!-- After: asset-first -->
+        <g transform="translate(220 20)">
+          <text x="90" y="0" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#d8352a" letter-spacing="1">AFTER — ASSET-FIRST</text>
+          <circle cx="90" cy="50" r="28" fill="#d8352a"/>
+          <text x="90" y="54" text-anchor="middle" font-family="Inter" font-size="10" fill="#fdf8ea" font-weight="700">ASSET</text>
+          <circle cx="30" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="30" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">inspections</text>
+          <circle cx="90" cy="130" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="90" y="133" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">media</text>
+          <circle cx="150" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="150" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">profiles</text>
+          <circle cx="30" cy="170" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="30" y="173" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">alerts</text>
+          <circle cx="150" cy="170" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="150" y="173" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">reports</text>
+          <line x1="90" y1="78" x2="30" y2="108" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="78" x2="90" y2="116" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="78" x2="150" y2="108" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="78" x2="30" y2="156" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="78" x2="150" y2="156" stroke="#d8352a" stroke-width=".9"/>
+          <text x="90" y="215" text-anchor="middle" font-family="Caveat" font-size="13" fill="#d8352a" font-weight="700">asset = record with a life</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- §04 TEMPLATIZATION — the payoff principle -->
+    <div class="principle artifact" id="obj-template-principle" data-anchor="3" data-anchor-offset="40" data-side="right" data-gap="80" data-width="380" style="transform:rotate(-1.5deg)">
+      <div class="principle-lbl">the payoff of the asset abstraction</div>
+      <div class="principle-title">One profile. <em>Applied to dozens</em> of identical assets.</div>
+      <div class="principle-body">Sarah has 45 wellheads. They're mostly the same. Without assets, she'd configure 45 missions. With assets plus templates, she configures one Inspection Profile and reuses it. <em>Setup time collapses from hours to minutes.</em></div>
+      <div class="principle-attr">— why the abstraction matters operationally</div>
+    </div>
+
+    <!-- §04 — the two profile types -->
+    <div class="sticky artifact" id="obj-profile-types" data-anchor="3" data-anchor-offset="460" data-side="left" data-gap="60" data-width="300" style="transform:rotate(3deg);width:300px">
+      <div class="sticky-eyebrow">— two profile types —</div>
+      <em>Grid</em> for area inspections — area, GSD, overlap.<br><br><em>Viewpoints</em> for discrete points — waypoints, lens, zoom, gimbal, per-waypoint actions.
+    </div>
+
+    <!-- §05 FIVE PAGES — printout showing the real left-rail nav + tree + map -->
+    <div class="printout artifact" id="obj-five-pages" data-anchor="4" data-anchor-offset="80" data-side="right" data-gap="60" data-width="460" style="width:460px;transform:rotate(2deg)">
+      <div class="printout-head">
+        <div class="printout-dots"><span></span><span></span><span></span></div>
+        <div class="printout-url">— asset management · left nav —</div>
+      </div>
+      <div class="printout-frame">
+        <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+          <rect width="400" height="250" fill="#1a1a1c"/>
+          <!-- Left nav rail -->
+          <rect x="10" y="10" width="40" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <!-- Five nav items -->
+          <g font-family="JetBrains Mono" font-size="7" letter-spacing=".5">
+            <circle cx="30" cy="40" r="7" fill="#d8352a"/>
+            <text x="30" y="43" text-anchor="middle" fill="#fdf8ea" font-size="6">ASSET</text>
+            <circle cx="30" cy="75" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="77" text-anchor="middle" fill="#d8352a" font-size="6">LOG</text>
+            <circle cx="30" cy="110" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="112" text-anchor="middle" fill="#d8352a" font-size="6">MEDIA</text>
+            <circle cx="30" cy="145" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="147" text-anchor="middle" fill="#d8352a" font-size="6">RPT</text>
+            <circle cx="30" cy="180" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="182" text-anchor="middle" fill="#d8352a" font-size="6">TAG</text>
+          </g>
+          <!-- Content area: tree + map -->
+          <rect x="58" y="10" width="140" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <g font-family="Inter" font-size="7" fill="#d8352a">
+            <text x="66" y="26" font-family="JetBrains Mono" font-size="7" letter-spacing="1">ASSETS · 1443</text>
+            <text x="66" y="48">▸ East sector · 3</text>
+            <text x="66" y="62">▾ South sector</text>
+            <text x="76" y="76">• Oil well — Injector 1</text>
+            <text x="76" y="90">• Oil well — Injector 2</text>
+            <text x="76" y="104">• Oil well — Producer 1</text>
+            <text x="76" y="118">▾ Power lines · 1</text>
+            <text x="86" y="132">• Power line 1</text>
+            <text x="66" y="152">▾ North sector · 1</text>
+            <text x="76" y="166">• Zone Apex</text>
+            <text x="76" y="180">• Pipeline 1</text>
+            <text x="76" y="194">• Pipeline 2</text>
+          </g>
+          <!-- Map area -->
+          <rect x="206" y="10" width="184" height="230" fill="#2a2a2c"/>
+          <!-- scattered asset pins -->
+          <g fill="#d8352a">
+            <circle cx="240" cy="60" r="3"/>
+            <circle cx="280" cy="90" r="3"/>
+            <circle cx="310" cy="50" r="3"/>
+            <circle cx="345" cy="110" r="3"/>
+            <circle cx="370" cy="160" r="3"/>
+            <circle cx="260" cy="180" r="3"/>
+            <circle cx="310" cy="200" r="3"/>
+            <circle cx="360" cy="220" r="3"/>
+          </g>
+          <!-- an annotated zone -->
+          <polygon points="260 130, 330 125, 340 180, 270 185" fill="none" stroke="#f5a524" stroke-width="1" stroke-dasharray="3 2"/>
+          <text x="300" y="250" text-anchor="middle" font-family="JetBrains Mono" font-size="6" fill="#f5a524">▪ ZONE APEX</text>
+        </svg>
+      </div>
+      <div class="printout-label"><span>Asset Management <em>·</em> home</span><small>— five pages, one data model</small></div>
+    </div>
+
+    <!-- §05 — Arpita/Reports quiet attribution sticky -->
+    <div class="sticky blue artifact" id="obj-arpita-reports" data-anchor="4" data-anchor-offset="480" data-side="left" data-gap="60" data-width="280" style="transform:rotate(-3deg);width:280px">
+      <div class="sticky-eyebrow">— credit where due —</div>
+      <em>Reports</em> — designed by Arpita. Prototyped in Lovable. I handed over the data model and integration points; she built the surface.
+    </div>
+
+    <!-- §05 — nav-is-the-schema insight -->
+    <div class="sticky artifact" id="obj-nav-schema" data-anchor="4" data-anchor-offset="820" data-side="left" data-gap="60" data-width="280" style="transform:rotate(2deg);width:280px">
+      <div class="sticky-eyebrow">— design rule —</div>
+      Each page is a <em>slice</em> of the same data. The navigation IS the schema.
+    </div>
+
+    <!-- §06 OUTCOME — M1 receipt -->
+    <div class="sticky green artifact" id="obj-m1-shipped" data-anchor="5" data-anchor-offset="60" data-side="right" data-gap="60" data-width="300" style="transform:rotate(-3deg);width:300px">
+      <div class="sticky-eyebrow">— what shipped —</div>
+      M1 live. Five pages, 1000+ asset import, PDF/link/QR distribution. FlytBase's <em>second</em> product.
+    </div>
+
+    <!-- §06 — downstream-wins receipt -->
+    <div class="sticky artifact" id="obj-downstream" data-anchor="5" data-anchor-offset="420" data-side="right" data-gap="60" data-width="300" style="transform:rotate(3deg);width:300px">
+      <div class="sticky-eyebrow">— the compound returns —</div>
+      <em>GoToLocation → GoToAsset.</em> Quick Asset Inspect. Future ground-robot integrations. Each one is free once the abstraction is correct.
+    </div>
+
+    <!-- §07 REFLECTION — final takeaway -->
+    <div class="sticky green artifact" id="obj-reflection" data-anchor="last" data-anchor-offset="60" data-side="right" data-gap="60" data-width="300" style="transform:rotate(-3deg);width:300px">
+      <div class="sticky-eyebrow">— takeaway —</div>
+      Sometimes the problem isn't a feature. It's the <em>abstraction.</em> Find that, and the features fall out of it.
+    </div>
+
+    <div class="sticky blue artifact" id="obj-reflection2" data-anchor="last" data-anchor-offset="400" data-side="right" data-gap="60" data-width="280" style="transform:rotate(4deg);width:280px">
+      <div class="sticky-eyebrow">— what this meant for me —</div>
+      Designing something meant to <em>create a category</em> — not refine one — is different work. Less polish. More invention.
+    </div>
+
+  </div>
+</div>
+
+<!-- UI CHROME -->
+
+<!-- Topbar: back to workbench + case label -->
+<div class="topbar">
+  <div class="tb-logo-wrap">
+    <a href="sivanesh-workbench.html#work" class="tb-logo" title="Back to workbench">
+      <span class="back-ic"><svg viewBox="0 0 14 14" width="12" height="12"><path d="M9 3L4 7l5 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span>Sivanesh.tv</span>
+      <span class="tb-logo-sub">← back to work</span>
+    </a>
+  </div>
+  <div class="tb-status">
+    <span class="case-lbl">CASE STUDY · 03</span>
+    <span class="sep">·</span>
+    <span>Asset Management</span>
+    <span class="sep">·</span>
+    <span id="clock">—:— IST</span>
+  </div>
+</div>
+
+<!-- Bottom toolbar (matches workbench + Reading button) -->
+<div class="toolbar">
+  <button class="tb-btn" id="btnZoomOut" title="Zoom out (−)">−</button>
+  <div class="tb-zoom" id="zoomVal">100%</div>
+  <button class="tb-btn" id="btnZoomIn" title="Zoom in (+)">+</button>
+  <div class="tb-divider"></div>
+  <button class="tb-btn" id="btnFit" title="Fit (F)"><svg viewBox="0 0 16 16" width="12" height="12"><path d="M2 5V2h3 M11 2h3v3 M14 11v3h-3 M5 14H2v-3" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round"/></svg></button>
+  <button class="tb-btn" id="btnReader" title="Reading view (R)"><svg viewBox="0 0 16 16" width="12" height="12"><rect x="3" y="2" width="10" height="12" stroke="currentColor" stroke-width="1.2" fill="none"/><line x1="5" y1="5" x2="11" y2="5" stroke="currentColor" stroke-width="1.2"/><line x1="5" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.2"/><line x1="5" y1="11" x2="9" y2="11" stroke="currentColor" stroke-width="1.2"/></svg></button>
+</div>
+
+<!-- Minimap -->
+<div class="minimap" id="minimap" title="Click to jump">
+  <div class="minimap-label">Case · 03</div>
+  <div class="minimap-canvas" id="minimapCanvas"></div>
+  <div class="minimap-viewport" id="minimapViewport"></div>
+</div>
+
+<!-- Reading hint -->
+<div class="reading-hint" id="readingHint"><kbd>R</kbd> reading mode · <kbd>F</kbd> fit · drag to explore</div>
+
+
+<script>
+(function(){
+  var reduce = matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canvasWrap = document.getElementById('canvasWrap');
+  var canvas = document.getElementById('canvas');
+  var zoomVal = document.getElementById('zoomVal');
+  var minimap = document.getElementById('minimap');
+  var minimapCanvas = document.getElementById('minimapCanvas');
+  var minimapViewport = document.getElementById('minimapViewport');
+  var reader = document.getElementById('reader');
+  var readingHint = document.getElementById('readingHint');
+
+  /* ═══════════ CANVAS PAN/ZOOM ENGINE ═══════════ */
+  var CANVAS_W = 5000, CANVAS_H = 6800;
+  var scale = 0.5, tx = 0, ty = 0;
+  var minScale = 0.2, maxScale = 2.4;
+
+  /* ═══════════ RESPONSIVE READER COLUMN SIZING ═══════════
+     The reader column width and reading-zoom scale are recomputed
+     based on viewport size so the column always fills comfortably
+     no matter the screen. Scattered artifacts keep absolute positions.
+  ═══════════════════════════════════════════════════════════ */
+  // Column width buckets in canvas pixels (at 1:1 scale):
+  //   small  viewport ( ≤  640px)  → 760px column
+  //   medium viewport ( ≤ 1100px)  → 900px column
+  //   large  viewport ( ≤ 1600px)  → 1080px column
+  //   xlarge viewport ( >  1600)   → 1160px column (max)
+  // Reading zoom is chosen so column fills ~78% of viewport width.
+  var readerWidth = 1080;     // in canvas px
+  var readerLeft = 1960;      // in canvas px (centered horizontally)
+  var readingScale = 0.55;    // dynamic, computed below
+
+  function computeReaderLayout(){
+    var vw = innerWidth;
+    if(vw <= 420) readerWidth = 580;
+    else if(vw <= 640) readerWidth = 720;
+    else if(vw <= 1100) readerWidth = 900;
+    else if(vw <= 1600) readerWidth = 1080;
+    else readerWidth = 1160;
+
+    readerLeft = Math.round((CANVAS_W - readerWidth) / 2);
+
+    var desiredColumnDisplayPx;
+    if(vw <= 420) desiredColumnDisplayPx = vw * 0.94;
+    else if(vw <= 640) desiredColumnDisplayPx = vw * 0.92;
+    else desiredColumnDisplayPx = vw * 0.82;
+    readingScale = desiredColumnDisplayPx / readerWidth;
+    readingScale = Math.max(0.3, Math.min(1.1, readingScale));
+
+    var pad, fsMult;
+    if(vw <= 420){
+      pad = '32px 20px 48px';
+      fsMult = 1.45;
+    } else if(vw <= 640){
+      pad = '44px 28px 64px';
+      fsMult = 1.3;
+    } else if(vw <= 1100){
+      pad = '72px 52px 92px';
+      fsMult = 1.1;
+    } else {
+      pad = '100px 90px 120px';
+      fsMult = 1.0;
+    }
+    var r = document.getElementById('reader');
+    if(r){
+      r.style.setProperty('--reader-width', readerWidth + 'px');
+      r.style.setProperty('--reader-left', readerLeft + 'px');
+      r.style.setProperty('--reader-pad', pad);
+      r.style.setProperty('--reader-fs', fsMult);
+    }
+
+    // Update zone targets to match new column center
+    var centerX = readerLeft + readerWidth/2;
+    zones.top.cx = centerX;      zones.top.scale = readingScale;
+    zones.problem.cx = centerX;  zones.problem.scale = readingScale;
+    zones.solution.cx = centerX; zones.solution.scale = readingScale;
+    zones.outcome.cx = centerX;  zones.outcome.scale = readingScale;
+
+    // Reposition artifacts relative to column edges
+    var columnLeft = readerLeft;
+    var columnRight = readerLeft + readerWidth;
+    var gapScale = (vw <= 640) ? 1.8 : 1.0;
+    document.querySelectorAll('.artifact').forEach(function(el){
+      var side = el.dataset.side;
+      var gap = (parseInt(el.dataset.gap) || 60) * gapScale;
+      var w = parseInt(el.dataset.width) || el.offsetWidth || 260;
+      var newLeft;
+      if(side === 'left'){
+        newLeft = columnLeft - gap - w;
+      } else {
+        newLeft = columnRight + gap;
+      }
+      el.style.left = newLeft + 'px';
+    });
+  }
+
+  function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
+
+  // Clamp tx/ty so at least some of the canvas always stays within viewport
+  function clampTranslate(){
+    var cw = CANVAS_W * scale, ch = CANVAS_H * scale;
+    var vw = innerWidth, vh = innerHeight;
+    // Canvas is top:50%/left:50% anchored so (0,0) of canvas is at screen center.
+    // Flush clamp: canvas edges never leave the viewport.
+    if(cw <= vw){ tx = -cw/2; }
+    else {
+      var maxTX = -vw/2;       // canvas left edge at viewport left edge
+      var minTX = vw/2 - cw;   // canvas right edge at viewport right edge
+      tx = clamp(tx, minTX, maxTX);
+    }
+    if(ch <= vh){ ty = -ch/2; }
+    else {
+      var maxTY = -vh/2;
+      var minTY = vh/2 - ch;
+      ty = clamp(ty, minTY, maxTY);
+    }
+  }
+  function apply(){
+    clampTranslate();
+    canvas.style.transform = 'translate3d(' + tx.toFixed(2) + 'px,' + ty.toFixed(2) + 'px,0) scale(' + scale.toFixed(4) + ')';
+    zoomVal.textContent = Math.round(scale*100) + '%';
+    updateMinimap();
+    updateActiveZone();
+  }
+  function fitView(){
+    var s = Math.min(innerWidth/CANVAS_W, innerHeight/CANVAS_H) * 0.92;
+    scale = s;
+    tx = -(CANVAS_W/2) * s;
+    ty = -(CANVAS_H/2) * s;
+    apply();
+  }
+
+  function zoomAt(deltaScale, screenX, screenY){
+    var newScale = clamp(scale * deltaScale, minScale, maxScale);
+    if(newScale === scale) return;
+    var cw = innerWidth/2, ch = innerHeight/2;
+    var canvasX = (screenX - cw - tx) / scale;
+    var canvasY = (screenY - ch - ty) / scale;
+    tx = screenX - cw - canvasX * newScale;
+    ty = screenY - ch - canvasY * newScale;
+    scale = newScale;
+    apply();
+  }
+
+  /* ═══════════ ZONES (camera targets aligned to reader sections) ═══════════ */
+  // cx, scale get recomputed on load/resize by computeReaderLayout()
+  // cy values are section Y offsets inside the reader (updated after DOM render)
+  var zones = {
+    top:      {cx: 2500, cy: 1000, scale: 0.55},
+    problem:  {cx: 2500, cy: 2300, scale: 0.55},
+    solution: {cx: 2500, cy: 4200, scale: 0.55},
+    outcome:  {cx: 2500, cy: 6200, scale: 0.55}
+  };
+
+  var zoneBounds = {
+    top:      {x1:1000, y1:500,  x2:4000, y2:1800},
+    problem:  {x1:1000, y1:1800, x2:4000, y2:3300},
+    solution: {x1:1000, y1:3300, x2:4000, y2:5600},
+    outcome:  {x1:1000, y1:5600, x2:4000, y2:6800}
+  };
+
+  // Re-compute zone cy values based on actual rendered reader sections
+  function refreshZoneTargets(){
+    var r = document.getElementById('reader');
+    if(!r) return;
+    var sections = r.querySelectorAll('.r-section');
+    var readerTop = parseInt(getComputedStyle(r).top) || 600;
+    var readerHeight = r.offsetHeight;
+
+    // Ensure canvas is tall enough to hold reader + artifacts below
+    var neededHeight = readerTop + readerHeight + 400;
+    if(neededHeight > CANVAS_H){
+      CANVAS_H = neededHeight;
+      document.getElementById('canvas').style.height = CANVAS_H + 'px';
+    }
+
+    // Top zone = beginning of reader (hero area)
+    zones.top.cy = readerTop + 400;
+    if(sections[1]){ // problem section (index 1 after context)
+      zones.problem.cy = readerTop + sections[1].offsetTop + sections[1].offsetHeight/3;
+    }
+    if(sections[3]){ // first solution step
+      zones.solution.cy = readerTop + sections[3].offsetTop + sections[3].offsetHeight/4;
+    }
+    if(sections[sections.length-2]){ // outcomes (second-last)
+      var outcomeEl = sections[sections.length-2];
+      zones.outcome.cy = readerTop + outcomeEl.offsetTop + outcomeEl.offsetHeight/4;
+    }
+
+    // Update zone bounds for live zone detection (used if any)
+    zoneBounds.top.y2 = zones.problem.cy - 200;
+    zoneBounds.problem.y1 = zones.problem.cy - 200;
+    zoneBounds.problem.y2 = zones.solution.cy - 200;
+    zoneBounds.solution.y1 = zones.solution.cy - 200;
+    zoneBounds.solution.y2 = zones.outcome.cy - 200;
+    zoneBounds.outcome.y1 = zones.outcome.cy - 200;
+    zoneBounds.outcome.y2 = CANVAS_H;
+
+    // Position section-anchored artifacts so they sit next to their section
+    document.querySelectorAll('[data-anchor]').forEach(function(el){
+      var anchor = el.dataset.anchor;
+      var offset = parseInt(el.dataset.anchorOffset) || 0;
+      var idx;
+      if(anchor === 'last') idx = sections.length - 1;
+      else idx = parseInt(anchor);
+      if(isNaN(idx) || !sections[idx]) return;
+      var sectTop = readerTop + sections[idx].offsetTop;
+      el.style.top = (sectTop + offset) + 'px';
+    });
+  }
+
+  /* ═══════════ CAMERA FLIGHT ═══════════ */
+  var flightAnim = null;
+  function easeInOutCubic(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+  function flyTo(targetCX, targetCY, targetScale, duration){
+    duration = duration || 700;
+    if(flightAnim) cancelAnimationFrame(flightAnim);
+    var startTX=tx, startTY=ty, startScale=scale;
+    // Reading-mode Y bias: on mobile, shift the target point above geometric center
+    // so text content lands at ~38% down from top instead of middle (more natural reading position)
+    var yBias = 0;
+    if(readingMode){
+      if(innerWidth <= 420) yBias = innerHeight * 0.18;
+      else if(innerWidth <= 640) yBias = innerHeight * 0.14;
+      else if(innerWidth <= 1100) yBias = innerHeight * 0.08;
+    }
+    var endTX = -targetCX*targetScale, endTY = -targetCY*targetScale + yBias;
+    var t0 = performance.now();
+    function step(now){
+      var t = Math.min((now-t0)/duration, 1);
+      var e = easeInOutCubic(t);
+      tx = startTX + (endTX-startTX)*e;
+      ty = startTY + (endTY-startTY)*e;
+      scale = startScale + (targetScale-startScale)*e;
+      apply();
+      if(t<1) flightAnim = requestAnimationFrame(step);
+      else flightAnim = null;
+    }
+    flightAnim = requestAnimationFrame(step);
+  }
+  function goToZone(name){
+    var z = zones[name]; if(!z) return;
+    flyTo(z.cx, z.cy, z.scale, 700);
+  }
+
+  /* ═══════════ LIVE ZONE DETECTION ═══════════ */
+  function updateActiveZone(){
+    // No-op: zone buttons removed from toolbar.
+  }
+
+  /* ═══════════ PAN WITH DRAG ═══════════ */
+  var isPanning = false;
+  var panStartX=0, panStartY=0, panStartTX=0, panStartTY=0;
+  var vx=0, vy=0, decelerating=false;
+  var lastMoveX=0, lastMoveY=0, lastMoveTime=0;
+  var spaceHeld = false;
+
+  canvasWrap.addEventListener('pointerdown', function(e){
+    var forcePan = (e.button === 1) || spaceHeld;
+
+    if(!forcePan){
+      // skip interactive elements for left-click
+      var t = e.target;
+      while(t && t !== canvasWrap){
+        if(t.tagName === 'A' || t.tagName === 'BUTTON') return;
+        t = t.parentElement;
+      }
+      if(e.button !== 0 && e.button !== undefined) return;
+    } else {
+      e.preventDefault();
+    }
+
+    isPanning = true;
+    decelerating = false;
+    vx = 0; vy = 0;
+    panStartX = e.clientX; panStartY = e.clientY;
+    panStartTX = tx; panStartTY = ty;
+    lastMoveX = e.clientX; lastMoveY = e.clientY; lastMoveTime = performance.now();
+    canvasWrap.classList.add('grabbing');
+    canvasWrap.setPointerCapture(e.pointerId);
+  });
+  canvasWrap.addEventListener('pointermove', function(e){
+    if(!isPanning) return;
+    tx = panStartTX + (e.clientX - panStartX);
+    ty = panStartTY + (e.clientY - panStartY);
+    var now = performance.now(), dt = now - lastMoveTime;
+    if(dt > 0){
+      vx = (e.clientX - lastMoveX) / dt * 16;
+      vy = (e.clientY - lastMoveY) / dt * 16;
+    }
+    lastMoveX = e.clientX; lastMoveY = e.clientY; lastMoveTime = now;
+    // If the drag is significant AND we were in reading mode AND we haven't shown the hint yet, show it
+    var dragDist = Math.hypot(e.clientX - panStartX, e.clientY - panStartY);
+    if(dragDist > 30 && readingMode){
+      readingMode = false;
+      showFirstPanHint();
+    }
+    apply();
+  });
+  canvasWrap.addEventListener('pointerup', function(e){
+    if(!isPanning) return;
+    isPanning = false;
+    canvasWrap.classList.remove('grabbing');
+    if(Math.hypot(vx, vy) > 2){
+      decelerating = true;
+      requestAnimationFrame(inertiaTick);
+    }
+  });
+  canvasWrap.addEventListener('pointercancel', function(){
+    isPanning = false;
+    canvasWrap.classList.remove('grabbing');
+  });
+
+  // Prevent middle-click autoscroll browser default
+  canvasWrap.addEventListener('mousedown', function(e){
+    if(e.button === 1) e.preventDefault();
+  });
+  canvasWrap.addEventListener('auxclick', function(e){
+    if(e.button === 1) e.preventDefault();
+  });
+
+  // Spacebar-held pan mode
+  window.addEventListener('keydown', function(e){
+    if(e.code === 'Space' && !spaceHeld){
+      var tag = (document.activeElement && document.activeElement.tagName) || '';
+      if(tag === 'INPUT' || tag === 'TEXTAREA') return;
+      spaceHeld = true;
+      canvasWrap.classList.add('space-pan');
+      e.preventDefault();
+    }
+  });
+  window.addEventListener('keyup', function(e){
+    if(e.code === 'Space'){
+      spaceHeld = false;
+      canvasWrap.classList.remove('space-pan');
+    }
+  });
+  function inertiaTick(){
+    if(!decelerating) return;
+    tx += vx; ty += vy;
+    vx *= 0.92; vy *= 0.92;
+    apply();
+    if(Math.hypot(vx,vy) > 0.3) requestAnimationFrame(inertiaTick);
+    else decelerating = false;
+  }
+
+  /* ═══════════ SCROLL / ZOOM BEHAVIOUR ═══════════
+     Default "reading mode": wheel scroll moves camera DOWN the reader column
+     (camera pans Y). Ctrl+wheel (or pinch) = zoom.
+     Shift+wheel = horizontal pan.
+     Outside reader area: wheel = zoom toward cursor (regular canvas behavior).
+  ═══════════════════════════════════════════════════ */
+  var readingMode = true;
+
+  function setReadingMode(on){
+    readingMode = on;
+    document.body.classList.toggle('reading', on);
+    if(readingHint){
+      readingHint.classList.add('on');
+      clearTimeout(setReadingMode._to);
+      setReadingMode._to = setTimeout(function(){ readingHint.classList.remove('on'); }, 2000);
+    }
+  }
+
+  // One-time tooltip shown when user first pans out of reading mode
+  function showFirstPanHint(){
+    var seen = false;
+    try { seen = sessionStorage.getItem('cockpit-pan-seen') === '1'; } catch(e){}
+    if(seen) return;
+    try { sessionStorage.setItem('cockpit-pan-seen', '1'); } catch(e){}
+    // Use existing readingHint styling but with different text
+    if(!readingHint) return;
+    readingHint.innerHTML = 'Exploring the board · press <kbd>R</kbd> to return to reading view';
+    readingHint.classList.add('on');
+    clearTimeout(showFirstPanHint._to);
+    showFirstPanHint._to = setTimeout(function(){
+      readingHint.classList.remove('on');
+      // restore original content after fade
+      setTimeout(function(){
+        readingHint.innerHTML = '<kbd>R</kbd> reading mode · <kbd>F</kbd> fit · drag to explore';
+      }, 400);
+    }, 4000);
+  }
+
+  canvasWrap.addEventListener('wheel', function(e){
+    e.preventDefault();
+    // Ctrl/Meta + wheel or pinch-trackpad gesture → zoom
+    if(e.ctrlKey || e.metaKey){
+      zoomAt(Math.pow(0.9985, e.deltaY), e.clientX, e.clientY);
+      return;
+    }
+    // Reading mode: wheel scrolls down the column (pan vertically)
+    // Horizontal wheel deltas still work for trackpad horizontal scrolls
+    if(readingMode){
+      tx -= e.deltaX;
+      ty -= e.deltaY;
+      apply();
+    } else {
+      // Explore mode: pan the board — trackpad two-finger works in both axes
+      tx -= e.deltaX;
+      ty -= e.deltaY;
+      apply();
+    }
+  }, {passive: false});
+
+  /* ═══════════ TOUCH: pinch zoom + one-finger pan ═══════════ */
+  var touchState = null;
+  canvasWrap.addEventListener('touchstart', function(e){
+    if(e.touches.length === 2){
+      var t1=e.touches[0], t2=e.touches[1];
+      var dx=t2.clientX-t1.clientX, dy=t2.clientY-t1.clientY;
+      touchState = {
+        mode:'pinch',
+        startDist: Math.hypot(dx,dy),
+        startScale: scale,
+        startTX: tx, startTY: ty,
+        cx:(t1.clientX+t2.clientX)/2, cy:(t1.clientY+t2.clientY)/2
+      };
+    }
+  }, {passive:false});
+  canvasWrap.addEventListener('touchmove', function(e){
+    if(touchState && touchState.mode === 'pinch' && e.touches.length === 2){
+      e.preventDefault();
+      var t1=e.touches[0], t2=e.touches[1];
+      var dx=t2.clientX-t1.clientX, dy=t2.clientY-t1.clientY;
+      var dist=Math.hypot(dx,dy);
+      var ratio = dist/touchState.startDist;
+      var newScale = clamp(touchState.startScale*ratio, minScale, maxScale);
+      var cw=innerWidth/2, ch=innerHeight/2;
+      var canvasX = (touchState.cx-cw-touchState.startTX)/touchState.startScale;
+      var canvasY = (touchState.cy-ch-touchState.startTY)/touchState.startScale;
+      tx = touchState.cx - cw - canvasX*newScale;
+      ty = touchState.cy - ch - canvasY*newScale;
+      scale = newScale;
+      apply();
+    }
+  }, {passive:false});
+  canvasWrap.addEventListener('touchend', function(){ touchState = null; });
+
+  /* ═══════════ MINIMAP ═══════════ */
+  function buildMinimap(){
+    minimapCanvas.innerHTML = '';
+    var mw = minimap.clientWidth-8, mh = minimap.clientHeight-8;
+    var sx = mw/CANVAS_W, sy = mh/CANVAS_H;
+    // Draw reader column first (prominent) then other artifacts as dots
+    var items = document.querySelectorAll('.reader, .sticky, .printout, .diagram, .contact-card');
+    items.forEach(function(el){
+      var left = el.offsetLeft || parseInt(el.style.left) || 0;
+      var top = el.offsetTop || parseInt(el.style.top) || 0;
+      var w = el.offsetWidth||200, h = el.offsetHeight||200;
+      var dot = document.createElement('div');
+      dot.className = 'minimap-dot';
+      if(el.classList.contains('reader')) dot.classList.add('reader');
+      dot.style.left = (left*sx)+'px';
+      dot.style.top = (top*sy)+'px';
+      dot.style.width = Math.max(2, w*sx)+'px';
+      dot.style.height = Math.max(2, h*sy)+'px';
+      minimapCanvas.appendChild(dot);
+    });
+  }
+  function updateMinimap(){
+    var mw = minimap.clientWidth-8, mh = minimap.clientHeight-8;
+    var sx = mw/CANVAS_W, sy = mh/CANVAS_H;
+    var cw = innerWidth/2, ch = innerHeight/2;
+    var vx = (0-cw-tx)/scale;
+    var vy = (0-ch-ty)/scale;
+    var vw = innerWidth/scale, vh = innerHeight/scale;
+    minimapViewport.style.left = (vx*sx+4)+'px';
+    minimapViewport.style.top = (vy*sy+4)+'px';
+    minimapViewport.style.width = (vw*sx)+'px';
+    minimapViewport.style.height = (vh*sy)+'px';
+  }
+  minimap.addEventListener('click', function(e){
+    var rect = minimap.getBoundingClientRect();
+    var mx = e.clientX-rect.left-4, my = e.clientY-rect.top-4;
+    var mw = minimap.clientWidth-8, mh = minimap.clientHeight-8;
+    var targetCX = (mx/mw)*CANVAS_W, targetCY = (my/mh)*CANVAS_H;
+    tx = -targetCX*scale;
+    ty = -targetCY*scale;
+    apply();
+  });
+
+  /* ═══════════ UI BINDINGS ═══════════ */
+  document.getElementById('btnZoomIn').addEventListener('click', function(){
+    zoomAt(1.25, innerWidth/2, innerHeight/2);
+  });
+  document.getElementById('btnZoomOut').addEventListener('click', function(){
+    zoomAt(0.8, innerWidth/2, innerHeight/2);
+  });
+  document.getElementById('btnFit').addEventListener('click', fitView);
+  document.getElementById('btnReader').addEventListener('click', function(){
+    goToZone('top');
+    setReadingMode(true);
+  });
+
+  // Margin ref clicks → fly to matching object
+  document.querySelectorAll('[data-jump]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      e.preventDefault();
+      var target = document.getElementById('obj-' + a.dataset.jump);
+      if(!target) return;
+      var left = parseInt(target.style.left)||0;
+      var top = parseInt(target.style.top)||0;
+      var w = target.offsetWidth||300, h = target.offsetHeight||300;
+      var fit = Math.min(innerWidth/(w*1.8), innerHeight/(h*1.8));
+      fit = Math.max(0.5, Math.min(1.4, fit));
+      flyTo(left+w/2, top+h/2, fit, 800);
+      setReadingMode(false);
+    });
+  });
+
+  /* ═══════════ KEYBOARD ═══════════ */
+  document.addEventListener('keydown', function(e){
+    if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    switch(e.key){
+      case 'r': case 'R': setReadingMode(true); goToZone('top'); e.preventDefault(); break;
+      case 'f': case 'F': fitView(); setReadingMode(false); e.preventDefault(); break;
+      case '0': case 'h': case 'H': goToZone('top'); setReadingMode(true); e.preventDefault(); break;
+      case '+': case '=': zoomAt(1.25, innerWidth/2, innerHeight/2); e.preventDefault(); break;
+      case '-': case '_': zoomAt(0.8, innerWidth/2, innerHeight/2); e.preventDefault(); break;
+      case 'ArrowUp': ty += 60; apply(); e.preventDefault(); break;
+      case 'ArrowDown': ty -= 60; apply(); e.preventDefault(); break;
+      case 'ArrowLeft': tx += 60; apply(); e.preventDefault(); break;
+      case 'ArrowRight': tx -= 60; apply(); e.preventDefault(); break;
+      case 'Escape': goToZone('top'); setReadingMode(true); break;
+    }
+  });
+
+  /* ═══════════ CLOCK ═══════════ */
+  function updateClock(){
+    var d = new Date();
+    var t = d.toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'Asia/Kolkata'});
+    var el = document.getElementById('clock');
+    if(el) el.textContent = t + ' IST';
+  }
+  updateClock(); setInterval(updateClock, 30000);
+
+  /* ═══════════ DRAG-VS-CLICK ═══════════ */
+  var clickStart = null;
+  canvasWrap.addEventListener('pointerdown', function(e){
+    clickStart = {x:e.clientX, y:e.clientY};
+  }, true);
+  canvasWrap.addEventListener('click', function(e){
+    if(!clickStart) return;
+    if(Math.hypot(e.clientX-clickStart.x, e.clientY-clickStart.y) > 6){
+      e.preventDefault(); e.stopPropagation();
+    }
+    clickStart = null;
+  }, true);
+
+  /* ═══════════ OPENING TRANSITION ═══════════ */
+  function playOpening(){
+    var opening = document.getElementById('opening');
+    if(!opening || reduce){
+      if(opening) opening.style.display = 'none';
+      boot();
+      return;
+    }
+    // delay briefly then play zoom animation
+    setTimeout(function(){
+      opening.classList.add('go');
+      setTimeout(function(){
+        opening.style.display = 'none';
+        boot();
+      }, 1000);
+    }, 200);
+  }
+
+  function boot(){
+    computeReaderLayout();
+    // Let the reader render with new width, then measure section positions
+    requestAnimationFrame(function(){
+      refreshZoneTargets();
+      buildMinimap();
+      goToZone('top');
+      // Show reading hint once on entry
+      setTimeout(function(){
+        readingHint.classList.add('on');
+        setTimeout(function(){ readingHint.classList.remove('on'); }, 3500);
+      }, 1200);
+    });
+  }
+
+  if(document.readyState === 'complete') playOpening();
+  else window.addEventListener('load', playOpening);
+  window.addEventListener('resize', function(){
+    computeReaderLayout();
+    requestAnimationFrame(function(){
+      refreshZoneTargets();
+      buildMinimap();
+      apply();
+      updateMinimap();
+    });
+  });
+
+})();
+</script>
+</body>
+</html>

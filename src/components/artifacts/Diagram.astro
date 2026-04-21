@@ -1,0 +1,44 @@
+---
+interface Props {
+  title: string;
+  sub?: string;
+  width?: number;
+  rotation?: number;
+  pos?: { x: number; y: number };
+}
+
+const { title, sub, width, rotation = 0, pos } = Astro.props;
+
+const style = [
+  'position:absolute',
+  width ? `width:${width}px` : '',
+  pos ? `left:${pos.x}px;top:${pos.y}px` : '',
+  `transform:rotate(${rotation}deg)`,
+].filter(Boolean).join(';');
+---
+
+<div class="diagram" style={style}>
+  <div class="diagram-title" set:html={title} />
+  {sub && <div class="diagram-sub">{sub}</div>}
+  <slot />
+</div>
+
+<style>
+  /* §4.14 — cockpit-canvas.html lines 350–365 */
+  .diagram{
+    position:absolute;padding:24px;background:var(--paper);
+    box-shadow:2px 3px 0 rgba(40,35,25,.04),4px 8px 20px rgba(40,35,25,.18);
+  }
+  .diagram::before{
+    content:"";position:absolute;top:-10px;left:40%;width:60px;height:20px;
+    background:var(--tape);opacity:.85;transform:rotate(-3deg);
+  }
+  .diagram-title{
+    font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ink);
+    margin-bottom:4px;
+  }
+  .diagram-sub{
+    font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px;
+  }
+  .diagram :global(svg){display:block}
+</style>

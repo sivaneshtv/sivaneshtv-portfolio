@@ -1,0 +1,12 @@
+---
+---
+<h2 class="r-h2"><slot /></h2>
+
+<style>
+  /* §5.4 */
+  .r-h2{
+    font-family:var(--fs);font-weight:700;font-size:calc(36px * var(--reader-fs, 1));line-height:1.15;letter-spacing:-.025em;
+    color:var(--ink);margin-bottom:20px;max-width:680px;
+  }
+  .r-h2 :global(em){font-style:italic;color:var(--red);font-weight:700}
+</style>

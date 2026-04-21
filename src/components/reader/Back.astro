@@ -1,0 +1,17 @@
+---
+interface Props { href?: string }
+const { href = '/' } = Astro.props;
+---
+<a class="r-back" href={href}><slot>back to workbench</slot></a>
+
+<style>
+  /* §5.2 */
+  .r-back{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+    margin-bottom:36px;transition:color .25s;text-decoration:none;
+  }
+  .r-back::before{content:"←";transition:transform .25s}
+  .r-back:hover{color:var(--red)}
+  .r-back:hover::before{transform:translateX(-3px)}
+</style>

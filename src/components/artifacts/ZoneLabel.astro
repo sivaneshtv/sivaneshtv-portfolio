@@ -1,0 +1,34 @@
+---
+interface Props {
+  size?: number;
+  rotation?: number;
+  pos?: { x: number; y: number };
+}
+
+const { size = 96, rotation = 0, pos } = Astro.props;
+
+const style = [
+  'position:absolute',
+  pos ? `left:${pos.x}px;top:${pos.y}px` : '',
+  `font-size:${size}px`,
+  `transform:rotate(${rotation}deg)`,
+].filter(Boolean).join(';');
+---
+
+<div class="zone-label" style={style} aria-hidden="true">
+  <slot />
+</div>
+
+<style>
+  /* §4.9 — portfolio-workbench.html lines 385–394 */
+  .zone-label{
+    position:absolute;
+    font-family:var(--fh);font-weight:700;
+    color:rgba(40,35,25,.13);
+    letter-spacing:-.03em;
+    line-height:.9;
+    pointer-events:none;
+    user-select:none;
+  }
+  .zone-label :global(em){font-style:italic}
+</style>

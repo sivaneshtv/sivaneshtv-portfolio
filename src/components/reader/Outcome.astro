@@ -1,0 +1,28 @@
+---
+interface Props { items: Array<{ n: string; l: string; d: string }> }
+const { items } = Astro.props;
+---
+<div class="r-outcome">
+  {items.map((item) => (
+    <div class="r-outcome-item">
+      <div class="r-outcome-n">{item.n}</div>
+      <div class="r-outcome-l">{item.l}</div>
+      <div class="r-outcome-d">{item.d}</div>
+    </div>
+  ))}
+</div>
+
+<style>
+  /* §5.9 */
+  .r-outcome{
+    display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;
+    margin:32px 0;padding:28px 0;
+    border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);
+  }
+  .r-outcome-item{display:flex;flex-direction:column;gap:6px}
+  .r-outcome-n{
+    font-family:var(--fh);font-weight:700;font-size:56px;line-height:.9;color:var(--red);letter-spacing:-.02em;
+  }
+  .r-outcome-l{font-family:var(--fm);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3)}
+  .r-outcome-d{font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--ink-2)}
+</style>

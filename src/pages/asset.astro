@@ -1,0 +1,377 @@
+---
+import CaseLayout from '../layouts/CaseLayout.astro';
+import ReaderColumn from '../components/reader/ReaderColumn.astro';
+import Back from '../components/reader/Back.astro';
+import Hero from '../components/reader/Hero.astro';
+import MetaRow from '../components/reader/MetaRow.astro';
+import Section from '../components/reader/Section.astro';
+import SectionLabel from '../components/reader/SectionLabel.astro';
+import H2 from '../components/reader/H2.astro';
+import Lead from '../components/reader/Lead.astro';
+import Body from '../components/reader/Body.astro';
+import Callout from '../components/reader/Callout.astro';
+import PullQuote from '../components/reader/PullQuote.astro';
+import MarginRef from '../components/reader/MarginRef.astro';
+import Hr from '../components/reader/Hr.astro';
+import Outcome from '../components/reader/Outcome.astro';
+import EndRow from '../components/reader/EndRow.astro';
+import ImgSlot from '../components/reader/ImgSlot.astro';
+---
+
+<CaseLayout title="Asset Management — Sivanesh TV" caseNum="03" caseName="Asset Management">
+  <Fragment slot="reader">
+    <ReaderColumn>
+      <Back href="/" />
+
+      <Hero
+        eyebrow="case study · 03"
+        title='Asset <em>Management.</em>'
+        sub="Designing FlytBase's first product that isn't about the flight."
+      />
+
+      <MetaRow items={[
+        { k: 'Role', v: 'Lead Product Designer' },
+        { k: 'Year', v: '2025' },
+        { k: 'Scope', v: 'Full module design · Reports page by Arpita' },
+        { k: 'Tools', v: 'Figma · Lovable · Claude Code' },
+      ]} />
+
+      <ImgSlot variant="hero"
+        label="Image slot 01 · Hero shot"
+        title="The Assets dashboard"
+        desc="Screenshot of the Assets page — left nav rail, asset tree with sector grouping, map with annotated zones and asset pins. The &quot;this is what it is&quot; frame."
+        dims="16 : 9 · ideally 2400 × 1350 px"
+        cap="Asset Management · the main view"
+        capMeta="the interface"
+      />
+
+      <!-- § 01 Context -->
+      <Section>
+        <SectionLabel text="Context" num="§ 01" />
+        <H2>FlytBase had always been <em>flight-first.</em> This module wasn't.</H2>
+        <Lead>Cockpit, Fleet, Mission Planning, Scheduler — every surface FlytBase had shipped until now was about the flight. The path the drone takes. The waypoints. The commands. Asset Management was the first time we were building a product that <em>doesn't care about the flight.</em></Lead>
+        <Body>
+          <p>Sarah Martinez runs operations at Devon Energy. She's responsible for 45+ wellheads spread across 15 square miles in North Cowden Unit. She schedules inspections, coordinates with maintenance teams, and files monthly compliance reports to regulators. She uses drones because they're faster and safer than sending people, but drones aren't her job. <em>The wellheads</em> are her job.</p>
+          <p>On the existing FlytBase dashboard, she could fly missions. What she couldn't do was answer the question her boss asked her every week: <em>"when was wellhead NC-0217 last inspected?"</em> The answer existed, somewhere, in a mission log she'd have to find by name. The software she used every day didn't know what a wellhead was.</p>
+        </Body>
+      </Section>
+
+      <!-- § 02 The problem -->
+      <Section>
+        <SectionLabel text="The problem" num="§ 02" />
+        <PullQuote>You could fly missions. You couldn't track <em>places.</em></PullQuote>
+        <Body>
+          <p>The existing system recorded flights beautifully — every waypoint, every telemetry reading, every piece of captured media. But infrastructure only existed as a string inside a mission's name. "Wellhead NC-0217 - Monthly Inspection" was the only thread tying a place to a flight, and that thread broke the moment someone mistyped the name, changed the naming convention, or inspected the same asset under a different mission.</p>
+          <p>There was no list of Sarah's wellheads anywhere in the product. No inspection history per asset. No way to see how a wellhead's condition had changed over six months. No templates for "here's how you always inspect this type of thing." Every monthly report Sarah filed, she built from scratch by scavenging across dozens of mission logs.</p>
+        </Body>
+        <Callout><p>The gap wasn't missing features. It was a missing <em>abstraction.</em> The software didn't have a concept for the thing the user actually cared about.</p></Callout>
+      </Section>
+
+      <Hr />
+
+      <!-- § 03 The shift -->
+      <Section>
+        <SectionLabel text="The shift" num="§ 03" />
+        <H2>Track the thing. <em>Not the flight.</em></H2>
+        <Lead>This sounds small. It wasn't. Every product surface FlytBase had shipped was flight-first — and this new module had to sit alongside them, in the same authentication, the same navigation, the same customer account, but operate on a <em>completely different axis.</em></Lead>
+        <Body>
+          <p>The move: create a second dashboard. Not a tab inside Operations. Not a new view. A separate product, launched from the FlytBase hamburger menu, with its own data model centred on <strong>Assets</strong>. An asset is a record — a wellhead, a power line, a pipeline, a generator — with its own ID, its own inspection history, its own media library, its own alert thresholds, its own reference imagery. Flights don't disappear. But they stop being the centre of the universe.</p>
+          <p>The Operations Dashboard continues to exist and continues to fly drones. But increasingly, <em>everything you do in Operations now references an asset.</em> You plan missions around assets. You launch GoToAsset instead of GoToLocation. You execute a Quick Asset Inspect instead of building a mission from scratch. The flight becomes a means. The asset is the end.</p>
+        </Body>
+        <MarginRef jump="principle">↗ see the principle card</MarginRef>
+
+        <ImgSlot variant="wide"
+          label="Image slot 02 · Asset detail"
+          title="One asset, complete"
+          desc="Screenshot of the Asset Detail page (Industrial Generator Unit). Shows the depth a single asset holds — category, status, inspection history, reference images, location on the map. This is the record that didn't exist before."
+          dims="16 : 9 · ideally 2200 × 1240 px"
+          cap="Asset Detail · Industrial Generator Unit"
+          capMeta="a first-class record"
+        />
+      </Section>
+
+      <!-- § 04 Templatization -->
+      <Section>
+        <SectionLabel text="The payoff" num="§ 04" />
+        <H2>Once assets exist, <em>templates become possible.</em></H2>
+        <Lead>Sarah has 45 wellheads. They're mostly the same. The drone needs to fly the same pattern around each — four viewpoints, a fixed altitude, the same lens at the same zoom, the same gimbal attitude. Without an asset abstraction, she'd configure 45 missions identically. With one, she configures a profile once and reuses it 45 times.</Lead>
+        <Body>
+          <p><strong>Inspection Profiles</strong> are reusable viewpoint definitions. Two types: <em>Grid</em> (for area-coverage inspections — area, GSD, overlap, photogrammetry settings) and <em>Viewpoints</em> (for discrete inspection points — waypoints, lens, zoom, gimbal attitude, per-waypoint actions). One profile, applied to dozens of similar assets, collapses setup time from hours to minutes.</p>
+          <p>The same templatization logic applies to <strong>Alert Profiles</strong> — a wellhead has different abnormal-temperature thresholds than a substation, which has different thresholds than a pipeline. Each asset type gets its own alert profile library. The software knows the rules by asset type, so Sarah doesn't have to re-teach it every time.</p>
+        </Body>
+
+        <ImgSlot variant="wide"
+          label="Image slot 03 · Inspection profiles"
+          title="Templates in action"
+          desc="Screenshot of the Inspection Profiles tab — profile cards with named viewpoints (8th Avenue, 9th Drive, 10th Avenue), drone model, camera, distance, viewpoint count. Plus the asset map showing numbered viewpoints 1-4 around the asset. The payoff of the abstraction."
+          dims="16 : 9 · ideally 2200 × 1240 px"
+          cap="Inspection Profiles · reusable viewpoint definitions"
+          capMeta="templatization"
+        />
+      </Section>
+
+      <!-- § 05 The five pages -->
+      <Section>
+        <SectionLabel text="The module" num="§ 05" />
+        <H2>Five pages. <em>One coherent model.</em></H2>
+        <Lead>The dashboard has five top-level pages, organised as a left-rail navigation. Each is the same underlying data sliced a different way — by asset, by flight, by media, by report, by tag.</Lead>
+        <Body>
+          <p><strong>Assets</strong> — the inventory. Import 1000+ assets via KML or CSV. Organise by site, by sector, by tags. Search, filter, group. The map on the right reflects whatever selection is active.</p>
+          <p><strong>Inspection Logs</strong> — cross-asset flight history. Every flight that happened anywhere in the system, searchable and filterable. Click into one and see its media, its map path, its asset context.</p>
+          <p><strong>Media</strong> — every piece of captured imagery, chronologically, tagged, annotated. The Gallery tab for Sarah's team when they're reviewing evidence across dozens of flights.</p>
+          <p><strong>Reports</strong> — the stakeholder-facing surface. Compliance reports, maintenance reports, custom reports — generated from asset data, distributed as PDF, secure link, or QR code.</p>
+          <p><strong>Tag Management</strong> — tags aren't strings you type, they're records. A dedicated page to create them, merge them, rename them, retire them. Because when you have 1000+ assets, tag sprawl is a real operational problem.</p>
+        </Body>
+
+        <ImgSlot variant="wide"
+          label="Image slot 04 · Inspection Logs page"
+          title="Cross-asset history, one surface"
+          desc="Screenshot of the Inspection Logs page showing the list of recent Perimeter scan flights, with a selected log's media carousel and map view on the right. Shows the media-focused review workflow."
+          dims="16 : 9 · ideally 2200 × 1240 px"
+          cap="Inspection Logs · evidence-first review"
+          capMeta="the history"
+        />
+      </Section>
+
+      <!-- § 06 Outcome -->
+      <Section>
+        <SectionLabel text="What shipped" num="§ 06" />
+        <H2>M1 went live as a <em>second product.</em></H2>
+        <Lead>Asset Management shipped as a standalone dashboard inside the FlytBase ecosystem — same authentication, same customer account, separate surface. It's the first FlytBase module that isn't about flying a drone.</Lead>
+
+        <ImgSlot variant="wide"
+          label="Image slot 05 · Reports page"
+          title="The compliance surface"
+          desc={"Screenshot of the Reports page — list of reports on the left, a preview of the \"Asset Maintenance Report\" on the right with executive summary and attached documentation. Designed by Arpita, prototyped in Lovable."}
+          dims="16 : 9 · ideally 2200 × 1240 px"
+          cap="Reports · stakeholder distribution"
+          capMeta="the output"
+        />
+
+        <Outcome items={[
+          { n: '1000+', l: 'Assets at import', d: 'KML and CSV import handles the scale Devon Energy and enterprise customers actually have.' },
+          { n: 'M1', l: 'Shipped', d: 'All five pages live with asset detail, inspection profiles, media gallery, and reports distribution.' },
+          { n: '2nd', l: 'Product', d: 'FlytBase is no longer a single-product company. Asset Management is the second, and the foundation for more.' },
+        ]} />
+      </Section>
+
+      <!-- § 07 Reflection -->
+      <Section>
+        <SectionLabel text="What I learnt" num="§ 07" />
+        <Body>
+          <p><strong>Sometimes the problem isn't a feature. It's an abstraction.</strong> No number of improvements to mission logs would have solved Sarah's problem, because her problem was that the software didn't have a concept for the thing she cared about. Finding the right abstraction was the work. Everything downstream followed from it.</p>
+          <p><strong>Shifts like this compound.</strong> Once assets exist, templates become possible. Once templates exist, setup time collapses. Once data is structured by asset, reports become queries. Once Operations references assets, GoToAsset replaces GoToLocation. Each downstream win was free — we got it by making one decision correctly early.</p>
+          <p><strong>A product company can enter new categories from a strong base.</strong> Asset Management isn't a pivot. It's a second product that sits next to the first, serves the same customers, and expands what FlytBase is. That's a different kind of work — less refinement, more invention — and it's the kind I want to keep doing.</p>
+        </Body>
+      </Section>
+
+      <EndRow note="— end of case · § 03 / 03 —" nextLabel="Back to the workbench ↗" nextHref="/" />
+    </ReaderColumn>
+  </Fragment>
+
+  <Fragment slot="artifacts">
+    <!-- §01 CONTEXT — wayfinding -->
+    <div class="marker md red artifact" data-anchor="0" data-anchor-offset="-80" data-side="left" data-gap="60" data-width="200" style="position:absolute;transform:rotate(-8deg);font-family:var(--fh);font-weight:700;font-size:34px;line-height:1.1;color:var(--marker-red)">↓ read straight through</div>
+    <div class="marker sm black artifact" data-anchor="0" data-anchor-offset="-40" data-side="right" data-gap="40" data-width="180" style="position:absolute;transform:rotate(4deg);font-family:var(--fh);font-weight:700;font-size:18px;line-height:1.1;color:var(--ink)">drag around to<br>explore →</div>
+
+    <!-- §01 CONTEXT — operational scale framed as a quiet context card -->
+    <div class="context-card artifact" id="obj-scale-context" data-anchor="0" data-anchor-offset="380" data-side="left" data-gap="60" data-width="380" style="position:absolute;transform:rotate(-2deg);width:380px;padding:28px;background:#1a1a1c;color:#f5ede0;box-shadow:3px 5px 0 rgba(40,35,25,.1),6px 14px 28px rgba(40,35,25,.25)">
+      <div style="position:absolute;top:-10px;left:12%;width:80px;height:20px;background:var(--tape);opacity:.85;transform:rotate(-3deg)"></div>
+      <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:14px">— the operational reality —</div>
+      <div style="font-family:var(--fs);font-weight:600;font-size:19px;line-height:1.3;color:#fdf8ea;margin-bottom:12px">45 wellheads. 15 square miles. <em style="font-style:italic;color:var(--red)">One</em> Operations Manager.</div>
+      <div style="font-family:var(--fs);font-size:12px;line-height:1.6;color:rgba(253,248,234,.75)">She's responsible for the inspections, the compliance reports, the maintenance coordination. She uses FlytBase every day — but the wellheads are her job, not the drones.</div>
+    </div>
+
+    <!-- §02 PROBLEM — Sarah's actual question -->
+    <div class="sticky pink artifact" id="obj-sarah-quote" data-anchor="1" data-anchor-offset="40" data-side="left" data-gap="60" data-width="300" style="position:absolute;transform:rotate(-4deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#ff8fa3;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— the question that doesn't have an answer —</div>
+      <em style="font-style:normal;color:var(--red);font-weight:700">"When was wellhead NC-0217 last inspected?"</em><br><br>She gets asked this every week. She spends thirty minutes every week finding out.
+    </div>
+
+    <!-- §02 — the missing abstraction pattern -->
+    <div class="sticky artifact" id="obj-missing-abstraction" data-anchor="1" data-anchor-offset="380" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(3deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— the diagnosis —</div>
+      Infrastructure existed as a <em style="font-style:normal;color:var(--red);font-weight:700">string</em> inside a mission's name. Nothing more. The software didn't know what a wellhead <em style="font-style:normal;color:var(--red);font-weight:700">was.</em>
+    </div>
+
+    <!-- §03 THE SHIFT — THE PRINCIPLE CARD -->
+    <div class="principle artifact" id="obj-shift-principle" data-anchor="2" data-anchor-offset="20" data-side="right" data-gap="80" data-width="400" style="position:absolute;transform:rotate(1.5deg);width:400px;padding:32px 32px 28px;background:var(--paper);box-shadow:3px 5px 0 rgba(40,35,25,.06),6px 14px 28px rgba(40,35,25,.2);border:1px solid rgba(40,35,25,.08)">
+      <div style="position:absolute;top:-12px;right:10%;width:90px;height:22px;background:var(--tape);opacity:.85;transform:rotate(3deg);box-shadow:0 2px 6px rgba(40,35,25,.1)"></div>
+      <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:14px;display:flex;align-items:center;gap:8px"><span>◆</span>the shift that created a second product</div>
+      <div style="font-family:var(--fs);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin-bottom:10px">Everything else FlytBase had built was about the flight. <em style="font-style:italic;color:var(--red)">This one was about the asset.</em></div>
+      <div style="font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--ink-2);margin-bottom:14px">Cockpit, Fleet, Mission Planning — all flight-first. Asset Management was the first module that doesn't care about the path the drone takes. It cares about the <em style="font-style:italic;color:var(--ink)">thing the drone was sent to look at.</em></div>
+      <div style="font-family:var(--fh);font-weight:600;font-size:17px;color:var(--ink-3);padding-top:12px;border-top:1px dashed rgba(40,35,25,.18)">— the abstraction that unlocks the module</div>
+    </div>
+
+    <!-- §03 — the shift diagram: flight-first vs asset-first mental model -->
+    <div class="diagram artifact" id="obj-shift-diagram" data-anchor="2" data-anchor-offset="560" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(-1deg);padding:24px;background:var(--paper);box-shadow:2px 3px 0 rgba(40,35,25,.04),4px 8px 20px rgba(40,35,25,.18)">
+      <div style="position:absolute;top:-10px;left:40%;width:60px;height:20px;background:var(--tape);opacity:.85;transform:rotate(-3deg)"></div>
+      <div style="font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ink);margin-bottom:4px">The mental-model shift</div>
+      <div style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px">— what sits at the centre —</div>
+      <svg viewBox="0 0 420 260" width="100%">
+        <!-- Before: flight-first -->
+        <g transform="translate(10 20)">
+          <text x="90" y="0" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7770" letter-spacing="1">BEFORE — FLIGHT-FIRST</text>
+          <circle cx="90" cy="50" r="28" fill="#1a1a1c"/>
+          <text x="90" y="54" text-anchor="middle" font-family="Inter" font-size="10" fill="#fdf8ea" font-weight="700">FLIGHT</text>
+          <!-- children: waypoints, media, telemetry, asset as ghost -->
+          <circle cx="30" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="30" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">waypoints</text>
+          <circle cx="90" cy="130" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="90" y="133" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">media</text>
+          <circle cx="150" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="150" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">telemetry</text>
+          <line x1="90" y1="78" x2="30" y2="108" stroke="#1a1a1c" stroke-width=".7"/>
+          <line x1="90" y1="78" x2="90" y2="116" stroke="#1a1a1c" stroke-width=".7"/>
+          <line x1="90" y1="78" x2="150" y2="108" stroke="#1a1a1c" stroke-width=".7"/>
+          <!-- asset as ghost -->
+          <circle cx="90" cy="175" r="12" fill="none" stroke="#1a1a1c" stroke-width=".5" stroke-dasharray="2 2" opacity=".4"/>
+          <text x="90" y="178" text-anchor="middle" font-family="Inter" font-size="7" fill="#7a7770" opacity=".5">"asset"</text>
+          <text x="90" y="210" text-anchor="middle" font-family="Caveat" font-size="13" fill="#7a7770">asset = string in mission name</text>
+        </g>
+        <!-- divider -->
+        <line x1="210" y1="30" x2="210" y2="240" stroke="#1a1a1c" stroke-width=".5" stroke-dasharray="2 3" opacity=".5"/>
+        <!-- After: asset-first -->
+        <g transform="translate(220 20)">
+          <text x="90" y="0" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#d8352a" letter-spacing="1">AFTER — ASSET-FIRST</text>
+          <circle cx="90" cy="50" r="28" fill="#d8352a"/>
+          <text x="90" y="54" text-anchor="middle" font-family="Inter" font-size="10" fill="#fdf8ea" font-weight="700">ASSET</text>
+          <circle cx="30" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="30" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">inspections</text>
+          <circle cx="90" cy="130" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="90" y="133" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">media</text>
+          <circle cx="150" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="150" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">profiles</text>
+          <circle cx="30" cy="170" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="30" y="173" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">alerts</text>
+          <circle cx="150" cy="170" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
+          <text x="150" y="173" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">reports</text>
+          <line x1="90" y1="78" x2="30" y2="108" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="78" x2="90" y2="116" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="78" x2="150" y2="108" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="78" x2="30" y2="156" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="78" x2="150" y2="156" stroke="#d8352a" stroke-width=".9"/>
+          <text x="90" y="215" text-anchor="middle" font-family="Caveat" font-size="13" fill="#d8352a" font-weight="700">asset = record with a life</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- §04 TEMPLATIZATION — the payoff principle -->
+    <div class="principle artifact" id="obj-template-principle" data-anchor="3" data-anchor-offset="40" data-side="right" data-gap="80" data-width="380" style="position:absolute;transform:rotate(-1.5deg);width:380px;padding:32px 32px 28px;background:var(--paper);box-shadow:3px 5px 0 rgba(40,35,25,.06),6px 14px 28px rgba(40,35,25,.2);border:1px solid rgba(40,35,25,.08)">
+      <div style="position:absolute;top:-12px;right:10%;width:90px;height:22px;background:var(--tape);opacity:.85;transform:rotate(3deg);box-shadow:0 2px 6px rgba(40,35,25,.1)"></div>
+      <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:14px;display:flex;align-items:center;gap:8px"><span>◆</span>the payoff of the asset abstraction</div>
+      <div style="font-family:var(--fs);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin-bottom:10px">One profile. <em style="font-style:italic;color:var(--red)">Applied to dozens</em> of identical assets.</div>
+      <div style="font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--ink-2);margin-bottom:14px">Sarah has 45 wellheads. They're mostly the same. Without assets, she'd configure 45 missions. With assets plus templates, she configures one Inspection Profile and reuses it. <em style="font-style:italic;color:var(--ink)">Setup time collapses from hours to minutes.</em></div>
+      <div style="font-family:var(--fh);font-weight:600;font-size:17px;color:var(--ink-3);padding-top:12px;border-top:1px dashed rgba(40,35,25,.18)">— why the abstraction matters operationally</div>
+    </div>
+
+    <!-- §04 — the two profile types -->
+    <div class="sticky artifact" id="obj-profile-types" data-anchor="3" data-anchor-offset="460" data-side="left" data-gap="60" data-width="300" style="position:absolute;transform:rotate(3deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— two profile types —</div>
+      <em style="font-style:normal;color:var(--red);font-weight:700">Grid</em> for area inspections — area, GSD, overlap.<br><br><em style="font-style:normal;color:var(--red);font-weight:700">Viewpoints</em> for discrete points — waypoints, lens, zoom, gimbal, per-waypoint actions.
+    </div>
+
+    <!-- §05 FIVE PAGES — printout showing the real left-rail nav + tree + map -->
+    <div class="printout artifact" id="obj-five-pages" data-anchor="4" data-anchor-offset="80" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(2deg);padding:12px;background:#fbfaf4;box-shadow:2px 3px 0 rgba(40,35,25,.05),5px 10px 22px rgba(40,35,25,.22)">
+      <div style="position:absolute;top:-12px;left:30%;width:70px;height:24px;background:var(--tape);opacity:.85;transform:rotate(-4deg);box-shadow:0 2px 5px rgba(40,35,25,.12)"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 4px 10px;border-bottom:1px dashed rgba(40,35,25,.15);margin-bottom:10px"><div style="display:flex;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span></div><div style="font-family:var(--fm);font-size:9px;color:var(--ink-3);letter-spacing:.1em">— asset management · left nav —</div></div>
+      <div style="aspect-ratio:16/10;background:var(--board);display:flex;align-items:center;justify-content:center;overflow:hidden">
+        <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+          <rect width="400" height="250" fill="#1a1a1c"/>
+          <!-- Left nav rail -->
+          <rect x="10" y="10" width="40" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <!-- Five nav items -->
+          <g font-family="JetBrains Mono" font-size="7" letter-spacing=".5">
+            <circle cx="30" cy="40" r="7" fill="#d8352a"/>
+            <text x="30" y="43" text-anchor="middle" fill="#fdf8ea" font-size="6">ASSET</text>
+            <circle cx="30" cy="75" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="77" text-anchor="middle" fill="#d8352a" font-size="6">LOG</text>
+            <circle cx="30" cy="110" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="112" text-anchor="middle" fill="#d8352a" font-size="6">MEDIA</text>
+            <circle cx="30" cy="145" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="147" text-anchor="middle" fill="#d8352a" font-size="6">RPT</text>
+            <circle cx="30" cy="180" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="182" text-anchor="middle" fill="#d8352a" font-size="6">TAG</text>
+          </g>
+          <!-- Content area: tree + map -->
+          <rect x="58" y="10" width="140" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <g font-family="Inter" font-size="7" fill="#d8352a">
+            <text x="66" y="26" font-family="JetBrains Mono" font-size="7" letter-spacing="1">ASSETS · 1443</text>
+            <text x="66" y="48">▸ East sector · 3</text>
+            <text x="66" y="62">▾ South sector</text>
+            <text x="76" y="76">• Oil well — Injector 1</text>
+            <text x="76" y="90">• Oil well — Injector 2</text>
+            <text x="76" y="104">• Oil well — Producer 1</text>
+            <text x="76" y="118">▾ Power lines · 1</text>
+            <text x="86" y="132">• Power line 1</text>
+            <text x="66" y="152">▾ North sector · 1</text>
+            <text x="76" y="166">• Zone Apex</text>
+            <text x="76" y="180">• Pipeline 1</text>
+            <text x="76" y="194">• Pipeline 2</text>
+          </g>
+          <!-- Map area -->
+          <rect x="206" y="10" width="184" height="230" fill="#2a2a2c"/>
+          <!-- scattered asset pins -->
+          <g fill="#d8352a">
+            <circle cx="240" cy="60" r="3"/>
+            <circle cx="280" cy="90" r="3"/>
+            <circle cx="310" cy="50" r="3"/>
+            <circle cx="345" cy="110" r="3"/>
+            <circle cx="370" cy="160" r="3"/>
+            <circle cx="260" cy="180" r="3"/>
+            <circle cx="310" cy="200" r="3"/>
+            <circle cx="360" cy="220" r="3"/>
+          </g>
+          <!-- an annotated zone -->
+          <polygon points="260 130, 330 125, 340 180, 270 185" fill="none" stroke="#f5a524" stroke-width="1" stroke-dasharray="3 2"/>
+          <text x="300" y="250" text-anchor="middle" font-family="JetBrains Mono" font-size="6" fill="#f5a524">▪ ZONE APEX</text>
+        </svg>
+      </div>
+      <div style="margin-top:10px;font-family:var(--fh);font-weight:700;font-size:18px;color:var(--ink);display:flex;justify-content:space-between;align-items:baseline"><span>Asset Management <em style="font-style:italic;color:var(--marker-red)">·</em> home</span><small style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:normal">— five pages, one data model</small></div>
+    </div>
+
+    <!-- §05 — Arpita/Reports quiet attribution sticky -->
+    <div class="sticky blue artifact" id="obj-arpita-reports" data-anchor="4" data-anchor-offset="480" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(-3deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#a8d0f0;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— credit where due —</div>
+      <em style="font-style:normal;color:var(--red);font-weight:700">Reports</em> — designed by Arpita. Prototyped in Lovable. I handed over the data model and integration points; she built the surface.
+    </div>
+
+    <!-- §05 — nav-is-the-schema insight -->
+    <div class="sticky artifact" id="obj-nav-schema" data-anchor="4" data-anchor-offset="820" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(2deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— design rule —</div>
+      Each page is a <em style="font-style:normal;color:var(--red);font-weight:700">slice</em> of the same data. The navigation IS the schema.
+    </div>
+
+    <!-- §06 OUTCOME — M1 receipt -->
+    <div class="sticky green artifact" id="obj-m1-shipped" data-anchor="5" data-anchor-offset="60" data-side="right" data-gap="60" data-width="300" style="position:absolute;transform:rotate(-3deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#b5e0b5;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— what shipped —</div>
+      M1 live. Five pages, 1000+ asset import, PDF/link/QR distribution. FlytBase's <em style="font-style:normal;color:var(--red);font-weight:700">second</em> product.
+    </div>
+
+    <!-- §06 — downstream-wins receipt -->
+    <div class="sticky artifact" id="obj-downstream" data-anchor="5" data-anchor-offset="420" data-side="right" data-gap="60" data-width="300" style="position:absolute;transform:rotate(3deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— the compound returns —</div>
+      <em style="font-style:normal;color:var(--red);font-weight:700">GoToLocation → GoToAsset.</em> Quick Asset Inspect. Future ground-robot integrations. Each one is free once the abstraction is correct.
+    </div>
+
+    <!-- §07 REFLECTION — final takeaway -->
+    <div class="sticky green artifact" id="obj-reflection" data-anchor="last" data-anchor-offset="60" data-side="right" data-gap="60" data-width="300" style="position:absolute;transform:rotate(-3deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#b5e0b5;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— takeaway —</div>
+      Sometimes the problem isn't a feature. It's the <em style="font-style:normal;color:var(--red);font-weight:700">abstraction.</em> Find that, and the features fall out of it.
+    </div>
+
+    <div class="sticky blue artifact" id="obj-reflection2" data-anchor="last" data-anchor-offset="400" data-side="right" data-gap="60" data-width="280" style="position:absolute;transform:rotate(4deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#a8d0f0;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— what this meant for me —</div>
+      Designing something meant to <em style="font-style:normal;color:var(--red);font-weight:700">create a category</em> — not refine one — is different work. Less polish. More invention.
+    </div>
+  </Fragment>
+</CaseLayout>
+
+<style is:global>
+  /* Case-study sticky tape strip (smaller variant from prototype) */
+  .sticky.artifact::before{
+    content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%) rotate(-3deg);
+    width:80px;height:20px;background:var(--tape);opacity:.85;
+    box-shadow:0 2px 4px rgba(40,35,25,.1);
+  }
+</style>

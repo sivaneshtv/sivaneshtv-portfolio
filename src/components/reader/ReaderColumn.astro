@@ -1,0 +1,32 @@
+---
+---
+<article class="reader" id="reader">
+  <slot />
+</article>
+
+<style is:global>
+  /* §5.1 — cockpit-canvas.html lines 76–100 */
+  .reader{
+    position:absolute;
+    left:var(--reader-left,1400px);
+    top:600px;
+    width:var(--reader-width,2200px);
+    padding:var(--reader-pad,120px 160px 140px);
+    font-size:calc(16px * var(--reader-fs, 1));
+    background:var(--paper);
+    box-shadow:
+      2px 4px 0 rgba(40,35,25,.04),
+      8px 16px 40px rgba(40,35,25,.18),
+      20px 32px 80px rgba(40,35,25,.12);
+  }
+  .reader::before{
+    content:"";position:absolute;top:-14px;left:50%;transform:translateX(-50%) rotate(-2deg);
+    width:120px;height:26px;background:var(--tape);opacity:.85;
+    box-shadow:0 2px 6px rgba(40,35,25,.12);
+  }
+  .reader::after{
+    content:"";position:absolute;bottom:-14px;right:10%;transform:rotate(3deg);
+    width:80px;height:22px;background:var(--tape-2);opacity:.85;
+    box-shadow:0 2px 6px rgba(40,35,25,.1);
+  }
+</style>

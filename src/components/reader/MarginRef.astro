@@ -1,0 +1,19 @@
+---
+interface Props { href?: string; jump?: string }
+const { href, jump } = Astro.props;
+---
+<a class="r-margin-ref" href={href || undefined} data-jump={jump || undefined}>
+  <slot />
+</a>
+
+<style>
+  /* §5.7 */
+  .r-margin-ref{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);
+    margin-top:12px;cursor:pointer;
+    border-bottom:1px dashed var(--red);padding-bottom:2px;
+    transition:color .25s;text-decoration:none;
+  }
+  .r-margin-ref:hover{color:var(--ink)}
+</style>

@@ -1,0 +1,17 @@
+---
+---
+<div class="reading-hint">drag to explore · press <kbd>r</kbd> to return to reading</div>
+
+<style>
+  /* §6.6 */
+  .reading-hint{
+    position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:25;
+    background:rgba(26,26,28,.92);color:#f5ede0;
+    padding:8px 14px;
+    font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    white-space:nowrap;
+    opacity:0;pointer-events:none;transition:opacity .4s;
+  }
+  :global(.reading-hint.on){opacity:.95}
+  .reading-hint kbd{background:rgba(255,240,200,.1);padding:2px 6px;border-radius:2px;margin:0 2px}
+</style>
