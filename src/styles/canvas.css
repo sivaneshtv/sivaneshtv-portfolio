@@ -40,3 +40,135 @@
 }
 
 /* Return pill CSS lives in CaseLayout.astro (scoped to case pages) */
+
+/* ─── Dark theme overrides ─── */
+[data-theme="dark"] .board-bg::before{
+  opacity:.12;mix-blend-mode:overlay;
+}
+[data-theme="dark"] .canvas{
+  background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.08) 1px,transparent 1px);
+}
+
+/* Stickies — !important to beat inline styles on case study artifacts */
+/* Stickies — lighter backgrounds for better text contrast */
+[data-theme="dark"] .sticky{background:#4a3d28 !important;color:#f0ece4 !important;box-shadow:2px 4px 0 rgba(0,0,0,.15),4px 8px 16px rgba(0,0,0,.3) !important}
+[data-theme="dark"] .sticky::before{background:var(--tape);opacity:.6}
+[data-theme="dark"] .sticky.pink{background:#5a2838 !important}
+[data-theme="dark"] .sticky.blue{background:#253a55 !important}
+[data-theme="dark"] .sticky.green{background:#254528 !important}
+[data-theme="dark"] .sticky em{color:var(--marker-red) !important}
+[data-theme="dark"] .sticky-eyebrow{color:#a8a49c !important}
+
+/* Cards + paper artifacts */
+[data-theme="dark"] .card{background:var(--paper) !important;color:var(--ink) !important;box-shadow:1px 2px 0 rgba(0,0,0,.2),3px 6px 14px rgba(0,0,0,.3),8px 16px 32px rgba(0,0,0,.15) !important;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 27px,rgba(80,130,220,.12) 27px,rgba(80,130,220,.12) 28px) !important}
+[data-theme="dark"] .card::before{background:rgba(216,53,42,.25)}
+
+/* Polaroid */
+[data-theme="dark"] .polaroid{background:var(--paper) !important;box-shadow:2px 3px 0 rgba(0,0,0,.2),5px 10px 22px rgba(0,0,0,.35),12px 20px 40px rgba(0,0,0,.2) !important}
+[data-theme="dark"] .polaroid::before{opacity:.5}
+[data-theme="dark"] .polaroid::after{opacity:.4}
+[data-theme="dark"] .polaroid-img{background:#1a1a1c !important}
+
+/* Printout */
+[data-theme="dark"] .printout{background:var(--paper) !important;box-shadow:2px 3px 0 rgba(0,0,0,.2),5px 10px 22px rgba(0,0,0,.35) !important}
+[data-theme="dark"] .printout::before{opacity:.5}
+[data-theme="dark"] .printout-head{border-bottom-color:rgba(255,255,255,.08)}
+[data-theme="dark"] .printout-frame{background:#1a1a1c !important}
+
+/* SVG text/stroke inversion for diagrams on dark backgrounds */
+[data-theme="dark"] .diagram svg text{fill:var(--ink) !important}
+[data-theme="dark"] .diagram svg [fill="#1a1a1c"]{fill:var(--ink)}
+[data-theme="dark"] .diagram svg [fill="#4a4945"]{fill:var(--ink-2)}
+[data-theme="dark"] .diagram svg [fill="#7a7770"]{fill:var(--ink-3)}
+[data-theme="dark"] .diagram svg [stroke="#1a1a1c"]{stroke:var(--ink)}
+[data-theme="dark"] .printout svg text{fill:var(--ink-2) !important}
+[data-theme="dark"] .printout svg [fill="#999"]{fill:var(--ink-3)}
+[data-theme="dark"] .printout svg [stroke="#666"]{stroke:var(--ink-3)}
+
+/* Inline-styled text on case stickies (basketball, manhwa) */
+[data-theme="dark"] .sticky [style*="color:#2a1400"]{color:var(--ink) !important}
+[data-theme="dark"] .sticky [style*="color:#1a1a1c"]{color:var(--ink) !important}
+
+/* Todo */
+[data-theme="dark"] .todo{background:var(--paper) !important;color:var(--ink) !important;box-shadow:1px 2px 0 rgba(0,0,0,.2),3px 6px 14px rgba(0,0,0,.3) !important}
+[data-theme="dark"] .todo-row{border-bottom-color:rgba(255,255,255,.08);color:var(--ink) !important}
+
+/* Photo */
+[data-theme="dark"] .photo{background:var(--paper) !important;box-shadow:2px 3px 0 rgba(0,0,0,.15),4px 8px 18px rgba(0,0,0,.35) !important}
+[data-theme="dark"] .photo::before{opacity:.5}
+
+/* Contact card — already dark, just adjust shadow */
+[data-theme="dark"] .contact-card{box-shadow:2px 3px 0 rgba(0,0,0,.2),6px 12px 28px rgba(0,0,0,.5) !important}
+
+/* Principle / Context / Cut / Diagram — !important to beat inline styles */
+[data-theme="dark"] .principle{background:var(--paper) !important;border-color:rgba(255,255,255,.08) !important;box-shadow:3px 5px 0 rgba(0,0,0,.15),6px 14px 28px rgba(0,0,0,.3) !important;color:var(--ink) !important}
+[data-theme="dark"] .principle::before{opacity:.5}
+[data-theme="dark"] .principle [style*="color:var(--ink-2)"]{color:var(--ink-2) !important}
+[data-theme="dark"] .principle [style*="color:var(--ink-3)"]{color:var(--ink-3) !important}
+[data-theme="dark"] .cut{background:var(--paper) !important;border-color:rgba(255,255,255,.08) !important;box-shadow:2px 3px 0 rgba(0,0,0,.15),4px 8px 18px rgba(0,0,0,.25) !important;color:var(--ink) !important}
+[data-theme="dark"] .cut::before{opacity:.5}
+[data-theme="dark"] .cut [style*="border-bottom"]{border-bottom-color:rgba(255,255,255,.1) !important}
+[data-theme="dark"] .diagram{background:var(--paper) !important;box-shadow:2px 3px 0 rgba(0,0,0,.12),4px 8px 20px rgba(0,0,0,.3) !important;color:var(--ink) !important}
+[data-theme="dark"] .diagram::before{opacity:.5}
+/* Context card already dark — ensure text stays readable */
+[data-theme="dark"] .context-card{background:#1a1a1c !important;box-shadow:3px 5px 0 rgba(0,0,0,.2),6px 14px 28px rgba(0,0,0,.4) !important}
+
+/* Reader column */
+[data-theme="dark"] .reader{background:var(--paper);box-shadow:2px 4px 0 rgba(0,0,0,.12),8px 16px 40px rgba(0,0,0,.3),20px 32px 80px rgba(0,0,0,.2)}
+[data-theme="dark"] .reader::before{opacity:.5}
+[data-theme="dark"] .reader::after{opacity:.5}
+
+/* Callout */
+[data-theme="dark"] .r-callout{background:rgba(200,160,48,.1);border-left-color:rgba(200,160,48,.4)}
+[data-theme="dark"] .r-callout::before{background:var(--paper)}
+
+/* ImgSlot */
+[data-theme="dark"] .img-slot{background:#262628;border-color:rgba(255,255,255,.1)}
+[data-theme="dark"] .img-slot-cap{background:var(--paper);border-top-color:rgba(255,255,255,.1)}
+[data-theme="dark"] .img-slot.split .is-half{background:#262628;border-color:rgba(255,255,255,.1)}
+
+/* Outcome */
+[data-theme="dark"] .r-outcome{border-top-color:var(--ink);border-bottom-color:var(--ink)}
+
+/* EndRow */
+[data-theme="dark"] .r-end{border-top-color:var(--ink)}
+
+/* Hr */
+[data-theme="dark"] .r-hr{border-top-color:rgba(255,255,255,.12)}
+
+/* PullQuote */
+[data-theme="dark"] .r-pullquote{border-top-color:rgba(255,255,255,.1);border-bottom-color:rgba(255,255,255,.1)}
+
+/* Meta — dashed borders need higher opacity to be visible on dark */
+[data-theme="dark"] .r-meta{border-top-color:rgba(255,255,255,.25) !important;border-bottom-color:rgba(255,255,255,.25) !important}
+[data-theme="dark"] .r-meta-item{border-left-color:rgba(255,255,255,.18) !important}
+
+/* Chrome */
+[data-theme="dark"] .tb-logo{background:rgba(30,30,32,.92);border-color:rgba(255,255,255,.08);color:var(--ink)}
+[data-theme="dark"] .tb-logo:hover{background:rgba(40,40,42,1) !important;border-color:rgba(255,255,255,.15) !important}
+[data-theme="dark"] .tb-logo[aria-expanded="true"]{background:rgba(40,40,42,1) !important;border-color:rgba(255,255,255,.2) !important}
+[data-theme="dark"] .nav-menu{background:rgba(30,30,32,.96);border-color:rgba(255,255,255,.08);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+[data-theme="dark"] .nav-row{color:var(--ink-2)}
+[data-theme="dark"] .nav-row:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+[data-theme="dark"] .toolbar{background:rgba(30,30,32,.92);border-color:rgba(255,255,255,.08);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+[data-theme="dark"] .tb-btn{color:var(--ink-2)}
+[data-theme="dark"] .tb-btn:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+[data-theme="dark"] .tb-divider{background:rgba(255,255,255,.1)}
+[data-theme="dark"] .tb-zoom{color:var(--ink-2)}
+[data-theme="dark"] .minimap{background:rgba(30,30,32,.92);border-color:rgba(255,255,255,.08);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+[data-theme="dark"] .minimap-dot{background:var(--ink-3)}
+[data-theme="dark"] .help{background:#2a2a2c;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+[data-theme="dark"] .help-key{background:rgba(255,240,200,.06);border-color:rgba(255,240,200,.12)}
+
+/* Zone label — needs higher opacity to read as backdrop text on dark */
+[data-theme="dark"] .zone-label{color:rgba(255,255,255,.15) !important}
+
+/* Status bar (workbench top-right) */
+[data-theme="dark"] .tb-status{background:rgba(30,30,32,.85) !important;border-color:rgba(255,255,255,.06) !important;color:var(--ink-2)}
+[data-theme="dark"] .tb-status .sep{color:rgba(255,255,255,.2)}
+
+/* Masthead highlight */
+[data-theme="dark"] .mh-sub em{background:rgba(200,160,48,.2)}
+
+/* Contact button in case topbar */
+[data-theme="dark"] .tb-contact{background:var(--red);border-color:#b82b22}

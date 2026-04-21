@@ -24,3 +24,26 @@
   --fh:'Caveat',cursive;
   --fk:'Kalam',cursive;
 }
+
+/* ─── Dark theme ─── */
+[data-theme="dark"]{
+  --board:#1a1a1c;
+  --board-2:#222224;
+  --board-shadow:rgba(0,0,0,.3);
+  --ink:#f0ece4;
+  --ink-2:#c8c4ba;
+  --ink-3:#8a867e;
+  --ink-4:#5e5a52;
+  --red:#e84a3f;
+  --blue:#5b8fe8;
+  --yellow:#c8a030;
+  --pink:#d4667a;
+  --green:#5cb870;
+  --purple:#b09ae0;
+  --marker-red:#e84a3f;
+  --marker-blue:#6b9ef0;
+  --marker-black:#c8c4ba;
+  --tape:#4a4230;
+  --tape-2:#3a3830;
+  --paper:#2a2a2c;
+}
