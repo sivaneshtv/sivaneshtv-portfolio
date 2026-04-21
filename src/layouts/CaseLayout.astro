@@ -28,7 +28,8 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
       <a href={backHref} class="tb-logo" title="Back to workbench">
         <span class="back-ic"><svg viewBox="0 0 14 14" width="12" height="12"><path d="M9 3L4 7l5 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <span>Sivanesh.tv</span>
-        <span class="tb-logo-sub">← back to work</span>
+        <span class="tb-logo-dot">·</span>
+        <span class="tb-logo-case">{caseName}</span>
       </a>
     </div>
     <div class="tb-status">
@@ -80,6 +81,8 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   .tb-logo{display:flex;align-items:center;gap:10px;font-family:var(--fs);font-weight:600;font-size:14px;color:var(--ink);background:rgba(232,228,219,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:8px 12px 8px 10px;border:1px solid rgba(40,35,25,.12);box-shadow:0 4px 14px rgba(40,35,25,.08);cursor:pointer;transition:background .2s,border-color .2s;text-decoration:none}
   .tb-logo:hover{background:rgba(232,228,219,1);border-color:rgba(40,35,25,.25)}
   .tb-logo-sub{color:var(--ink-3);font-weight:400;font-size:12px}
+  .tb-logo-dot{color:var(--ink-3);font-weight:400;font-size:12px;opacity:.5}
+  .tb-logo-case{color:var(--ink-3);font-weight:400;font-size:12px}
   .back-ic{display:inline-flex;align-items:center;justify-content:center;width:14px;color:var(--ink-2);transition:transform .2s,color .2s}
   .tb-logo:hover .back-ic{transform:translateX(-2px);color:var(--red)}
   .tb-status{display:flex;align-items:center;gap:14px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);background:rgba(232,228,219,.85);backdrop-filter:blur(10px);padding:10px 14px;border:1px solid rgba(40,35,25,.1)}
@@ -103,6 +106,8 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     .topbar{padding:14px 16px;flex-wrap:wrap;gap:10px}
     .tb-logo{padding:6px 10px;font-size:12px}
     .tb-logo-sub{display:none}
+    .tb-logo-dot{display:none}
+    .tb-logo-case{display:none}
     .tb-status{font-size:9px;padding:8px 12px;gap:10px}
     .toolbar{bottom:12px;padding:4px;gap:1px}
     .tb-btn{width:32px;height:32px}

@@ -218,11 +218,26 @@ import {
         <span class="menu-chev">▾</span>
       </button>
       <div class="nav-menu" id="layersPanel" role="menu">
-        {zoneNav.map((z) => (
-          <button class="nav-row" role="menuitem" data-zone={z.id}>
-            <span class="nav-ic">◎</span><span class="nav-name">{z.label}</span><span class="nav-ar">↗</span>
-          </button>
-        ))}
+        <button class="nav-row" data-zone="hello">
+          <span class="nav-ic"><svg viewBox="0 0 14 14" width="11" height="11"><circle cx="7" cy="7" r="2.8" fill="currentColor"/></svg></span>
+          <span class="nav-name">Intro</span><span class="nav-ar">↗</span>
+        </button>
+        <button class="nav-row" data-zone="about">
+          <span class="nav-ic"><svg viewBox="0 0 14 14" width="11" height="11"><path d="M2 2h10v10H2z M2 6h10 M2 9h10" stroke="currentColor" stroke-width="1.1" fill="none"/></svg></span>
+          <span class="nav-name">About</span><span class="nav-ar">↗</span>
+        </button>
+        <button class="nav-row" data-zone="work">
+          <span class="nav-ic"><svg viewBox="0 0 14 14" width="11" height="11"><rect x="1" y="2" width="5" height="4" stroke="currentColor" stroke-width="1.1" fill="none"/><rect x="8" y="2" width="5" height="4" stroke="currentColor" stroke-width="1.1" fill="none"/><rect x="1" y="8" width="5" height="4" stroke="currentColor" stroke-width="1.1" fill="none"/><rect x="8" y="8" width="5" height="4" stroke="currentColor" stroke-width="1.1" fill="none"/></svg></span>
+          <span class="nav-name">Work</span><span class="nav-ar">↗</span>
+        </button>
+        <button class="nav-row" data-zone="howwork">
+          <span class="nav-ic"><svg viewBox="0 0 14 14" width="11" height="11"><path d="M2 4h10 M2 7h7 M2 10h10" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg></span>
+          <span class="nav-name">Process</span><span class="nav-ar">↗</span>
+        </button>
+        <button class="nav-row" data-zone="contact">
+          <span class="nav-ic"><svg viewBox="0 0 14 14" width="11" height="11"><path d="M1 3h12v8H1z M1 3l6 5 6-5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/></svg></span>
+          <span class="nav-name">Contact</span><span class="nav-ar">↗</span>
+        </button>
       </div>
     </div>
     <div class="tb-status">
