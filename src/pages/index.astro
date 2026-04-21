@@ -424,14 +424,13 @@ import {
     }
   }
 
-  // Hash-based zone navigation (e.g. /#contact from case study Contact button)
+  // Hash-based zone navigation (e.g. /#contact from case study back button)
+  // Instant — no pan animation, user should land directly on the zone
   const hash = location.hash.replace('#', '');
-  if (hash && engine.goToZone) {
-    // Dismiss help first so it doesn't block the view
+  if (hash) {
     help.classList.remove('on');
     engine.dismissHelp();
-    // Small delay to let boot settle, then fly to zone
-    setTimeout(() => engine.goToZone(hash), 300);
+    engine.goToZoneInstant(hash);
   }
 
   // Theme toggle

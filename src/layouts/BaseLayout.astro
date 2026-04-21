@@ -1,4 +1,6 @@
 ---
+import { ClientRouter } from 'astro:transitions';
+
 interface Props {
   title: string;
   description?: string;
@@ -23,6 +25,7 @@ const {
     <title>{title}</title>
     <link rel="preload" href="/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/JetBrainsMono[wght].woff2" as="font" type="font/woff2" crossorigin />
+    <ClientRouter />
   </head>
   <body>
     <!-- Shared wobble filter — one per page, referenced by all arrows -->
@@ -41,4 +44,29 @@ const {
 <style is:global>
   @import '../styles/base.css';
   @import '../styles/canvas.css';
+
+  /* Page transition animation */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  ::view-transition-old(root) {
+    animation: fadeOut 0.3s ease-out forwards;
+  }
+  ::view-transition-new(root) {
+    animation: fadeIn 0.3s ease-in forwards;
+  }
 </style>
+
+<script>
+  // Re-apply theme after view transition (Astro swaps the DOM)
+  document.addEventListener('astro:after-swap', () => {
+    const t = localStorage.getItem('sivanesh.theme');
+    if (t) document.documentElement.setAttribute('data-theme', t);
+  });
+</script>

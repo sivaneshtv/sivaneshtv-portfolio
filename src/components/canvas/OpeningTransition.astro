@@ -1,0 +1,60 @@
+---
+interface Props {
+  caption: string;
+}
+const { caption } = Astro.props;
+---
+
+<div id="opening" aria-hidden="true">
+  <div class="opening-polaroid">
+    <div class="opening-polaroid-img">
+      <slot />
+    </div>
+    <div class="opening-polaroid-cap" set:html={caption}></div>
+  </div>
+</div>
+
+<style>
+  /* Verbatim from prototype opening CSS */
+  #opening {
+    position: fixed; inset: 0; z-index: 500;
+    background: var(--board);
+    pointer-events: none;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #opening.go {
+    animation: openingZoom 1s cubic-bezier(.65, 0, .35, 1) forwards;
+  }
+  @keyframes openingZoom {
+    0%   { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(4); }
+  }
+  .opening-polaroid {
+    width: 320px;
+    padding: 16px 16px 60px;
+    background: var(--paper);
+    box-shadow:
+      4px 6px 0 rgba(40,35,25,.08),
+      10px 20px 40px rgba(40,35,25,.3);
+    transform: rotate(-3deg);
+  }
+  .opening-polaroid-img {
+    aspect-ratio: 4/3;
+    background: #1a1a1c;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .opening-polaroid-img :global(svg) {
+    width: 80%;
+  }
+  .opening-polaroid-cap {
+    font-family: var(--fh); font-weight: 700; font-size: 26px;
+    color: var(--ink); text-align: center; margin-top: 14px;
+  }
+  .opening-polaroid-cap :global(em) {
+    font-style: italic; color: var(--red);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #opening { display: none; }
+  }
+</style>

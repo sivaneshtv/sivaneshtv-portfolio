@@ -13,6 +13,9 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
 ---
 
 <BaseLayout title={title}>
+  <!-- Opening transition — polaroid zoom intro -->
+  <slot name="opening" />
+
   <div class="board-bg"></div>
 
   <div class="canvas-wrap" id="canvasWrap">
@@ -228,4 +231,16 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('sivanesh.theme', next);
   });
+
+  // Opening transition — polaroid zoom intro
+  const opening = document.getElementById('opening');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (opening && !reduceMotion) {
+    setTimeout(() => {
+      opening.classList.add('go');
+      setTimeout(() => { opening.style.display = 'none'; }, 1000);
+    }, 200);
+  } else if (opening) {
+    opening.style.display = 'none';
+  }
 </script>
