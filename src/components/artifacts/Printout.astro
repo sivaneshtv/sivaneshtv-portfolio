@@ -7,9 +7,11 @@ interface Props {
   labelMeta?: string;
   pos?: { x: number; y: number };
   compact?: boolean;
+  id?: string;
+  dataLabel?: string;
 }
 
-const { width = 460, rotation = 0, url, label, labelMeta, pos, compact = false } = Astro.props;
+const { width = 460, rotation = 0, url, label, labelMeta, pos, compact = false, id, dataLabel } = Astro.props;
 
 const style = [
   'position:absolute',
@@ -19,7 +21,7 @@ const style = [
 ].filter(Boolean).join(';');
 ---
 
-<div class="printout" style={style}>
+<div class="printout" style={style} id={id} data-label={dataLabel}>
   <div class="printout-head">
     <div class="printout-dots"><span /><span /><span /></div>
     {url && <div class="printout-url">{url}</div>}

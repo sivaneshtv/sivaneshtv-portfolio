@@ -9,6 +9,8 @@ interface Props {
   compact?: boolean;
   class?: string;
   style?: string;
+  id?: string;
+  dataLabel?: string;
 }
 
 const {
@@ -21,6 +23,8 @@ const {
   compact = false,
   class: className,
   style: extraStyle,
+  id,
+  dataLabel,
 } = Astro.props;
 
 const parts = [
@@ -32,7 +36,7 @@ const parts = [
 ].filter(Boolean).join(';');
 ---
 
-<div class:list={['sticky', variant, className]} style={parts}>
+<div class:list={['sticky', variant, className]} style={parts} id={id} data-label={dataLabel}>
   {eyebrow && (
     <div class="sticky-eyebrow" style={eyebrowColor ? `color:${eyebrowColor}` : ''}>{eyebrow}</div>
   )}

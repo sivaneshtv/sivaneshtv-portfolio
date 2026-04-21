@@ -139,7 +139,7 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     mode: 'case',
   });
 
-  (window as any).__canvas = engine;
+  (window as any).__canvasEngine = engine;
 
   document.getElementById('btnZoomIn')?.addEventListener('click', () => engine.zoomIn());
   document.getElementById('btnZoomOut')?.addEventListener('click', () => engine.zoomOut());

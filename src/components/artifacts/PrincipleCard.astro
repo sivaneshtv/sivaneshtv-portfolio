@@ -7,9 +7,11 @@ interface Props {
   width?: number;
   rotation?: number;
   pos?: { x: number; y: number };
+  id?: string;
+  dataLabel?: string;
 }
 
-const { label, title, body, attr, width = 380, rotation = 0, pos } = Astro.props;
+const { label, title, body, attr, width = 380, rotation = 0, pos, id, dataLabel } = Astro.props;
 
 const style = [
   'position:absolute',
@@ -19,7 +21,7 @@ const style = [
 ].filter(Boolean).join(';');
 ---
 
-<div class="principle" style={style}>
+<div class="principle" style={style} id={id} data-label={dataLabel}>
   <div class="principle-lbl">{label}</div>
   <div class="principle-title" set:html={title} />
   {body && <div class="principle-body" set:html={body} />}

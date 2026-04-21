@@ -6,9 +6,11 @@ interface Props {
   pos?: { x: number; y: number };
   compact?: boolean;
   style?: string;
+  id?: string;
+  dataLabel?: string;
 }
 
-const { size = 'md', variant = 'red', rotation = 0, pos, compact = false, style: extraStyle } = Astro.props;
+const { size = 'md', variant = 'red', rotation = 0, pos, compact = false, style: extraStyle, id, dataLabel } = Astro.props;
 
 const style = [
   'position:absolute',
@@ -18,7 +20,7 @@ const style = [
 ].filter(Boolean).join(';');
 ---
 
-<div class:list={['marker', size, variant]} style={style}>
+<div class:list={['marker', size, variant]} style={style} id={id} data-label={dataLabel}>
   <slot />
 </div>
 

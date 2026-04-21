@@ -6,9 +6,11 @@ interface Props {
   width?: number;
   rotation?: number;
   pos?: { x: number; y: number };
+  id?: string;
+  dataLabel?: string;
 }
 
-const { label, title, body, width = 380, rotation = 0, pos } = Astro.props;
+const { label, title, body, width = 380, rotation = 0, pos, id, dataLabel } = Astro.props;
 
 const style = [
   'position:absolute',
@@ -18,7 +20,7 @@ const style = [
 ].filter(Boolean).join(';');
 ---
 
-<div class="context-card" style={style}>
+<div class="context-card" style={style} id={id} data-label={dataLabel}>
   <div class="context-lbl">{label}</div>
   <div class="context-title" set:html={title} />
   {body && <div class="context-body" set:html={body} />}

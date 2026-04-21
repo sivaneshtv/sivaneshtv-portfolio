@@ -5,9 +5,11 @@ interface Props {
   width?: number;
   rotation?: number;
   pos?: { x: number; y: number };
+  id?: string;
+  dataLabel?: string;
 }
 
-const { title, sub, width, rotation = 0, pos } = Astro.props;
+const { title, sub, width, rotation = 0, pos, id, dataLabel } = Astro.props;
 
 const style = [
   'position:absolute',
@@ -17,7 +19,7 @@ const style = [
 ].filter(Boolean).join(';');
 ---
 
-<div class="diagram" style={style}>
+<div class="diagram" style={style} id={id} data-label={dataLabel}>
   <div class="diagram-title" set:html={title} />
   {sub && <div class="diagram-sub">{sub}</div>}
   <slot />

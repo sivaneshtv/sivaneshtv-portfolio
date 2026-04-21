@@ -6,9 +6,11 @@ interface Props {
   width?: number;
   rotation?: number;
   pos?: { x: number; y: number };
+  id?: string;
+  dataLabel?: string;
 }
 
-const { meta, title, body, width = 320, rotation = 0, pos } = Astro.props;
+const { meta, title, body, width = 320, rotation = 0, pos, id, dataLabel } = Astro.props;
 
 const style = [
   'position:absolute',
@@ -18,7 +20,7 @@ const style = [
 ].filter(Boolean).join(';');
 ---
 
-<div class="cut" style={style}>
+<div class="cut" style={style} id={id} data-label={dataLabel}>
   <div class="cut-hd">
     <div class="cut-stamp">Cut</div>
     <div class="cut-meta">{meta}</div>
