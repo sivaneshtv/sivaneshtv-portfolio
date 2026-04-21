@@ -77,12 +77,16 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   .back-ic{display:inline-flex;align-items:center;justify-content:center;width:14px;color:var(--ink-2);transition:transform .2s,color .2s}
   .tb-logo:hover .back-ic{transform:translateX(-2px);color:var(--red)}
   .tb-contact{
+    display:flex;align-items:center;
     font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     color:#fff;background:var(--red);
-    padding:8px 14px;text-decoration:none;
-    transition:background .2s;
+    border:1px solid var(--red);
+    padding:8px 12px;text-decoration:none;
+    box-shadow:0 4px 14px rgba(40,35,25,.08);
+    height:39px;box-sizing:border-box;
+    transition:background .2s,border-color .2s;
   }
-  .tb-contact:hover{background:#b82b22}
+  .tb-contact:hover{background:#b82b22;border-color:#b82b22}
   .toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:2px;background:rgba(232,228,219,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(40,35,25,.12);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08)}
   .tb-divider{width:1px;height:22px;background:rgba(40,35,25,.15);margin:0 4px;flex-shrink:0}
   .tb-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);transition:background .2s,color .2s;border-radius:2px}
