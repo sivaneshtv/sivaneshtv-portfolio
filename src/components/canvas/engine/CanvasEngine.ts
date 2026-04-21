@@ -80,7 +80,7 @@ export class CanvasEngine {
   private readerLeft = 1960;
   private readingScale = 0.55;
   private firstPanHintShown = false;
-  private jumpToastTimer = 0;
+  private preJumpState: { tx: number; ty: number; scale: number; readingMode: boolean } | null = null;
 
   constructor(config: CanvasEngineConfig) {
     this.canvas = config.canvasEl;
@@ -161,6 +161,25 @@ export class CanvasEngine {
       this.tx = startTX + (endTX - startTX) * e;
       this.ty = startTY + (endTY - startTY) * e;
       this.scale = startScale + (targetScale - startScale) * e;
+      this.apply();
+      if (t < 1) this.flightAnim = requestAnimationFrame(step);
+      else this.flightAnim = null;
+    };
+    this.flightAnim = requestAnimationFrame(step);
+  }
+
+  // flyToRaw — animates to literal tx/ty/scale (no centering math)
+  private flyToRaw(endTX: number, endTY: number, endScale: number, duration = 600): void {
+    if (this.flightAnim) cancelAnimationFrame(this.flightAnim);
+    this.decelerating = false;
+    const startTX = this.tx; const startTY = this.ty; const startScale = this.scale;
+    const t0 = performance.now();
+    const step = (now: number) => {
+      const t = Math.min((now - t0) / duration, 1);
+      const e = easeInOutCubic(t);
+      this.tx = startTX + (endTX - startTX) * e;
+      this.ty = startTY + (endTY - startTY) * e;
+      this.scale = startScale + (endScale - startScale) * e;
       this.apply();
       if (t < 1) this.flightAnim = requestAnimationFrame(step);
       else this.flightAnim = null;
@@ -316,19 +335,26 @@ export class CanvasEngine {
     this.firstPanHintShown = true;
     const hint = document.querySelector<HTMLElement>('.reading-hint');
     if (hint) {
-      this.hideJumpToast();
       hint.classList.add('on');
       setTimeout(() => hint.classList.remove('on'), 4000);
     }
   }
 
-  // MARGIN-REF-SPEC — jumpToArtifact
+  // MARGIN-REF-SPEC — jumpToArtifact (with preJumpState snapshot)
   jumpToArtifact(slug: string): void {
     const el = document.getElementById(`obj-${slug}`);
     if (!el) {
       console.warn(`[canvas] no artifact found with id="obj-${slug}"`);
       return;
     }
+
+    // Snapshot current camera state BEFORE jumping
+    this.preJumpState = {
+      tx: this.tx,
+      ty: this.ty,
+      scale: this.scale,
+      readingMode: this.readingMode,
+    };
 
     // Exit reading mode so user sees the canvas
     this.readingMode = false;
@@ -351,30 +377,39 @@ export class CanvasEngine {
     el.classList.add('artifact-pulse');
     setTimeout(() => el.classList.remove('artifact-pulse'), 1400);
 
-    // Show jump toast (hide reading-hint if showing)
+    // Show return pill
     const label = el.dataset.label || slug;
-    this.showJumpToast(`Viewing: ${label} · press R to return to reading`);
+    this.showReturnPill(label);
   }
 
-  private showJumpToast(text: string): void {
-    // Hide reading-hint if active
-    const readingHint = document.querySelector<HTMLElement>('.reading-hint');
-    if (readingHint) readingHint.classList.remove('on');
+  // Restore camera to pre-jump position
+  restoreFromJump(): void {
+    if (!this.preJumpState) return;
+    const snapshot = this.preJumpState;
+    this.preJumpState = null;
 
-    const toast = document.querySelector<HTMLElement>('.jump-toast');
-    if (!toast) return;
-    toast.textContent = text;
-    toast.classList.add('on');
+    this.readingMode = snapshot.readingMode;
 
-    // Auto-hide after 5s if user doesn't press R
-    clearTimeout(this.jumpToastTimer);
-    this.jumpToastTimer = window.setTimeout(() => this.hideJumpToast(), 5000);
+    // Fly back to exact prior camera position
+    this.flyToRaw(snapshot.tx, snapshot.ty, snapshot.scale, 600);
   }
 
-  private hideJumpToast(): void {
-    const toast = document.querySelector<HTMLElement>('.jump-toast');
-    if (toast) toast.classList.remove('on');
-    clearTimeout(this.jumpToastTimer);
+  private returnPillTimer = 0;
+
+  private showReturnPill(label: string): void {
+    const pill = document.getElementById('returnPill');
+    const labelEl = document.getElementById('returnPillArtifact');
+    if (!pill || !labelEl) return;
+    labelEl.textContent = label;
+    pill.classList.add('on');
+    clearTimeout(this.returnPillTimer);
+    this.returnPillTimer = window.setTimeout(() => this.hideReturnPill(), 4500);
+  }
+
+  hideReturnPill(): void {
+    const pill = document.getElementById('returnPill');
+    if (pill) pill.classList.remove('on');
+    clearTimeout(this.returnPillTimer);
   }
 
   // §3.5 — Inertia
@@ -485,6 +520,7 @@ export class CanvasEngine {
         this.computeReaderLayout();
         this.refreshZoneTargets();
       }
+      this.preJumpState = null;
       this.apply();
       this.buildMinimap();
       this.updateMinimap();
@@ -594,8 +630,12 @@ export class CanvasEngine {
         case 'ArrowDown': this.ty -= 80; this.apply(); e.preventDefault(); break;
         case 'r': case 'R':
           if (this.mode === 'case') {
-            this.hideJumpToast();
-            this.setReadingMode(true);
+            if (this.preJumpState) {
+              this.restoreFromJump();
+              this.hideReturnPill();
+            } else {
+              this.setReadingMode(true);
+            }
             e.preventDefault();
           }
           break;
