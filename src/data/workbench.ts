@@ -5,18 +5,18 @@
 
 export const zones = {
   hello:   { cx: 2550, cy: 1900, scale: 0.60 },
-  about:   { cx: 1200, cy: 2100, scale: 0.55 },
+  about:   { cx: 900, cy: 2100, scale: 0.65 },
   work:    { cx: 4100, cy: 2200, scale: 0.55 },
-  howwork: { cx: 2050, cy: 3400, scale: 0.60 },
-  contact: { cx: 4300, cy: 3620, scale: 0.65 },
+  howwork: { cx: 1700, cy: 3450, scale: 0.55 },
+  contact: { cx: 4200, cy: 3620, scale: 0.65 },
 } as const;
 
 export const zoneBounds = {
   hello:   { x1: 1800, y1: 1400, x2: 3200, y2: 2100 },
-  about:   { x1:  750, y1: 1500, x2: 1700, y2: 2700 },
+  about:   { x1:  450, y1: 1500, x2: 1400, y2: 2700 },
   work:    { x1: 3400, y1: 1600, x2: 4800, y2: 2900 },
-  howwork: { x1: 1100, y1: 3000, x2: 3300, y2: 3800 },
-  contact: { x1: 3600, y1: 3200, x2: 4800, y2: 3850 },
+  howwork: { x1: 1100, y1: 3000, x2: 2400, y2: 4000 },
+  contact: { x1: 3500, y1: 3200, x2: 4700, y2: 3850 },
 } as const;
 
 export const zoneNav = [
@@ -32,8 +32,8 @@ export const zoneLabels = [
   { x: 2100, y: 1420, size: 72, rotation: -2, html: '— hello —' },
   { x: 3600, y: 1440, size: 120, rotation: -1, html: 'the <em>work</em>' },
   { x: 1200, y: 3000, size: 96, rotation: 1, html: 'how <em>I</em> work' },
-  { x: 3800, y: 3240, size: 96, rotation: -1, html: 'say <em>hi</em>' },
-  { x: 880, y: 1520, size: 96, rotation: -1, html: 'about <em>me</em>' },
+  { x: 3700, y: 3240, size: 96, rotation: -1, html: 'say <em>hi</em>' },
+  { x: 580, y: 1520, size: 96, rotation: -1, html: 'about <em>me</em>' },
 ];
 
 // §7.2 — Masthead (position baked into CSS: left:2100, top:1600, rotate(-1deg))
@@ -53,17 +53,17 @@ export const photo = {
 // §7.5 — About stickies
 export const aboutStickies = {
   whoIAm: {
-    x: 800, y: 1760, rotation: 3, width: 300, variant: 'pink' as const,
+    x: 500, y: 1760, rotation: 3, width: 300, variant: 'pink' as const,
     eyebrow: '— in my own words —',
     body: 'A product designer who cares about <em>structure</em> more than surface. Happiest when the problem is fuzzy, the stakes are real, and the answer is a rule — not a mood board.',
   },
   belief: {
-    x: 1280, y: 1820, rotation: -3, width: 260, variant: 'yellow' as const,
+    x: 980, y: 1820, rotation: -3, width: 260, variant: 'yellow' as const,
     eyebrow: '— what I hold to —',
     body: 'Structure <em>before</em> style. Always. Style is how structure <em>shows itself.</em>',
   },
   music: {
-    x: 1030, y: 2440, rotation: -2, width: 240, variant: 'green' as const,
+    x: 730, y: 2440, rotation: -2, width: 240, variant: 'green' as const,
     eyebrow: '— always on —',
     body: 'Can\'t get through a day without good music. Obsessed.',
   },
@@ -98,12 +98,12 @@ export const howIWork = {
     ],
   },
   toolsSticky: {
-    x: 2200, y: 3230, rotation: -2, width: 240, variant: 'blue' as const,
+    x: 1200, y: 3600, rotation: 2, width: 240, variant: 'blue' as const,
     eyebrow: '— tools, apr \'26 —',
     body: 'Figma · <em>Claude</em> · Lovable · Cursor · iA Writer · MacBook Pro M3.',
   },
   whatIBring: {
-    x: 2520, y: 3190, rotation: 2.5, width: 260, variant: 'pink' as const,
+    x: 1730, y: 3620, rotation: -2.5, width: 260, variant: 'pink' as const,
     eyebrow: '— what I bring to a team —',
   },
 };
@@ -126,7 +126,7 @@ export const workZone = {
       caption: 'Fleet <em>View</em>', meta: '2024–25 · Fleet Operations',
     },
     {
-      x: 3600, y: 2250, rotation: 2, href: '/asset',
+      x: 3490, y: 2200, rotation: 2, href: '/asset',
       caption: 'Asset <em>Management</em>', meta: '2025 · Infrastructure-first module',
     },
   ],
@@ -135,7 +135,7 @@ export const workZone = {
 // §7.8 — Contact zone (email/socials from DECISIONS.md)
 export const contactZone = {
   card: {
-    x: 3900, y: 3420,
+    x: 3800, y: 3420,
     title: 'if this <em>clicked</em> — say hi.',
     body: 'Taking briefs in Q2 \'26. Short contracts, design lead roles, advisory, pair-thinking sessions. Drop a line — I read everything.',
     email: 'hello@sivanesh.tv',
@@ -147,7 +147,7 @@ export const contactZone = {
     ],
   },
   availSticky: {
-    x: 4480, y: 3520, rotation: -3, width: 220,
+    x: 4380, y: 3520, rotation: -3, width: 220,
     eyebrow: '— availability —',
     body: 'Open to <em>Q2 \'26</em> briefs. Pune-based, work across IST hours.',
   },

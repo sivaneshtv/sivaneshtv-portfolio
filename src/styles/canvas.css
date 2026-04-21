@@ -168,7 +168,7 @@
 [data-theme="dark"] .tb-status .sep{color:rgba(255,255,255,.2)}
 
 /* Masthead highlight */
-[data-theme="dark"] .mh-sub em{background:rgba(200,160,48,.2)}
+[data-theme="dark"] .mh-sub em{background:rgba(200,160,48,.45) !important}
 
 /* Contact button in case topbar */
 [data-theme="dark"] .tb-contact{background:var(--red);border-color:#b82b22}
