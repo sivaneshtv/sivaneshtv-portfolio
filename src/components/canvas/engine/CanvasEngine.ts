@@ -403,7 +403,7 @@ export class CanvasEngine {
     labelEl.textContent = label;
     pill.classList.add('on');
     clearTimeout(this.returnPillTimer);
-    this.returnPillTimer = window.setTimeout(() => this.hideReturnPill(), 4500);
+    this.returnPillTimer = window.setTimeout(() => this.hideReturnPill(), 10000);
   }
 
   hideReturnPill(): void {
