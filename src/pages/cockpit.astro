@@ -15,25 +15,9 @@ import Hr from '../components/reader/Hr.astro';
 import Outcome from '../components/reader/Outcome.astro';
 import EndRow from '../components/reader/EndRow.astro';
 import ImgSlot from '../components/reader/ImgSlot.astro';
-import OpeningTransition from '../components/canvas/OpeningTransition.astro';
 ---
 
 <CaseLayout title="Cockpit View 2.0 — Sivanesh TV" caseNum="01" caseName="Cockpit View 2.0">
-  <Fragment slot="opening">
-    <OpeningTransition caption='Cockpit View <em>2.0</em>'>
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" width="80%">
-        <g stroke="#d8352a" stroke-width="1" fill="none" opacity=".8">
-          <circle cx="200" cy="150" r="100"/>
-          <circle cx="200" cy="150" r="70" stroke-dasharray="2 4"/>
-          <circle cx="200" cy="150" r="40"/>
-          <line x1="200" y1="50" x2="200" y2="250"/>
-          <line x1="100" y1="150" x2="300" y2="150"/>
-        </g>
-        <circle cx="200" cy="150" r="6" fill="#d8352a"/>
-      </svg>
-    </OpeningTransition>
-  </Fragment>
-
   <Fragment slot="reader">
     <ReaderColumn>
       <Hero

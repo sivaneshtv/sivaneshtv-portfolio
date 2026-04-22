@@ -202,22 +202,6 @@ export class CanvasEngine {
     }
   }
 
-  // Instant zone jump — no animation, sets position directly
-  goToZoneInstant(name: string): void {
-    const z = this.zones[name]; if (!z) return;
-    let targetScale = z.scale;
-    if (this.mode === 'workbench') {
-      const vw = innerWidth;
-      if (vw <= 520) targetScale = z.scale * 0.55;
-      else if (vw <= 820) targetScale = z.scale * 0.72;
-      else if (vw <= 1100) targetScale = z.scale * 0.88;
-    }
-    this.scale = targetScale;
-    this.tx = -z.cx * targetScale;
-    this.ty = -z.cy * targetScale;
-    this.apply();
-  }
-
   // §3.13 — Reset (workbench)
   private resetView(): void {
     const vw = innerWidth;
@@ -524,11 +508,11 @@ export class CanvasEngine {
         }, 1600);
       }
     } else {
-      // §3.20 — Case boot (instant — no animation, opening overlay covers)
+      // §3.20 — Case boot
       this.computeReaderLayout();
       this.refreshZoneTargets();
       this.buildMinimap();
-      this.goToZoneInstant('top');
+      this.goToZone('top');
     }
 
     window.addEventListener('resize', () => {
