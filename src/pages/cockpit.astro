@@ -33,11 +33,9 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         { k: 'Tools', v: 'Figma · Framer · Claude Code' },
       ]} />
 
-      <ImgSlot variant="hero"
-        label="Image slot 01 · Hero shot"
-        title="Full Cockpit View 2.0 interface"
-        desc='A clean screenshot of the live UI — map, video feed, mission panel, system controls all visible. The "this is what it is" moment.'
-        dims="16 : 10 · ideally 2400 × 1500 px"
+      <ImgSlot variant="wide"
+        src="/assets/cockpit/cockpit-hero.png"
+        alt="Cockpit View 2.0 — in-flight interface showing map, video feed, mission panel, and system controls"
         cap="Cockpit View 2.0 — in-flight, live telemetry"
         capMeta="the interface"
       />
@@ -65,10 +63,8 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <MarginRef jump="alerts">↗ see the alert-system redesign</MarginRef>
 
         <ImgSlot variant="wide"
-          label="Image slot 02 · Evidence"
-          title="v1 interface, annotated"
-          desc="A screenshot of the old Cockpit (v1) with arrows/sticky annotations showing what operators were compensating for. Red pen marks where panels collapsed or alerts got buried. Or: a photo of an actual operator setup with multiple tabs."
-          dims="16 : 9 · ideally 2200 × 1240 px"
+          src="/assets/cockpit/cockpit-v1.png"
+          alt="Cockpit v1 interface — the version operators were working around"
           cap={'v1 — the "it works" version operators were working around'}
           capMeta="before"
         />
@@ -88,10 +84,8 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <MarginRef jump="ia-diagram">↗ see the IA diagram</MarginRef>
 
         <ImgSlot variant="wide"
-          label="Image slot 03 · Information architecture"
-          title="The three-bucket sort"
-          desc="A clean IA diagram showing every element of the UI sorted into Monitor / Act / Diagnose. Could be a Figma export, or an annotated screenshot mapping the actual live UI to the three zones."
-          dims="16 : 9 · ideally 2000 × 1125 px"
+          src="/assets/cockpit/cockpit-three-bucket.png"
+          alt="Information architecture — the three-bucket sort: monitor, act, diagnose"
           cap="Information architecture — monitor, act, diagnose"
           capMeta="the rule"
         />
@@ -110,10 +104,8 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <MarginRef jump="alerts">↗ see the alert severity diagram</MarginRef>
 
         <ImgSlot variant="wide"
-          label="Image slot 04 · Alert system"
-          title="Three severities, in context"
-          desc='Screenshot stack showing all three states: (1) Critical takeover overlay, (2) Warning persistent badge, (3) Informational fade. Plus the empty-state "all nominal" green state. Ideally shown within the actual Cockpit chrome.'
-          dims="16 : 9 · ideally 2000 × 1125 px"
+          src="/assets/cockpit/cockpit-alerts.png"
+          alt="Alert grammar — three severities in context: critical, warning, informational, nominal"
           cap="Alert grammar — critical, warning, informational, nominal"
           capMeta="the system"
         />
@@ -131,10 +123,8 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         </Body>
 
         <ImgSlot variant="square"
-          label="Image slot 05 · Feedback micro-states"
-          title="Three questions, three indicators"
-          desc="Close-up zooms of the three indicators — network glyph states (red / amber / green), the command-confirm micro-interaction at the action point, and the map/telemetry sync state. Ideally a single composed image showing all three."
-          dims="4 : 3 · ideally 1600 × 1200 px"
+          src="/assets/cockpit/cockpit-feedback.png"
+          alt="Feedback architecture — three questions, three indicators"
           cap="Feedback architecture — one question per system"
           capMeta="the grammar"
         />

@@ -529,6 +529,21 @@ export class CanvasEngine {
       this.refreshZoneTargets();
       this.buildMinimap();
       this.goToZoneInstant('top');
+
+      // Re-measure after images load (they change reader height)
+      window.addEventListener('load', () => {
+        this.refreshZoneTargets();
+        this.buildMinimap();
+      });
+      // Also watch individual images inside the reader
+      document.querySelectorAll('#reader img').forEach((img) => {
+        if (!(img as HTMLImageElement).complete) {
+          img.addEventListener('load', () => {
+            this.refreshZoneTargets();
+            this.buildMinimap();
+          }, { once: true });
+        }
+      });
     }
 
     window.addEventListener('resize', () => {
