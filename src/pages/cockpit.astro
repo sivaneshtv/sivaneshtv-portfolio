@@ -29,7 +29,7 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
 
       <MetaRow items={[
         { k: 'Role', v: 'Lead · with Prathamesh' },
-        { k: 'Year', v: '2024' },
+        { k: 'Year', v: '2026' },
         { k: 'Scope', v: 'End-to-end UX · Design system' },
         { k: 'Tools', v: 'Figma · Framer · Claude Code' },
       ]} />
@@ -45,10 +45,12 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
       <Section>
         <SectionLabel text="Context" num="§ 01" />
         <H2>Cockpit View is the <em>primary interface</em> operators live in all day.</H2>
-        <Lead>It runs entirely in a browser — no native app, no dedicated hardware — and it has to perform like both a map and a command centre simultaneously. When we inherited the design, it worked. But "working" and "trustworthy" aren't the same thing at this scale.</Lead>
+        <Lead>It runs in a browser — no native app, no dedicated hardware — and it has to perform like both a map and a command centre at once.</Lead>
         <Body>
-          <p>Professional drone operators use Cockpit View to control autonomous flights, monitor live video, manage missions, and respond to in-flight events. Every shift is hours long. Every alert matters. Every moment of ambiguity in the interface translates into cognitive load the operator can't afford.</p>
-          <p>The v1 interface was built for a single drone. By the time I joined, operators were running multiple sites, responding to alerts from integrations fired at any hour, and beginning to prepare for regulatory one-to-many waivers. The interface hadn't caught up.</p>
+          <p>Professional drone operators use Cockpit View to control autonomous flights, monitor live video, manage missions, and respond to in-flight events. Shifts are long. Attention is finite. Every ambiguous moment in the interface translates directly into cognitive load the operator can't afford.</p>
+          <p>The v1 interface had grown by accretion. Every new capability arrived as another panel, another toggle, another overlay — stacked onto a canvas originally built for far fewer concerns than it now carried. Alerts, toast messages, banner strips, video overlays, integration triggers, system status — they'd all ended up sharing the same corners. Nothing had a designated home; things lived wherever someone had first put them.</p>
+          <p>Operators had adapted. They knew where things were because they'd memorised the layout — not because the layout communicated it. The interface had lost its mental model. And every new feature we tried to add made that problem worse.</p>
+          <p>The Cockpit didn't need a polish pass. It needed a rewire.</p>
         </Body>
       </Section>
 
@@ -57,11 +59,10 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         <SectionLabel text="The problem" num="§ 02" />
         <PullQuote>The interface was working. The <em>operators</em> were doing the work it should have been doing.</PullQuote>
         <Body>
-          <p>When we sat in on CS calls and read the transcripts, a pattern emerged. Operators were compensating — memorising which panel held which control, ignoring alerts they'd learned to filter out, opening multiple browser tabs to "see everything at once." The interface wasn't broken. It was offloading its work onto the person using it.</p>
+          <p>Sitting in on CS calls and reading transcripts, a pattern emerged. Operators were compensating — memorising which panel held which control, ignoring notifications they'd learned to filter out, opening multiple browser tabs to see everything at once. The interface wasn't broken. It was offloading its work onto the person using it.</p>
           <p>The hard part wasn't identifying this. The hard part was <strong>deciding what to change first</strong> when the answer was <em>everything is coupled to everything</em>.</p>
         </Body>
-        <Callout><p>Information architecture is the spine. Before we could fix any screen, we had to decide where everything should <em>live</em>, and why. That became the first of four structural rewrites.</p></Callout>
-        <MarginRef jump="alerts">↗ see the alert-system redesign</MarginRef>
+        <Callout><p>Before we could fix any screen, we had to decide which kind of signal lives where — and why. That became the spine of four structural rewrites.</p></Callout>
 
         <ImgSlot variant="wide"
           src="/assets/cockpit/cockpit-v1.png"
@@ -73,22 +74,27 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
 
       <Hr />
 
-      <!-- § 03 Step one (IA) -->
+      <!-- § 03 Step one — Five-mechanism communication framework -->
       <Section>
         <SectionLabel text="Step one" num="§ 03" />
-        <H2>Before designing anything, decide where everything <em>lives</em> — and why.</H2>
-        <Lead>The first structural decision wasn't visual. It was categorical.</Lead>
+        <H2>Every signal gets one mechanism. <em>No exceptions.</em></H2>
+        <Lead>The first structural decision wasn't visual — it was categorical. A grammar for how the Cockpit communicates with the operator.</Lead>
         <Body>
-          <p>We mapped every piece of information, every action, every state across the old interface — then sorted them into three buckets based on a simple test: does the operator need this to <em>monitor</em>, to <em>act</em>, or to <em>diagnose</em>? Everything got one bucket. No exceptions.</p>
-          <p>That single rule eliminated the question of where to put things. Monitoring information (live video, telemetry, map state) became the always-visible surface. Action controls (mission dispatch, manual override, emergency stop) became the ever-ready toolbar. Diagnostic data (logs, history, settings) moved to on-demand panels. The operator now knew where to look without thinking — which is exactly what matters when there's no time to think.</p>
+          <p>We defined five delivery mechanisms. Each one anchored to a specific place on screen. Each one answering a specific kind of question. The operator learns once: <em>where a signal lives tells them what kind of thing it is.</em></p>
+          <p><strong>Alerts — top bar.</strong> Something's wrong with the drone, dock, environment, or system. Organized by category, auto-expanding for high severity, persistent until the condition clears.</p>
+          <p><strong>Toasts — viewport corner.</strong> Feedback about actions the operator just took. Success, failure, progress. Transient by design — they fade, but nothing's lost.</p>
+          <p><strong>Banners — full-width strip, below the top bar.</strong> A platform or subscription limit is affecting what's possible right now. Not urgent, but the operator needs to know before they hit the wall.</p>
+          <p><strong>Contextual indicators — in the video or map feed.</strong> Something in what the operator is already looking at needs their attention. An AI detection, a geofence edge, an object flagged for review.</p>
+          <p><strong>Alarms — right panel.</strong> An external integration has triggered. Intrusion systems, weather services, third-party dispatch tools routed through Flinks.</p>
+          <p>When a new feature arrives, the question isn't "where should this go?" — it's "which mechanism is this?" The answer is always decidable from the signal's nature. Five homes, no overlaps, no orphans.</p>
         </Body>
-        <MarginRef jump="ia-diagram">↗ see the IA diagram</MarginRef>
+        <MarginRef jump="panel-hierarchy">↗ see the communication framework</MarginRef>
 
         <ImgSlot variant="wide"
           src="/assets/cockpit/cockpit-three-bucket.png"
-          alt="Information architecture — the three-bucket sort: monitor, act, diagnose"
-          cap="Information architecture — monitor, act, diagnose"
-          capMeta="the rule"
+          alt="Five communication mechanisms, each anchored to a specific place on screen"
+          cap="Where signal lives tells you what it is"
+          capMeta="the grammar"
         />
       </Section>
 
@@ -96,18 +102,19 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
       <Section>
         <SectionLabel text="Step two" num="§ 04" />
         <H2>If the alerts panel is empty, <em>that</em> should feel like good news.</H2>
-        <Lead>v1 buried alerts. Low-priority warnings, critical emergencies, informational nudges — all stacked in the same list. Operators had learned to ignore them.</Lead>
+        <Lead>v1 buried alerts. Critical emergencies, low-priority warnings, informational nudges — all stacked in the same list. Operators had learned to ignore them.</Lead>
         <Body>
-          <p>We rebuilt the alert system with three levels — <strong>critical, warning, informational</strong> — each with a distinct visual grammar, a distinct sound, and a distinct action model. Critical alerts take over the interface until acknowledged. Warnings persist until resolved. Informational alerts fade after a beat.</p>
-          <p>More importantly: the alert panel now tells you when it's empty. A quiet green state, explicit and visible. An empty panel should feel like a <em>status</em>, not an absence.</p>
+          <p>v2 organizes alerts along two axes. Four categories — <strong>Airspace, Diagnostic, Weather, System</strong> — each as its own tab in the top-bar panel. And four severities — <strong>Critical, Warning, Caution, Info</strong> — each with its own colour, weight, and behaviour.</p>
+          <p>Critical and Warning alerts auto-expand the panel and persist until the condition clears. Caution and Info alerts collect quietly, available when the operator chooses to look but never demanding attention they haven't earned. Each severity has a distinct visual grammar so operators recognise "this is a critical airspace alert" from peripheral vision alone.</p>
+          <p>The panel tells you when it's empty with an explicit quiet state. An empty panel should feel like a <em>status</em>, not an absence — otherwise the operator wonders whether the alert system is broken.</p>
         </Body>
         <Callout><p>"If there's nothing to worry about, say so. Don't leave the operator wondering whether the alert system is broken."</p></Callout>
-        <MarginRef jump="alerts">↗ see the alert severity diagram</MarginRef>
+        <MarginRef jump="alerts">↗ see the alert severity grammar</MarginRef>
 
         <ImgSlot variant="wide"
           src="/assets/cockpit/cockpit-alerts.png"
-          alt="Alert grammar — three severities in context: critical, warning, informational, nominal"
-          cap="Alert grammar — critical, warning, informational, nominal"
+          alt="Alert grammar — four categories, four severities, one panel"
+          cap="Four categories, four severities"
           capMeta="the system"
         />
       </Section>
@@ -115,30 +122,38 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
       <!-- § 05 Step three (Feedback) -->
       <Section>
         <SectionLabel text="Step three" num="§ 05" />
-        <H2>One question per system. <em>Three questions</em> total.</H2>
-        <Lead>Every piece of feedback in the interface — every status indicator, every confirmation, every animation — now answers one of three questions, and only one.</Lead>
+        <H2>Feedback has a home. <em>Always the same home.</em></H2>
+        <Lead>Every response the interface gives — every status, every confirmation, every state change — is routed by how long the operator needs it in view.</Lead>
         <Body>
-          <p><strong>Is the connection healthy?</strong> Answered by the always-visible network glyph at the top-right. Red if the drone has lost link. Amber if degraded. Green if nominal.</p>
-          <p><strong>Is the command understood?</strong> Answered by a micro-interaction at the action point. The button dims. A dot pulses. A confirmation appears <em>at the location of the action</em>, not somewhere else on screen.</p>
-          <p><strong>Is the drone doing what I asked?</strong> Answered by the map and telemetry together, updating in sync. If they ever disagree, we show the disagreement explicitly rather than picking a winner.</p>
+          <p><strong>Always present — the Control Panel at the bottom.</strong> Primary telemetry: horizontal speed, vertical speed, wind, CAS, heading. This is the HUD the operator's peripheral vision treats as ambient truth. It never moves, never collapses, never gets replaced by something else. The moment it shifts, hours of built-up flight instinct go with it.</p>
+          <p><strong>Transient — the viewport corner.</strong> Action confirmations surface as toasts. Success fades after a beat. Failure persists until dismissed. Progress stays visible while work is happening. Toasts are designed to disappear — the operator reads them, internalises them, moves on.</p>
+          <p><strong>On-demand — the notification bell in the top bar.</strong> Every toast that fades is logged here, timestamped and searchable. Quick glance or permanent record — the operator gets both, in the right place for each. Nothing is ever lost to the scroll of a busy shift.</p>
         </Body>
 
         <ImgSlot variant="square"
           src="/assets/cockpit/cockpit-feedback.png"
-          alt="Feedback architecture — three questions, three indicators"
-          cap="Feedback architecture — one question per system"
-          capMeta="the grammar"
+          alt="Feedback architecture — three destinations, zero overlap"
+          cap="Transient, ambient, on-demand"
+          capMeta="the routing"
         />
       </Section>
 
       <!-- § 06 Step four (Layout) -->
       <Section>
         <SectionLabel text="Step four" num="§ 06" />
-        <H2>A layout that earns operator trust by <em>never</em> surprising them.</H2>
-        <Lead>The biggest complaint with v1 wasn't what things did — it was that things <em>moved</em>. Panels re-sized depending on what was active. Controls appeared and disappeared. The operator never developed muscle memory.</Lead>
+        <H2>Boring chrome. <em>Flexible body.</em></H2>
+        <Lead>The biggest complaint with v1 wasn't what things did. It was that things <em>moved</em>. Panels resized depending on what was active. Controls appeared and disappeared. The operator never developed muscle memory.</Lead>
         <Body>
-          <p>v2 uses a fixed layout grammar. Four zones: map (left), video feed (right), mission panel (bottom-left), system controls (bottom-right). Nothing ever moves. Zones can expand or collapse for emphasis, but their positions are permanent. The operator's hand knows where to go before their eyes confirm it.</p>
-          <p>This sounds boring. It is boring. Boring is the entire point.</p>
+          <p>v2 freezes the chrome. The top bar stays at top. The Control Panel stays at bottom. The left and right toolbars hold their 36px rails. The safety buttons — RTH, STOP, E.LAND, GTSA — never leave their positions. Three view modes (<strong>Map, Split, Video</strong>) decide what fills the body of the Cockpit, but switching between them never disturbs the chrome around it.</p>
+          <p>That's the trust contract. It sounds boring. It is boring. Boring is the entire point of chrome — the parts of the interface the operator's hand should find without looking.</p>
+        </Body>
+
+        <Callout><p>Inside that frozen frame, we gave operators something v1 never had — real ownership of their workspace.</p></Callout>
+
+        <Body>
+          <p>In Split view, the divider between Map and Video is draggable. Operators pull Map to 30% for video-dominant work, push it to 50% when navigation matters more. The positions can be swapped — but constraints follow the panel type, not the location, so a 15% minimum always means 15% whether Map is on the left or the right.</p>
+          <p>An additional video feed (Dock camera, FPV, auxiliary payload) can appear below the primary video, resizable vertically. Push panels slide in from the right for focused tasks — Drone Settings, Scheduler, Audit Logs — then tuck away again. Robin AI takes its own 20% slice when invited, and disappears when dismissed. The Left Panel's telemetry widgets open and close on demand — Terrain, RTK, Dock telemetry, Zones, Network — so operators see exactly what they want to watch, and nothing else.</p>
+          <p>Every ratio, every panel state, every layout preference persists to local storage. The Cockpit the operator logged in with is the Cockpit they left off with. Different operators run different missions — inspection, patrol, delivery, mapping — and each builds a configuration that matches their workflow. Same chrome, different body. Certainty where it matters. Sovereignty where it helps.</p>
         </Body>
 
         <BeforeAfter
@@ -147,7 +162,7 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
           beforeLabel="v1 · before"
           afterLabel="v2 · after"
           beforeAlt="Cockpit v1 layout — panels jostle, nothing has a home"
-          afterAlt="Cockpit v2 layout — fixed 4-zone grammar"
+          afterAlt="Cockpit v2 layout — fixed chrome + modular body"
           cap="Layout comparison — drag to compare v1 and v2"
           capMeta="before / after"
         />
@@ -161,19 +176,10 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         <SectionLabel text="What happened" num="§ 07" />
         <H2>The receipts.</H2>
 
-        <ImgSlot variant="wide"
-          label="Image slot 07 · Outcome visual"
-          title="In production, in use"
-          desc={"One of: (a) photo of Cockpit 2.0 on a real operator's monitor during a shift, (b) a Loom thumbnail or embedded video of a live demo, (c) a quote from a CS lead or operator, stylised as a pull-quote graphic."}
-          dims="16 : 9 · ideally 2000 × 1125 px"
-          cap="Cockpit View 2.0 — live in enterprise deployments"
-          capMeta="evidence"
-        />
-
         <Outcome items={[
-          { n: 'Live', l: 'Deployed', d: 'Cockpit View 2.0 shipped as the primary interface across FlytBase enterprise deployments.' },
-          { n: '3×', l: 'Fewer support calls', d: "About alert ambiguity and layout confusion, based on CS's tracking over 2024 Q4." },
-          { n: '1→N', l: 'Scaled', d: 'The layout and IA foundations carried over directly into Fleet View — the next case.' },
+          { n: 'Live', l: 'Deployed', d: 'Cockpit View 2.0 shipped as the primary interface across FlytBase enterprise deployments — the surface every operator flies from.' },
+          { n: '5', l: 'Communication mechanisms', d: 'Alerts, Toasts, Banners, Contextual, Alarms. Each owning one signal type, each anchored to one place.' },
+          { n: '52', l: 'Remappable actions', d: 'Full keyboard, joystick, and gamepad binding system — context-aware, configurable per operator.' },
         ]} />
       </Section>
 
@@ -181,9 +187,9 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
       <Section>
         <SectionLabel text="What I took away" num="§ 08" />
         <Body>
-          <p><strong>Structural rewrites need a rule, not a vision.</strong> "Everything has one bucket" survived every design review. A mood board wouldn't have.</p>
+          <p><strong>Structural rewrites need a rule, not a vision.</strong> "Every signal gets one mechanism" survived every design review. A mood board wouldn't have. Rules are stress-testable; visions are negotiable.</p>
           <p><strong>Operators design the interface with you.</strong> Shadowing CS calls and reading transcripts isn't a substitute for user research — it's where most of the real insight came from. The people closest to the user knew the answer; I just had to listen.</p>
-          <p><strong>Boring is a feature.</strong> In critical-ops interfaces, "surprising" is almost always bad. The best thing you can do for the operator is build an interface they can forget about.</p>
+          <p><strong>Boring is a feature.</strong> In critical-ops interfaces, surprising is almost always bad. The best thing you can do for the operator is build chrome they can forget about, and give them sovereignty over the parts that should feel like theirs.</p>
         </Body>
       </Section>
 
@@ -197,35 +203,35 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
     <div class="marker sm black artifact" data-anchor="0" data-anchor-offset="-40" data-side="right" data-gap="40" data-width="180" style="position:absolute;transform:rotate(4deg);font-family:var(--fh);font-weight:700;font-size:18px;line-height:1.1;color:var(--ink)">drag around to<br>explore →</div>
 
     <!-- §02 stickies -->
-    <div class="sticky pink artifact" data-anchor="1" data-anchor-offset="40" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(-4deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#ff8fa3;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+    <div id="obj-operator-quote" data-label="Operator quote — multi-tab workflow" class="sticky pink artifact" data-anchor="1" data-anchor-offset="40" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(-4deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#ff8fa3;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
       <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— operator, multi-monitor setup —</div>
       "I have Cockpit in one tab, alerts in another, video feed pinned separately. <em style="font-style:normal;color:var(--red);font-weight:700">That's my workflow.</em>"
     </div>
 
-    <div class="sticky artifact" data-anchor="1" data-anchor-offset="360" data-side="left" data-gap="60" data-width="260" style="position:absolute;transform:rotate(3deg);width:260px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+    <div id="obj-multi-tool" data-label="What we found — cognitive tax" class="sticky artifact" data-anchor="1" data-anchor-offset="360" data-side="left" data-gap="60" data-width="260" style="position:absolute;transform:rotate(3deg);width:260px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
       <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— what we found —</div>
       Every feature added a panel. Every panel fought for screen space. The operator paid the <em style="font-style:normal;color:var(--red);font-weight:700">cognitive tax.</em>
     </div>
 
     <!-- §03 principle + diagram -->
-    <div class="principle artifact" data-anchor="2" data-anchor-offset="20" data-side="right" data-gap="80" data-width="380" style="position:absolute;transform:rotate(1.5deg);width:380px;padding:32px 32px 28px;background:var(--paper);box-shadow:3px 5px 0 rgba(40,35,25,.06),6px 14px 28px rgba(40,35,25,.2);border:1px solid rgba(40,35,25,.08)">
+    <div id="obj-push-overlay" data-label="Every signal gets one mechanism" class="principle artifact" data-anchor="2" data-anchor-offset="20" data-side="right" data-gap="80" data-width="380" style="position:absolute;transform:rotate(1.5deg);width:380px;padding:32px 32px 28px;background:var(--paper);box-shadow:3px 5px 0 rgba(40,35,25,.06),6px 14px 28px rgba(40,35,25,.2);border:1px solid rgba(40,35,25,.08)">
       <div style="position:absolute;top:-12px;right:10%;width:90px;height:22px;background:var(--tape);opacity:.85;transform:rotate(3deg);box-shadow:0 2px 6px rgba(40,35,25,.1)"></div>
-      <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:14px;display:flex;align-items:center;gap:8px"><span>◆</span>the interaction rule every tool obeys</div>
-      <div style="font-family:var(--fs);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin-bottom:10px"><em style="font-style:italic;color:var(--red)">Push</em> or <em style="font-style:italic;color:var(--red)">Overlay.</em> Every tool picks one.</div>
-      <div style="font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--ink-2);margin-bottom:14px">Tools that need ambient awareness (Mission, GTL, AI-R Detections) <em style="font-style:italic;color:var(--ink)">push</em> the body — they squeeze other components and share the space. Tools that need momentary focus (Options, Scheduler, Team Chat) <em style="font-style:italic;color:var(--ink)">overlay</em> — they sit on top briefly and dismiss.</div>
-      <div style="font-family:var(--fh);font-weight:600;font-size:17px;color:var(--ink-3);padding-top:12px;border-top:1px dashed rgba(40,35,25,.18)">— the IA of a complex cockpit</div>
+      <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:14px;display:flex;align-items:center;gap:8px"><span>◆</span>the rule every feature obeys</div>
+      <div style="font-family:var(--fs);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin-bottom:10px">Every signal gets <em style="font-style:italic;color:var(--red)">one</em> mechanism. <em style="font-style:italic;color:var(--red)">No exceptions.</em></div>
+      <div style="font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--ink-2);margin-bottom:14px">Five mechanisms. Five places. Each one owns a specific kind of question the Cockpit can answer. When a new feature arrives, we don't ask <em style="font-style:italic;color:var(--ink)">"where should this go?"</em> — we ask <em style="font-style:italic;color:var(--ink)">which mechanism is this?</em></div>
+      <div style="font-family:var(--fh);font-weight:600;font-size:17px;color:var(--ink-3);padding-top:12px;border-top:1px dashed rgba(40,35,25,.18)">— the grammar that replaced the guesswork</div>
     </div>
 
-    <!-- §03 panel hierarchy diagram -->
-    <div id="obj-ia-diagram" data-label="The Cockpit layout" class="diagram artifact" data-anchor="2" data-anchor-offset="480" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(-1deg);padding:24px;background:var(--paper);box-shadow:2px 3px 0 rgba(40,35,25,.04),4px 8px 20px rgba(40,35,25,.18)">
+    <!-- §03 communication framework diagram -->
+    <div id="obj-panel-hierarchy" data-label="Communication framework" class="diagram artifact" data-anchor="2" data-anchor-offset="480" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(-1deg);padding:24px;background:var(--paper);box-shadow:2px 3px 0 rgba(40,35,25,.04),4px 8px 20px rgba(40,35,25,.18)">
       <div style="position:absolute;top:-10px;left:40%;width:60px;height:20px;background:var(--tape);opacity:.85;transform:rotate(-3deg)"></div>
-      <div style="font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ink);margin-bottom:4px">The Cockpit layout</div>
-      <div style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px">— body · left panel · right panel —</div>
-      <svg viewBox="0 0 420 280" width="100%"><rect x="10" y="10" width="400" height="28" fill="none" stroke="#1a1a1c" stroke-width="1"/><text x="210" y="28" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7770" letter-spacing="1">TOP BAR · DEVICE · ALERTS · PROFILE</text><rect x="10" y="48" width="60" height="190" fill="none" stroke="#d8352a" stroke-width="1.2"/><text x="40" y="72" text-anchor="middle" font-family="Caveat" font-size="14" fill="#d8352a" font-weight="700">LEFT</text><g font-family="Inter" font-size="9" fill="#4a4945" text-anchor="middle"><text x="40" y="100">Terrain</text><text x="40" y="115">RTK</text><text x="40" y="130">Dock</text><text x="40" y="145">Network</text><text x="40" y="160">Parachute</text></g><text x="40" y="225" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#7a7770" letter-spacing="1">HIGH-FREQ</text><rect x="80" y="48" width="260" height="190" fill="none" stroke="#1a1a1c" stroke-width="1.5"/><text x="210" y="72" text-anchor="middle" font-family="Caveat" font-size="14" fill="#1a1a1c" font-weight="700">BODY</text><g font-family="Inter" font-size="10" fill="#4a4945" text-anchor="middle"><text x="210" y="115">Map · Video feed</text><text x="210" y="135">Control panel</text><text x="210" y="155">(Dock · FPV · Aux feeds)</text></g><text x="210" y="225" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#7a7770" letter-spacing="1">PRIMARY WORK</text><rect x="350" y="48" width="60" height="190" fill="none" stroke="#d8352a" stroke-width="1.2"/><text x="380" y="72" text-anchor="middle" font-family="Caveat" font-size="14" fill="#d8352a" font-weight="700">RIGHT</text><g font-family="Inter" font-size="9" fill="#4a4945" text-anchor="middle"><text x="380" y="100">Mission</text><text x="380" y="115">GTL</text><text x="380" y="130">POI</text><text x="380" y="145">AI-R</text><text x="380" y="160">Flinks</text></g><text x="380" y="225" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#7a7770" letter-spacing="1">DEEP ACTIONS</text><text x="210" y="268" text-anchor="middle" font-family="Caveat" font-size="13" fill="#d8352a" font-weight="700">each panel has a job. nothing overflows.</text></svg>
+      <div style="font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ink);margin-bottom:4px">The communication framework</div>
+      <div style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px">— five mechanisms · each in its own place —</div>
+      <svg viewBox="0 0 420 280" width="100%"><rect x="10" y="10" width="400" height="260" fill="none" stroke="#1a1a1c" stroke-width="1.2"/><rect x="10" y="10" width="400" height="28" fill="#d8352a" fill-opacity=".1" stroke="#d8352a" stroke-width="1.4"/><text x="210" y="28" text-anchor="middle" font-family="Inter" font-size="10" fill="#1a1a1c" font-weight="700" letter-spacing=".5">ALERTS · top bar</text><rect x="10" y="38" width="400" height="18" fill="#f5c84a" fill-opacity=".18" stroke="#f5c84a" stroke-width="1" stroke-dasharray="3 2"/><text x="210" y="50" text-anchor="middle" font-family="Inter" font-size="9" fill="#1a1a1c" font-weight="600" letter-spacing=".4">BANNERS · platform / subscription</text><rect x="70" y="62" width="280" height="130" fill="none" stroke="#7a7770" stroke-width="1"/><text x="210" y="82" text-anchor="middle" font-family="Caveat" font-size="14" fill="#1a1a1c" font-weight="700">video + map</text><circle cx="130" cy="110" r="4" fill="#4a9d5f"/><circle cx="250" cy="135" r="4" fill="#4a9d5f"/><circle cx="310" cy="170" r="4" fill="#4a9d5f"/><text x="210" y="180" text-anchor="middle" font-family="Inter" font-size="9" fill="#4a9d5f" font-weight="600" letter-spacing=".4">CONTEXTUAL · in the feed</text><rect x="280" y="75" width="65" height="34" fill="#1a1a1c" fill-opacity=".9"/><text x="312" y="89" text-anchor="middle" font-family="Inter" font-size="8" fill="#fdf8ea" font-weight="600">Toast</text><text x="312" y="100" text-anchor="middle" font-family="Inter" font-size="7" fill="#fdf8ea" opacity=".8">action ok</text><rect x="350" y="62" width="60" height="130" fill="#3a7dd0" fill-opacity=".1" stroke="#3a7dd0" stroke-width="1.2"/><text x="380" y="82" text-anchor="middle" font-family="Caveat" font-size="12" fill="#3a7dd0" font-weight="700">ALARMS</text><text x="380" y="125" text-anchor="middle" font-family="Inter" font-size="8" fill="#4a4945">integrations</text><rect x="10" y="62" width="60" height="130" fill="none" stroke="#7a7770" stroke-width=".8" stroke-dasharray="2 2"/><text x="40" y="82" text-anchor="middle" font-family="Caveat" font-size="11" fill="#7a7770" font-weight="700">telemetry</text><rect x="10" y="192" width="400" height="28" fill="none" stroke="#1a1a1c" stroke-width="1" stroke-dasharray="3 2"/><text x="210" y="210" text-anchor="middle" font-family="Inter" font-size="9" fill="#7a7770" letter-spacing=".4">CONTROL PANEL · primary telemetry</text><text x="210" y="248" text-anchor="middle" font-family="Caveat" font-size="15" fill="#1a1a1c" font-weight="700">Five mechanisms. <tspan fill="#d8352a">No overlaps.</tspan></text><text x="210" y="266" text-anchor="middle" font-family="Inter" font-size="9" fill="#4a4945">Where signal lives tells you what it is.</text></svg>
     </div>
 
     <!-- §04 alert diagram -->
-    <div id="obj-alerts" data-label="The Alerts Bar" class="diagram artifact" data-anchor="3" data-anchor-offset="40" data-side="right" data-gap="60" data-width="440" style="position:absolute;width:440px;transform:rotate(-1deg);padding:24px;background:var(--paper);box-shadow:2px 3px 0 rgba(40,35,25,.04),4px 8px 20px rgba(40,35,25,.18)">
+    <div id="obj-alerts" data-label="Alert severity grammar" class="diagram artifact" data-anchor="3" data-anchor-offset="40" data-side="right" data-gap="60" data-width="440" style="position:absolute;width:440px;transform:rotate(-1deg);padding:24px;background:var(--paper);box-shadow:2px 3px 0 rgba(40,35,25,.04),4px 8px 20px rgba(40,35,25,.18)">
       <div style="position:absolute;top:-10px;left:40%;width:60px;height:20px;background:var(--tape);opacity:.85;transform:rotate(-3deg)"></div>
       <div style="font-family:var(--fh);font-weight:700;font-size:22px;color:var(--ink);margin-bottom:4px">The Alerts Bar</div>
       <div style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px">— four categories · one surface · always visible —</div>
@@ -233,26 +239,26 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
     </div>
 
     <!-- §04 restraint sticky -->
-    <div class="sticky artifact" data-anchor="3" data-anchor-offset="180" data-side="left" data-gap="60" data-width="260" style="position:absolute;transform:rotate(3deg);width:260px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+    <div id="obj-alert-restraint" data-label="The quiet empty state" class="sticky artifact" data-anchor="3" data-anchor-offset="180" data-side="left" data-gap="60" data-width="260" style="position:absolute;transform:rotate(3deg);width:260px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
       <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— the restraint —</div>
-      Left panel widgets are <em style="font-style:normal;color:var(--red);font-weight:700">silent</em> until severity demands they speak. No ambient noise.
+      An empty alerts panel shows an <em style="font-style:normal;color:var(--red);font-weight:700">explicit</em> quiet state. Silence has to be stated, or operators wonder whether the system is broken.
     </div>
 
     <!-- §05 Robin AI sticky -->
-    <div class="sticky blue artifact" data-anchor="4" data-anchor-offset="40" data-side="right" data-gap="60" data-width="280" style="position:absolute;transform:rotate(-4deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#a8d0f0;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
-      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— in the top bar —</div>
-      <em style="font-style:normal;color:var(--red);font-weight:700">Robin AI</em> opens as an agent — operators can ask it to explain an alert, summarise a shift, or triage.
+    <div id="obj-robin" data-label="Robin AI — summoned panel" class="sticky blue artifact" data-anchor="4" data-anchor-offset="40" data-side="right" data-gap="60" data-width="280" style="position:absolute;transform:rotate(-4deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#a8d0f0;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— when asked —</div>
+      <em style="font-style:normal;color:var(--red);font-weight:700">Robin AI</em> takes its own 20% slice when invited — explain an alert, summarise a shift, triage a situation. Dismiss, and it vanishes. No ambient presence.
     </div>
 
     <!-- §06 before/after printouts -->
-    <div class="printout artifact" data-anchor="5" data-anchor-offset="180" data-side="left" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(-2deg);padding:12px;background:#fbfaf4;box-shadow:2px 3px 0 rgba(40,35,25,.05),5px 10px 22px rgba(40,35,25,.22)">
+    <div id="obj-before" data-label="v1 — the version operators worked around" class="printout artifact" data-anchor="5" data-anchor-offset="180" data-side="left" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(-2deg);padding:12px;background:#fbfaf4;box-shadow:2px 3px 0 rgba(40,35,25,.05),5px 10px 22px rgba(40,35,25,.22)">
       <div style="position:absolute;top:-12px;left:30%;width:70px;height:24px;background:var(--tape);opacity:.85;transform:rotate(-4deg);box-shadow:0 2px 5px rgba(40,35,25,.12)"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 4px 10px;border-bottom:1px dashed rgba(40,35,25,.15);margin-bottom:10px"><div style="display:flex;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span></div><div style="font-family:var(--fm);font-size:9px;color:var(--ink-3);letter-spacing:.1em">— v1 · before —</div></div>
       <div style="aspect-ratio:16/10;background:var(--board);display:flex;align-items:center;justify-content:center;overflow:hidden"><svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="400" height="250" fill="#2a2a2c"/><g stroke="#666" stroke-width=".5" fill="none"><rect x="10" y="10" width="200" height="130"/><rect x="215" y="10" width="175" height="85"/><rect x="215" y="100" width="175" height="40"/><rect x="10" y="145" width="380" height="95"/></g><g fill="#999" font-family="JetBrains Mono" font-size="7" letter-spacing="1"><text x="20" y="24">MAP (RESIZES)</text><text x="224" y="24">VIDEO</text><text x="224" y="114">CONTROLS</text><text x="20" y="158">ALERTS · LOGS · SCHEDULER · SETTINGS · FLINKS · TEAM · PROFILE...</text></g><text x="200" y="230" text-anchor="middle" font-family="Caveat" font-size="13" fill="#d8352a" font-weight="700">— panels jostle · nothing has a home —</text></svg></div>
       <div style="margin-top:10px;font-family:var(--fh);font-weight:700;font-size:18px;color:var(--ink);display:flex;justify-content:space-between;align-items:baseline"><span>Cockpit <em style="font-style:italic;color:var(--marker-red)">v1</em></span><small style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:normal">— before</small></div>
     </div>
 
-    <div class="printout artifact" data-anchor="5" data-anchor-offset="520" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(2deg);padding:12px;background:#fbfaf4;box-shadow:2px 3px 0 rgba(40,35,25,.05),5px 10px 22px rgba(40,35,25,.22)">
+    <div id="obj-after" data-label="v2 — the chrome that doesn't move" class="printout artifact" data-anchor="5" data-anchor-offset="520" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(2deg);padding:12px;background:#fbfaf4;box-shadow:2px 3px 0 rgba(40,35,25,.05),5px 10px 22px rgba(40,35,25,.22)">
       <div style="position:absolute;top:-12px;left:30%;width:70px;height:24px;background:var(--tape);opacity:.85;transform:rotate(-4deg);box-shadow:0 2px 5px rgba(40,35,25,.12)"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 4px 10px;border-bottom:1px dashed rgba(40,35,25,.15);margin-bottom:10px"><div style="display:flex;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span></div><div style="font-family:var(--fm);font-size:9px;color:var(--ink-3);letter-spacing:.1em">— v2 · after —</div></div>
       <div style="aspect-ratio:16/10;background:var(--board);display:flex;align-items:center;justify-content:center;overflow:hidden"><svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="400" height="250" fill="#1a1a1c"/><rect x="6" y="6" width="388" height="18" fill="none" stroke="#d8352a" stroke-width=".8"/><text x="200" y="18" text-anchor="middle" font-family="JetBrains Mono" font-size="6.5" fill="#d8352a" letter-spacing="1">DOCK · DRONE · ALERTS · ROBIN · PROFILE</text><rect x="6" y="30" width="32" height="214" fill="none" stroke="#d8352a" stroke-width=".8"/><text x="22" y="140" text-anchor="middle" font-family="JetBrains Mono" font-size="6.5" fill="#d8352a" transform="rotate(-90 22 140)" letter-spacing="1">LEFT · HIGH-FREQ DATA</text><rect x="362" y="30" width="32" height="214" fill="none" stroke="#d8352a" stroke-width=".8"/><text x="378" y="140" text-anchor="middle" font-family="JetBrains Mono" font-size="6.5" fill="#d8352a" transform="rotate(90 378 140)" letter-spacing="1">RIGHT · DEEP ACTIONS</text><rect x="42" y="30" width="160" height="160" fill="none" stroke="#d8352a" stroke-width=".8"/><rect x="206" y="30" width="152" height="160" fill="none" stroke="#d8352a" stroke-width=".8"/><rect x="42" y="194" width="316" height="26" fill="none" stroke="#d8352a" stroke-width=".8"/><rect x="42" y="224" width="316" height="20" fill="none" stroke="#d8352a" stroke-width=".8"/><g fill="#d8352a" font-family="JetBrains Mono" font-size="7" letter-spacing="1"><text x="52" y="42">MAP</text><text x="216" y="42">VIDEO</text><text x="52" y="208">CONTROL PANEL (TELEMETRY · LAUNCH · SAFETY)</text><text x="52" y="238">DOCK · FPV · AUX</text></g></svg></div>
@@ -260,30 +266,19 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
     </div>
 
     <!-- §06 layout callout sticky -->
-    <div class="sticky green artifact" data-anchor="5" data-anchor-offset="860" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(-3deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#b5e0b5;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
-      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— what stayed fixed —</div>
-      Zones never swap positions. <em style="font-style:normal;color:var(--red);font-weight:700">Muscle memory</em> is the operator's unpaid co-pilot.
+    <div id="obj-layout-callout" data-label="Fixed chrome, flexible body" class="sticky green artifact" data-anchor="5" data-anchor-offset="860" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(-3deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#b5e0b5;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— what stays fixed —</div>
+      Chrome never moves. Top bar, toolbars, safety buttons — <em style="font-style:normal;color:var(--red);font-weight:700">always</em> in the same place. Inside that frame, the body bends to the operator's job.
     </div>
 
     <!-- §07 receipt sticky -->
-    <div class="sticky blue artifact" data-anchor="6" data-anchor-offset="40" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(3deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#a8d0f0;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+    <div id="obj-receipt" data-label="Shipped as primary" class="sticky blue artifact" data-anchor="6" data-anchor-offset="40" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(3deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#a8d0f0;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
       <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— deployed —</div>
-      Cockpit View 2.0 shipped as the <em style="font-style:normal;color:var(--red);font-weight:700">primary</em> interface. The structural grammar carried into Fleet View.
-    </div>
-
-    <!-- §08 cut card -->
-    <div class="cut artifact" data-anchor="last" data-anchor-offset="40" data-side="left" data-gap="60" data-width="320" style="position:absolute;transform:rotate(-2deg);width:320px;padding:20px;background:var(--paper);box-shadow:2px 3px 0 rgba(40,35,25,.04),4px 8px 18px rgba(40,35,25,.15);border:1px solid rgba(40,35,25,.1)">
-      <div style="position:absolute;top:-8px;left:15%;width:70px;height:18px;background:var(--tape-2);opacity:.8;transform:rotate(-4deg)"></div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px dashed rgba(40,35,25,.15)">
-        <span style="font-family:var(--fs);font-weight:700;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);border:1.5px solid var(--red);padding:4px 8px;transform:rotate(-2deg)">Cut</span>
-        <span style="font-family:var(--fm);font-size:9px;letter-spacing:.1em;color:var(--ink-3);flex:1">— deferred past v2 —</span>
-      </div>
-      <div style="font-family:var(--fs);font-weight:600;font-size:15px;color:var(--ink);margin-bottom:6px">Per-operator custom layouts</div>
-      <div style="font-family:var(--fs);font-size:12px;line-height:1.55;color:var(--ink-2)">Pitched as "let operators move panels." Would have <em style="font-style:italic;color:var(--ink)">destroyed</em> muscle memory across shift handoffs. Revisited as layout-saving <em style="font-style:italic;color:var(--ink)">within</em> the fixed grammar — not free composition.</div>
+      Cockpit View 2.0 shipped as the <em style="font-style:normal;color:var(--red);font-weight:700">primary</em> interface across FlytBase enterprise deployments. Every operator flies from it.
     </div>
 
     <!-- §08 reflection sticky -->
-    <div class="sticky green artifact" data-anchor="last" data-anchor-offset="320" data-side="right" data-gap="60" data-width="300" style="position:absolute;transform:rotate(-3deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#b5e0b5;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+    <div id="obj-reflection" data-label="What I learnt" class="sticky green artifact" data-anchor="last" data-anchor-offset="40" data-side="right" data-gap="60" data-width="300" style="position:absolute;transform:rotate(-3deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#b5e0b5;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
       <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— what I learnt —</div>
       In critical ops, <em style="font-style:normal;color:var(--red);font-weight:700">boring is a feature.</em> Muscle memory lives in layouts that never change.
     </div>
@@ -291,7 +286,7 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
 </CaseLayout>
 
 <style is:global>
-  /* Case-study sticky tape strip (smaller variant from prototype) */
+  /* Case-study sticky tape strip */
   .sticky.artifact::before{
     content:"";position:absolute;top:-8px;left:50%;transform:translateX(-50%) rotate(-3deg);
     width:80px;height:20px;background:var(--tape);opacity:.85;
