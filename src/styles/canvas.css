@@ -172,3 +172,7 @@
 
 /* Contact button in case topbar */
 [data-theme="dark"] .tb-contact{background:var(--red);border-color:#b82b22}
+
+/* Before/after slider */
+[data-theme="dark"] .ba-slider{border-color:rgba(255,255,255,.12) !important}
+[data-theme="dark"] .ba-cap{border-color:rgba(255,255,255,.12) !important;border-top:none !important}

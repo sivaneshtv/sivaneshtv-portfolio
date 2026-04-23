@@ -15,6 +15,7 @@ import Hr from '../components/reader/Hr.astro';
 import Outcome from '../components/reader/Outcome.astro';
 import EndRow from '../components/reader/EndRow.astro';
 import ImgSlot from '../components/reader/ImgSlot.astro';
+import BeforeAfter from '../components/reader/BeforeAfter.astro';
 ---
 
 <CaseLayout title="Cockpit View 2.0 — Sivanesh TV" caseNum="01" caseName="Cockpit View 2.0">
@@ -140,11 +141,15 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
           <p>This sounds boring. It is boring. Boring is the entire point.</p>
         </Body>
 
-        <ImgSlot variant="split"
-          halves={[
-            { label: 'Image slot 06a · Before', title: 'v1 layout', desc: 'Old Cockpit screenshot, showing panels that resize/move.', dims: '~1200 × 900 px' },
-            { label: 'Image slot 06b · After', title: 'v2 layout', desc: 'New Cockpit screenshot, showing fixed 4-zone grammar.', dims: '~1200 × 900 px' },
-          ]}
+        <BeforeAfter
+          before="/assets/cockpit/cockpit-v1-layout.png"
+          after="/assets/cockpit/cockpit-v2-layout.png"
+          beforeLabel="v1 · before"
+          afterLabel="v2 · after"
+          beforeAlt="Cockpit v1 layout — panels jostle, nothing has a home"
+          afterAlt="Cockpit v2 layout — fixed 4-zone grammar"
+          cap="Layout comparison — drag to compare v1 and v2"
+          capMeta="before / after"
         />
         <p style="font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);text-align:center;margin-top:-18px;margin-bottom:24px">— the single most important image in this case —</p>
       </Section>

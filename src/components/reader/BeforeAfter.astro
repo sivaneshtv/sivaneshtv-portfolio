@@ -1,0 +1,189 @@
+---
+interface Props {
+  before: string;
+  after: string;
+  beforeLabel?: string;
+  afterLabel?: string;
+  beforeAlt?: string;
+  afterAlt?: string;
+  cap?: string;
+  capMeta?: string;
+}
+
+const {
+  before, after,
+  beforeLabel = 'Before', afterLabel = 'After',
+  beforeAlt = '', afterAlt = '',
+  cap, capMeta,
+} = Astro.props;
+---
+
+<figure class="ba-wrap">
+  <div class="ba-slider" data-ba-slider>
+    <div class="ba-after">
+      <img src={after} alt={afterAlt} loading="lazy" />
+    </div>
+    <div class="ba-before" data-ba-before>
+      <img src={before} alt={beforeAlt} loading="lazy" />
+    </div>
+    <div class="ba-handle" data-ba-handle>
+      <div class="ba-handle-line"></div>
+      <div class="ba-handle-grip">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M8 4l-4 8 4 8"/><path d="M16 4l4 8-4 8"/>
+        </svg>
+      </div>
+      <div class="ba-handle-line"></div>
+    </div>
+    <div class="ba-label ba-label-before">{beforeLabel}</div>
+    <div class="ba-label ba-label-after">{afterLabel}</div>
+  </div>
+  {(cap || capMeta) && (
+    <div class="ba-cap">
+      <span>{cap}</span>
+      <span>{capMeta}</span>
+    </div>
+  )}
+</figure>
+
+<style>
+  .ba-wrap {
+    margin: 32px 0 36px;
+    width: 100%;
+  }
+
+  .ba-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    cursor: col-resize;
+    user-select: none;
+    -webkit-user-select: none;
+    background: #1a1a1c;
+    border: 1.5px dashed rgba(40, 35, 25, .2);
+  }
+
+  .ba-after {
+    width: 100%;
+  }
+  .ba-after img, .ba-before img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .ba-before {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 50%;
+    overflow: hidden;
+  }
+  .ba-before img {
+    position: absolute;
+    top: 0; left: 0;
+    width: var(--ba-full-width, 200%);
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: left top;
+  }
+
+  /* Handle */
+  .ba-handle {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .ba-handle-line {
+    flex: 1;
+    width: 2px;
+    background: var(--red);
+    opacity: .85;
+  }
+
+  .ba-handle-grip {
+    width: 36px; height: 36px;
+    background: var(--red);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(40, 35, 25, .3);
+    flex-shrink: 0;
+    pointer-events: auto;
+    cursor: col-resize;
+  }
+
+  /* Labels */
+  .ba-label {
+    position: absolute;
+    bottom: 12px;
+    font-family: var(--fm);
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    pointer-events: none;
+  }
+  .ba-label-before {
+    left: 12px;
+    background: rgba(26, 26, 28, .75);
+    color: #f5ede0;
+  }
+  .ba-label-after {
+    right: 12px;
+    background: rgba(232, 228, 219, .85);
+    color: var(--ink);
+  }
+
+  /* Caption — same style as .img-slot-cap in ImgSlot */
+  .ba-cap{
+    padding:7px 12px;background:var(--paper);
+    border:1.5px dashed rgba(40,35,25,.2);border-top:none;
+    font-family:var(--fm);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .ba-cap span:last-child{color:var(--red)}
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-ba-slider]').forEach(slider => {
+    const before = slider.querySelector<HTMLElement>('[data-ba-before]')!;
+    const handle = slider.querySelector<HTMLElement>('[data-ba-handle]')!;
+    let dragging = false;
+
+    function setPosition(x: number) {
+      const rect = slider.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
+      before.style.width = (pct * 100) + '%';
+      handle.style.left = (pct * 100) + '%';
+      before.style.setProperty('--ba-full-width', slider.offsetWidth + 'px');
+    }
+
+    // Initialize — use offsetWidth (CSS layout px, not scaled)
+    requestAnimationFrame(() => {
+      before.style.setProperty('--ba-full-width', slider.offsetWidth + 'px');
+    });
+
+    slider.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      slider.setPointerCapture(e.pointerId);
+      setPosition(e.clientX);
+    });
+    slider.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      setPosition(e.clientX);
+    });
+    slider.addEventListener('pointerup', () => { dragging = false; });
+    slider.addEventListener('pointercancel', () => { dragging = false; });
+  });
+</script>
