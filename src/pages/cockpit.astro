@@ -30,8 +30,8 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
       <MetaRow items={[
         { k: 'Role', v: 'Lead · with Prathamesh' },
         { k: 'Year', v: '2026' },
-        { k: 'Scope', v: 'End-to-end UX · Design system' },
-        { k: 'Tools', v: 'Figma · Framer · Claude Code' },
+        { k: 'Scope', v: 'Product Design · Prototype/Simulations' },
+        { k: 'Tools', v: 'Figma · Claude suite · Docs/Sheets' },
       ]} />
 
       <ImgSlot variant="wide"
@@ -48,8 +48,8 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         <Lead>It runs in a browser — no native app, no dedicated hardware — and it has to perform like both a map and a command centre at once.</Lead>
         <Body>
           <p>Professional drone operators use Cockpit View to control autonomous flights, monitor live video, manage missions, and respond to in-flight events. Shifts are long. Attention is finite. Every ambiguous moment in the interface translates directly into cognitive load the operator can't afford.</p>
-          <p>The v1 interface had grown by accretion. Every new capability arrived as another panel, another toggle, another overlay — stacked onto a canvas originally built for far fewer concerns than it now carried. Alerts, toast messages, banner strips, video overlays, integration triggers, system status — they'd all ended up sharing the same corners. Nothing had a designated home; things lived wherever someone had first put them.</p>
-          <p>Operators had adapted. They knew where things were because they'd memorised the layout — not because the layout communicated it. The interface had lost its mental model. And every new feature we tried to add made that problem worse.</p>
+          <p>The v1 interface had grown by accretion. Every new capability arrived as another panel, another toggle, another overlay — stacked onto a canvas originally built for far fewer concerns than it now carried.</p>
+          <p>Operators had adapted. They knew where things were because they'd memorised the layout — not because the layout communicated it. The interface had lost its mental model. Every new feature we tried to add made that problem worse.</p>
           <p>The Cockpit didn't need a polish pass. It needed a rewire.</p>
         </Body>
       </Section>
@@ -80,13 +80,16 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         <H2>Every signal gets one mechanism. <em>No exceptions.</em></H2>
         <Lead>The first structural decision wasn't visual — it was categorical. A grammar for how the Cockpit communicates with the operator.</Lead>
         <Body>
-          <p>We defined five delivery mechanisms. Each one anchored to a specific place on screen. Each one answering a specific kind of question. The operator learns once: <em>where a signal lives tells them what kind of thing it is.</em></p>
-          <p><strong>Alerts — top bar.</strong> Something's wrong with the drone, dock, environment, or system. Organized by category, auto-expanding for high severity, persistent until the condition clears.</p>
-          <p><strong>Toasts — viewport corner.</strong> Feedback about actions the operator just took. Success, failure, progress. Transient by design — they fade, but nothing's lost.</p>
-          <p><strong>Banners — full-width strip, below the top bar.</strong> A platform or subscription limit is affecting what's possible right now. Not urgent, but the operator needs to know before they hit the wall.</p>
-          <p><strong>Contextual indicators — in the video or map feed.</strong> Something in what the operator is already looking at needs their attention. An AI detection, a geofence edge, an object flagged for review.</p>
-          <p><strong>Alarms — right panel.</strong> An external integration has triggered. Intrusion systems, weather services, third-party dispatch tools routed through Flinks.</p>
-          <p>When a new feature arrives, the question isn't "where should this go?" — it's "which mechanism is this?" The answer is always decidable from the signal's nature. Five homes, no overlaps, no orphans.</p>
+          <p>We defined five delivery mechanisms. Each anchored to a specific place on screen. Each answering a specific kind of question. The operator learns once: <em>where a signal lives tells them what kind of thing it is.</em></p>
+        </Body>
+        <Callout><p>Five wasn't where we started. The first draft had three — Alerts, Feedback, Status — and kept producing arguments about where things belonged. Is a lost DRC connection an alert, or a platform state? Is an AI detection feedback, or something to act on? Every new feature was a debate. We added mechanisms only when we could name the specific confusion the new one resolved. <em>Five was where the arguments stopped.</em></p></Callout>
+        <Body>
+          <p><strong>Alerts — top bar.</strong> Something's wrong with the drone, dock, environment, or system.</p>
+          <p><strong>Toasts — viewport corner.</strong> Feedback about what the operator just did.</p>
+          <p><strong>Banners — full-width strip.</strong> A platform state is affecting what's possible right now. Network lost, subscription limit, DRC disconnected.</p>
+          <p><strong>Contextual — in the video or map feed.</strong> Something in what the operator is already looking at needs attention.</p>
+          <p><strong>Right Panel — the workbench.</strong> Where the operator <em>does</em> things. Flight actions, third-party alarms, AI workflows.</p>
+          <p>When a new feature arrives, the question isn't "where should this go?" — it's "which mechanism is this?" No overlaps. No orphans.</p>
         </Body>
         <MarginRef jump="panel-hierarchy">↗ see the communication framework</MarginRef>
 
@@ -105,7 +108,7 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         <Lead>v1 buried alerts. Critical emergencies, low-priority warnings, informational nudges — all stacked in the same list. Operators had learned to ignore them.</Lead>
         <Body>
           <p>v2 organizes alerts along two axes. Four categories — <strong>Airspace, Diagnostic, Weather, System</strong> — each as its own tab in the top-bar panel. And four severities — <strong>Critical, Warning, Caution, Info</strong> — each with its own colour, weight, and behaviour.</p>
-          <p>Critical and Warning alerts auto-expand the panel and persist until the condition clears. Caution and Info alerts collect quietly, available when the operator chooses to look but never demanding attention they haven't earned. Each severity has a distinct visual grammar so operators recognise "this is a critical airspace alert" from peripheral vision alone.</p>
+          <p>Critical and Warning alerts auto-expand the panel and persist until the condition clears. Caution and Info alerts collect quietly, available when the operator chooses to look but never demanding attention they haven't earned. Each severity has a distinct visual grammar, so operators recognise "this is a critical airspace alert" from peripheral vision alone.</p>
           <p>The panel tells you when it's empty with an explicit quiet state. An empty panel should feel like a <em>status</em>, not an absence — otherwise the operator wonders whether the alert system is broken.</p>
         </Body>
         <Callout><p>"If there's nothing to worry about, say so. Don't leave the operator wondering whether the alert system is broken."</p></Callout>
@@ -119,15 +122,16 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         />
       </Section>
 
-      <!-- § 05 Step three (Feedback) -->
+      <!-- § 05 Step three (Half-life) -->
       <Section>
         <SectionLabel text="Step three" num="§ 05" />
-        <H2>Feedback has a home. <em>Always the same home.</em></H2>
-        <Lead>Every response the interface gives — every status, every confirmation, every state change — is routed by how long the operator needs it in view.</Lead>
+        <H2>Every surface has a <em>half-life.</em></H2>
+        <Lead>§ 03 routed signal by category — what it is. § 05 routes by duration — how long it deserves to stay.</Lead>
         <Body>
-          <p><strong>Always present — the Control Panel at the bottom.</strong> Primary telemetry: horizontal speed, vertical speed, wind, CAS, heading. This is the HUD the operator's peripheral vision treats as ambient truth. It never moves, never collapses, never gets replaced by something else. The moment it shifts, hours of built-up flight instinct go with it.</p>
-          <p><strong>Transient — the viewport corner.</strong> Action confirmations surface as toasts. Success fades after a beat. Failure persists until dismissed. Progress stays visible while work is happening. Toasts are designed to disappear — the operator reads them, internalises them, moves on.</p>
-          <p><strong>On-demand — the notification bell in the top bar.</strong> Every toast that fades is logged here, timestamped and searchable. Quick glance or permanent record — the operator gets both, in the right place for each. Nothing is ever lost to the scroll of a busy shift.</p>
+          <p>Some information is true for a moment. Some for an hour. Some for as long as the shift runs. The Cockpit routes each to a surface built for that time scale.</p>
+          <p><strong>Always — Control Panel, bottom.</strong> Flight state the operator glances at without thinking. Horizontal and vertical speed, wind, heading. It never moves. Moving it would invalidate hours of built-up flight instinct.</p>
+          <p><strong>Transient — viewport corner.</strong> Action confirmations as toasts. Success fades on its own. Failure waits until the operator has seen it. Nothing here claims permanence it hasn't earned.</p>
+          <p><strong>On-demand — notification bell, top bar.</strong> Every toast that fades lands here — timestamped, searchable, held for as long as the operator needs it. Quick glance or permanent record, in one place that answers both.</p>
         </Body>
 
         <ImgSlot variant="square"
@@ -142,18 +146,17 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
       <Section>
         <SectionLabel text="Step four" num="§ 06" />
         <H2>Boring chrome. <em>Flexible body.</em></H2>
-        <Lead>The biggest complaint with v1 wasn't what things did. It was that things <em>moved</em>. Panels resized depending on what was active. Controls appeared and disappeared. The operator never developed muscle memory.</Lead>
+        <Lead>v1's biggest complaint wasn't what things did. It was that things <em>moved</em>. Muscle memory never formed.</Lead>
         <Body>
-          <p>v2 freezes the chrome. The top bar stays at top. The Control Panel stays at bottom. The left and right toolbars hold their 36px rails. The safety buttons — RTH, STOP, E.LAND, GTSA — never leave their positions. Three view modes (<strong>Map, Split, Video</strong>) decide what fills the body of the Cockpit, but switching between them never disturbs the chrome around it.</p>
-          <p>That's the trust contract. It sounds boring. It is boring. Boring is the entire point of chrome — the parts of the interface the operator's hand should find without looking.</p>
+          <p>v2 freezes the chrome. The frame around the Cockpit never shifts — same places, every shift, every mission. Three view modes (<strong>Map, Split, Video</strong>) change what fills the body, never what sits around it.</p>
+          <p>That's the trust contract. Boring, on purpose. Chrome the operator's hand finds without looking.</p>
         </Body>
 
         <Callout><p>Inside that frozen frame, we gave operators something v1 never had — real ownership of their workspace.</p></Callout>
 
         <Body>
-          <p>In Split view, the divider between Map and Video is draggable. Operators pull Map to 30% for video-dominant work, push it to 50% when navigation matters more. The positions can be swapped — but constraints follow the panel type, not the location, so a 15% minimum always means 15% whether Map is on the left or the right.</p>
-          <p>An additional video feed (Dock camera, FPV, auxiliary payload) can appear below the primary video, resizable vertically. Push panels slide in from the right for focused tasks — Drone Settings, Scheduler, Audit Logs — then tuck away again. Robin AI takes its own 20% slice when invited, and disappears when dismissed. The Left Panel's telemetry widgets open and close on demand — Terrain, RTK, Dock telemetry, Zones, Network — so operators see exactly what they want to watch, and nothing else.</p>
-          <p>Every ratio, every panel state, every layout preference persists to local storage. The Cockpit the operator logged in with is the Cockpit they left off with. Different operators run different missions — inspection, patrol, delivery, mapping — and each builds a configuration that matches their workflow. Same chrome, different body. Certainty where it matters. Sovereignty where it helps.</p>
+          <p>In Split view, the divider is draggable. Map and Video can swap sides; constraints follow the panel type, not the location, so a 15% minimum always means 15% regardless of where the panel sits. Every ratio and preference persists — the Cockpit an operator logged out of is the Cockpit they log back into.</p>
+          <p>Different missions build different bodies. Same chrome. <em>Certainty where it matters. Sovereignty where it helps.</em></p>
         </Body>
 
         <BeforeAfter
@@ -177,9 +180,9 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         <H2>The receipts.</H2>
 
         <Outcome items={[
-          { n: 'Live', l: 'Deployed', d: 'Cockpit View 2.0 shipped as the primary interface across FlytBase enterprise deployments — the surface every operator flies from.' },
-          { n: '5', l: 'Communication mechanisms', d: 'Alerts, Toasts, Banners, Contextual, Alarms. Each owning one signal type, each anchored to one place.' },
-          { n: '52', l: 'Remappable actions', d: 'Full keyboard, joystick, and gamepad binding system — context-aware, configurable per operator.' },
+          { n: 'Live', l: 'Deployed', d: 'Shipped as the primary interface across FlytBase enterprise deployments — the surface every operator flies from.' },
+          { n: '0', l: 'Exceptions', d: 'Since shipping, every new feature has slotted into the five-mechanism grammar without needing a sixth. The framework held.' },
+          { n: 'Kept', l: 'By operators', d: 'No significant layout-discoverability complaints post-launch — the kind of silence that, in critical-ops interfaces, is the loudest win you can get.' },
         ]} />
       </Section>
 
@@ -188,7 +191,7 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         <SectionLabel text="What I took away" num="§ 08" />
         <Body>
           <p><strong>Structural rewrites need a rule, not a vision.</strong> "Every signal gets one mechanism" survived every design review. A mood board wouldn't have. Rules are stress-testable; visions are negotiable.</p>
-          <p><strong>Operators design the interface with you.</strong> Shadowing CS calls and reading transcripts isn't a substitute for user research — it's where most of the real insight came from. The people closest to the user knew the answer; I just had to listen.</p>
+          <p><strong>The framework decides, not you.</strong> Once "every signal gets one mechanism" was a principle, half my design decisions stopped being my decisions. A feature request that didn't fit was a signal about the request, not the framework. The rule did the hard work of saying no so I didn't have to have the same conversation five times.</p>
           <p><strong>Boring is a feature.</strong> In critical-ops interfaces, surprising is almost always bad. The best thing you can do for the operator is build chrome they can forget about, and give them sovereignty over the parts that should feel like theirs.</p>
         </Body>
       </Section>
