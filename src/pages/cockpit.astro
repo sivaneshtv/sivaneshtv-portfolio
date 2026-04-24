@@ -59,10 +59,11 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         <SectionLabel text="The problem" num="§ 02" />
         <PullQuote>The interface was working. The <em>operators</em> were doing the work it should have been doing.</PullQuote>
         <Body>
-          <p>Sitting in on CS calls and reading transcripts, a pattern emerged. Operators were compensating — memorising which panel held which control, ignoring notifications they'd learned to filter out, opening multiple browser tabs to see everything at once. The interface wasn't broken. It was offloading its work onto the person using it.</p>
+          <p>We didn't have a dedicated research team. What we had was Customer Success — sitting in on calls, reading transcripts, fielding every confused operator question since v1 shipped. That was our evidence pool. And a pattern kept surfacing: operators were compensating.</p>
+          <p>Memorising which panel held which control. Ignoring notifications they'd learned to filter out. Opening multiple browser tabs to see everything at once. The interface wasn't broken. It was offloading its work onto the person using it.</p>
           <p>The hard part wasn't identifying this. The hard part was <strong>deciding what to change first</strong> when the answer was <em>everything is coupled to everything</em>.</p>
         </Body>
-        <Callout><p>Before we could fix any screen, we had to decide which kind of signal lives where — and why. That became the spine of four structural rewrites.</p></Callout>
+        <Callout><p><em>Before we could fix any screen, we had to decide which kind of signal lives where — and why.</em> That became the spine of four structural rewrites.</p></Callout>
 
         <ImgSlot variant="wide"
           src="/assets/cockpit/cockpit-v1.png"
@@ -82,14 +83,14 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         <Body>
           <p>We defined five delivery mechanisms. Each anchored to a specific place on screen. Each answering a specific kind of question. The operator learns once: <em>where a signal lives tells them what kind of thing it is.</em></p>
         </Body>
-        <Callout><p>Five wasn't where we started. The first draft had three — Alerts, Feedback, Status — and kept producing arguments about where things belonged. Is a lost DRC connection an alert, or a platform state? Is an AI detection feedback, or something to act on? Every new feature was a debate. We added mechanisms only when we could name the specific confusion the new one resolved. <em>Five was where the arguments stopped.</em></p></Callout>
+        <Callout><p>Five wasn't where we started. The first draft had three — <em>Alerts</em> (things wrong), <em>Feedback</em> (things done), <em>Status</em> (things true). It collapsed within a week. Is a lost Dock–Drone connection an alert, or a background status the operator just needs to know about? Is an AI detection feedback, or something to act on? Is a failed subscription renewal an alert, a banner, or neither? Every new feature was a debate. We added mechanisms only when we could name the specific confusion the new one resolved. <em>Five was where the arguments stopped.</em></p></Callout>
         <Body>
           <p><strong>Alerts — top bar.</strong> Something's wrong with the drone, dock, environment, or system.</p>
           <p><strong>Toasts — viewport corner.</strong> Feedback about what the operator just did.</p>
-          <p><strong>Banners — full-width strip.</strong> A platform state is affecting what's possible right now. Network lost, subscription limit, DRC disconnected.</p>
+          <p><strong>Banners — full-width strip.</strong> A platform state is affecting what's possible right now. Network lost, subscription limit, connection dropped.</p>
           <p><strong>Contextual — in the video or map feed.</strong> Something in what the operator is already looking at needs attention.</p>
           <p><strong>Right Panel — the workbench.</strong> Where the operator <em>does</em> things. Flight actions, third-party alarms, AI workflows.</p>
-          <p>When a new feature arrives, the question isn't "where should this go?" — it's "which mechanism is this?" No overlaps. No orphans.</p>
+          <p>When a new feature arrives, the question isn't "where should this go?" — it's "which mechanism is this?" <em>No overlaps. No orphans.</em> Design reviews got shorter. The grammar did the arguing for us.</p>
         </Body>
         <MarginRef jump="panel-hierarchy">↗ see the communication framework</MarginRef>
 
@@ -111,7 +112,7 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
           <p>Critical and Warning alerts auto-expand the panel and persist until the condition clears. Caution and Info alerts collect quietly, available when the operator chooses to look but never demanding attention they haven't earned. Each severity has a distinct visual grammar, so operators recognise "this is a critical airspace alert" from peripheral vision alone.</p>
           <p>The panel tells you when it's empty with an explicit quiet state. An empty panel should feel like a <em>status</em>, not an absence — otherwise the operator wonders whether the alert system is broken.</p>
         </Body>
-        <Callout><p>"If there's nothing to worry about, say so. Don't leave the operator wondering whether the alert system is broken."</p></Callout>
+        <Callout><p><em>If there's nothing to worry about, say so.</em> Silence is a design decision, not a default.</p></Callout>
         <MarginRef jump="alerts">↗ see the alert severity grammar</MarginRef>
 
         <ImgSlot variant="wide"
@@ -155,7 +156,7 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
         <Callout><p>Inside that frozen frame, we gave operators something v1 never had — real ownership of their workspace.</p></Callout>
 
         <Body>
-          <p>In Split view, the divider is draggable. Map and Video can swap sides; constraints follow the panel type, not the location, so a 15% minimum always means 15% regardless of where the panel sits. Every ratio and preference persists — the Cockpit an operator logged out of is the Cockpit they log back into.</p>
+          <p>In Split view, the divider is draggable — pull Map to 70% for survey work, push it down to 30% when the video feed is the job. Swap Map and Video sides entirely if that's how your team thinks. The Cockpit remembers. Every ratio, every position, every preference — the Cockpit an operator logged out of is the Cockpit they log back into.</p>
           <p>Different missions build different bodies. Same chrome. <em>Certainty where it matters. Sovereignty where it helps.</em></p>
         </Body>
 
@@ -190,7 +191,6 @@ import BeforeAfter from '../components/reader/BeforeAfter.astro';
       <Section>
         <SectionLabel text="What I took away" num="§ 08" />
         <Body>
-          <p><strong>Structural rewrites need a rule, not a vision.</strong> "Every signal gets one mechanism" survived every design review. A mood board wouldn't have. Rules are stress-testable; visions are negotiable.</p>
           <p><strong>The framework decides, not you.</strong> Once "every signal gets one mechanism" was a principle, half my design decisions stopped being my decisions. A feature request that didn't fit was a signal about the request, not the framework. The rule did the hard work of saying no so I didn't have to have the same conversation five times.</p>
           <p><strong>Boring is a feature.</strong> In critical-ops interfaces, surprising is almost always bad. The best thing you can do for the operator is build chrome they can forget about, and give them sovereignty over the parts that should feel like theirs.</p>
         </Body>
