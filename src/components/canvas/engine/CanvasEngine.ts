@@ -122,6 +122,8 @@ export class CanvasEngine {
     this.canvas.style.transform =
       `translate3d(${this.tx.toFixed(2)}px,${this.ty.toFixed(2)}px,0) scale(${this.scale.toFixed(4)})`;
     this.zoomLabel.textContent = Math.round(this.scale * 100) + '%';
+    // Disable backdrop-filter at low zoom to prevent compositing jank
+    document.body.classList.toggle('low-zoom', this.scale < 0.25);
     this.updateMinimap();
     this.updateActiveZone();
   }
