@@ -573,6 +573,8 @@ export class CanvasEngine {
 
     // §3.5 — Pointer pan
     this.wrap.addEventListener('pointerdown', (e: PointerEvent) => {
+      // Skip pan if a pinch gesture is active
+      if (this.touchState) return;
       const forcePan = e.button === 1 || this.spaceHeld;
       if (!forcePan) {
         let target = e.target as HTMLElement;
@@ -595,7 +597,7 @@ export class CanvasEngine {
     });
 
     this.wrap.addEventListener('pointermove', (e: PointerEvent) => {
-      if (!this.isPanning) return;
+      if (!this.isPanning || this.touchState) return;
       this.tx = this.panStartTX + (e.clientX - this.panStartX);
       this.ty = this.panStartTY + (e.clientY - this.panStartY);
       const now = performance.now(); const dt = now - this.lastMoveTime;
@@ -676,6 +678,9 @@ export class CanvasEngine {
     // §3.9 — Touch
     this.wrap.addEventListener('touchstart', (e) => {
       if (e.touches.length === 2) {
+        // Cancel any active pointer pan so it doesn't fight with pinch
+        this.isPanning = false;
+        this.wrap.classList.remove('grabbing');
         const t1 = e.touches[0], t2 = e.touches[1];
         const dx = t2.clientX - t1.clientX, dy = t2.clientY - t1.clientY;
         this.touchState = {

@@ -69,7 +69,7 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
 
 <style is:global>
   /* §6.1 — Topbar */
-  .topbar{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:20px 28px;pointer-events:none}
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:20px 28px;pointer-events:none;-webkit-transform:translateZ(0);transform:translateZ(0)}
   .topbar > *{pointer-events:auto}
   .tb-logo-wrap{position:relative}
   .tb-logo{display:flex;align-items:center;gap:10px;font-family:var(--fs);font-weight:600;font-size:14px;color:var(--ink);background:rgba(232,228,219,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:8px 12px 8px 10px;border:1px solid rgba(40,35,25,.12);box-shadow:0 4px 14px rgba(40,35,25,.08);cursor:pointer;transition:background .2s,border-color .2s;text-decoration:none}
@@ -88,13 +88,13 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     transition:background .2s,border-color .2s;
   }
   .tb-contact:hover{background:#b82b22;border-color:#b82b22}
-  .toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:2px;background:rgba(232,228,219,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(40,35,25,.12);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08)}
+  .toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateZ(0);-webkit-transform:translateX(-50%) translateZ(0);z-index:30;display:flex;align-items:center;gap:2px;background:rgba(232,228,219,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(40,35,25,.12);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08)}
   .tb-divider{width:1px;height:22px;background:rgba(40,35,25,.15);margin:0 4px;flex-shrink:0}
   .tb-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);transition:background .2s,color .2s;border-radius:2px}
   .tb-btn:hover{background:rgba(40,35,25,.08);color:var(--ink)}
   .tb-btn svg{display:block}
   .tb-zoom{font-family:var(--fm);font-size:11px;letter-spacing:.08em;color:var(--ink-2);padding:0 12px;min-width:58px;text-align:center}
-  .minimap{position:fixed;bottom:20px;right:20px;z-index:30;width:160px;height:112px;background:rgba(232,228,219,.92);backdrop-filter:blur(12px);border:1px solid rgba(40,35,25,.15);box-shadow:0 4px 16px rgba(40,35,25,.12);overflow:hidden;cursor:pointer}
+  .minimap{position:fixed;bottom:20px;right:20px;z-index:30;width:160px;height:112px;background:rgba(232,228,219,.92);backdrop-filter:blur(12px);border:1px solid rgba(40,35,25,.15);box-shadow:0 4px 16px rgba(40,35,25,.12);overflow:hidden;cursor:pointer;-webkit-transform:translateZ(0);transform:translateZ(0)}
   .minimap-canvas{position:absolute;inset:4px;background:transparent}
   .minimap-dot{position:absolute;background:var(--ink);border-radius:1px;opacity:.55}
   .minimap-dot.work{background:var(--marker-red);opacity:.75}
