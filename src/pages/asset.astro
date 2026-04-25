@@ -72,10 +72,11 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <H2>Track the thing. <em>Not the flight.</em></H2>
         <Lead>This sounds small. It wasn't. Every product surface FlytBase had shipped was flight-first — and this new module had to sit alongside them, in the same authentication, the same navigation, the same customer account, but operate on a <em>completely different axis.</em></Lead>
         <Body>
-          <p>The move: create a second dashboard. Not a tab inside Operations. Not a new view. A separate product, launched from the FlytBase hamburger menu, with its own data model centred on <strong>Assets</strong>. An asset is a record — a wellhead, a power line, a pipeline, a generator — with its own ID, its own inspection history, its own media library, its own alert thresholds, its own reference imagery. Flights don't disappear. But they stop being the centre of the universe.</p>
-          <p>The Operations Dashboard continues to exist and continues to fly drones. But increasingly, <em>everything you do in Operations now references an asset.</em> You plan missions around assets. You launch GoToAsset instead of GoToLocation. You execute a Quick Asset Inspect instead of building a mission from scratch. The flight becomes a means. The asset is the end.</p>
+          <p>The natural-seeming move was to embed asset functionality inside Operations — same dashboard, new tab, assets as a property of the existing system. We almost went there. What stopped us was recognising that asset management isn't drone operations at a different scale — it's a different <em>kind</em> of work, on a different <em>time horizon</em>. Operations lives in minutes and hours; asset management lives in months, audit cycles, and regulatory trails. One surface couldn't serve both without compromising both.</p>
+          <p>So we built it as a separate product — launched from the FlytBase hamburger menu, with its own data model centred on <strong>Assets</strong>. An asset is a record — a wellhead, a power line, a pipeline, a generator — with its own ID, its own inspection history, its own media library, its own alert thresholds. Flights don't disappear. They stop being the centre of the universe.</p>
+          <p>The Operations Dashboard continues to fly drones, but increasingly <em>everything you do there now references an asset.</em> You launch GoToAsset instead of GoToLocation. The Cockpit's launcher panel has a slot reserved for asset-dispatch flows — not shipped yet, but the architecture is ready. The flight becomes a means. The asset is the end.</p>
         </Body>
-        <MarginRef jump="shift-principle">↗ see the principle card</MarginRef>
+        <MarginRef jump="shift-principle">↗ see the shift principle</MarginRef>
 
         <ImgSlot variant="wide"
           label="Image slot 02 · Asset detail"
@@ -91,10 +92,10 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
       <Section>
         <SectionLabel text="The payoff" num="§ 04" />
         <H2>Once assets exist, <em>templates become possible.</em></H2>
-        <Lead>Sarah has 45 wellheads. They're mostly the same. The drone needs to fly the same pattern around each — four viewpoints, a fixed altitude, the same lens at the same zoom, the same gimbal attitude. Without an asset abstraction, she'd configure 45 missions identically. With one, she configures a profile once and reuses it 45 times.</Lead>
+        <Lead>This is the operational unlock. Without an asset abstraction, every inspection is configured from scratch. With assets in the data model, configuration moves up one level: define the inspection once, apply it to every instance of that type. <em>Setup time stops scaling with fleet size.</em></Lead>
         <Body>
-          <p><strong>Inspection Profiles</strong> are reusable viewpoint definitions. Two types: <em>Grid</em> (for area-coverage inspections — area, GSD, overlap, photogrammetry settings) and <em>Viewpoints</em> (for discrete inspection points — waypoints, lens, zoom, gimbal attitude, per-waypoint actions). One profile, applied to dozens of similar assets, collapses setup time from hours to minutes.</p>
-          <p>The same templatization logic applies to <strong>Alert Profiles</strong> — a wellhead has different abnormal-temperature thresholds than a substation, which has different thresholds than a pipeline. Each asset type gets its own alert profile library. The software knows the rules by asset type, so Sarah doesn't have to re-teach it every time.</p>
+          <p><strong>Inspection Profiles</strong> are reusable viewpoint definitions. Two types: <em>Grid</em> for area coverage (area, GSD, overlap), <em>Viewpoints</em> for discrete points (waypoints, lens, zoom, gimbal attitude). One profile per asset type, reused across every instance of that type.</p>
+          <p>The same logic applies to <strong>Alert Profiles</strong>. A wellhead has different abnormal-temperature thresholds than a substation, which has different thresholds than a pipeline. Each asset type gets its own alert library. The software learns the rules once. The operator never re-teaches it.</p>
         </Body>
 
         <ImgSlot variant="wide"
@@ -111,22 +112,22 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
       <Section>
         <SectionLabel text="The module" num="§ 05" />
         <H2>Five pages. <em>One coherent model.</em></H2>
-        <Lead>The dashboard has five top-level pages, organised as a left-rail navigation. Each is the same underlying data sliced a different way — by asset, by flight, by media, by report, by tag.</Lead>
+        <Lead>The navigation isn't decoration — it's the data schema, made visible. Each page is the same asset data, sliced a different way. If you understand the navigation, you understand the data model.</Lead>
         <Body>
-          <p><strong>Assets</strong> — the inventory. Import 1000+ assets via KML or CSV. Organise by site, by sector, by tags. Search, filter, group. The map on the right reflects whatever selection is active.</p>
-          <p><strong>Inspection Logs</strong> — cross-asset flight history. Every flight that happened anywhere in the system, searchable and filterable. Click into one and see its media, its map path, its asset context.</p>
-          <p><strong>Media</strong> — every piece of captured imagery, chronologically, tagged, annotated. The Gallery tab for Sarah's team when they're reviewing evidence across dozens of flights.</p>
-          <p><strong>Reports</strong> — the stakeholder-facing surface. Compliance reports, maintenance reports, custom reports — generated from asset data, distributed as PDF, secure link, or QR code.</p>
-          <p><strong>Tag Management</strong> — tags aren't strings you type, they're records. A dedicated page to create them, merge them, rename them, retire them. Because when you have 1000+ assets, tag sprawl is a real operational problem.</p>
+          <p><strong>Assets</strong> — the canonical record. Import 1000+ via KML or CSV, organise by site or sector, search and filter. The map reflects the active selection.</p>
+          <p><strong>Inspection Logs</strong> — sliced by flight. Every inspection that happened anywhere, searchable, with media and map context one click away.</p>
+          <p><strong>Media</strong> — sliced by captured imagery. Every photo, every video, chronologically, tagged, annotated. The surface for evidence review.</p>
+          <p><strong>Reports</strong> — sliced by stakeholder. Compliance, maintenance, custom — generated from asset records, distributed as PDF, secure link, or QR.</p>
+          <p><strong>Tag Management</strong> — sliced by classification. Tags are records, not strings. Create, merge, rename, retire. When you have 1000+ assets, tag sprawl is an operational problem the schema has to handle.</p>
         </Body>
 
         <ImgSlot variant="wide"
-          label="Image slot 04 · Inspection Logs page"
-          title="Cross-asset history, one surface"
-          desc="Screenshot of the Inspection Logs page showing the list of recent Perimeter scan flights, with a selected log's media carousel and map view on the right. Shows the media-focused review workflow."
+          label="Image slot 04 · The module home"
+          title="Five pages, one model"
+          desc="Screenshot of the Assets page (the module's home and canonical record view) — left nav rail showing the five pages, asset tree with sector grouping in the centre, map with annotated zones and asset pins on the right. The frame that anchors the whole module."
           dims="16 : 9 · ideally 2200 × 1240 px"
-          cap="Inspection Logs · evidence-first review"
-          capMeta="the history"
+          cap="Asset Management home · the module anchor"
+          capMeta="the architecture"
         />
       </Section>
 
@@ -137,12 +138,12 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <Lead>Asset Management shipped as a standalone dashboard inside the FlytBase ecosystem — same authentication, same customer account, separate surface. It's the first FlytBase module that isn't about flying a drone.</Lead>
 
         <ImgSlot variant="wide"
-          label="Image slot 05 · Reports page"
-          title="The compliance surface"
-          desc={"Screenshot of the Reports page — list of reports on the left, a preview of the \"Asset Maintenance Report\" on the right with executive summary and attached documentation. Designed by Arpita, prototyped in Lovable."}
+          label="Image slot 05 · In production"
+          title="Asset Management, shipped"
+          desc="One of: (a) photo of the module being used by a customer's operations team, (b) a Loom thumbnail of a deployment demo, (c) a redacted screenshot showing the module in a real customer's account with their actual asset count visible."
           dims="16 : 9 · ideally 2200 × 1240 px"
-          cap="Reports · stakeholder distribution"
-          capMeta="the output"
+          cap="Asset Management — live in production"
+          capMeta="evidence"
         />
 
         <Outcome items={[
@@ -256,16 +257,10 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
     <!-- §04 TEMPLATIZATION — the payoff principle -->
     <div class="principle artifact" id="obj-template-principle" data-anchor="3" data-anchor-offset="40" data-side="right" data-gap="80" data-width="380" style="position:absolute;transform:rotate(-1.5deg);width:380px;padding:32px 32px 28px;background:var(--paper);box-shadow:3px 5px 0 rgba(40,35,25,.06),6px 14px 28px rgba(40,35,25,.2);border:1px solid rgba(40,35,25,.08)">
       <div style="position:absolute;top:-12px;right:10%;width:90px;height:22px;background:var(--tape);opacity:.85;transform:rotate(3deg);box-shadow:0 2px 6px rgba(40,35,25,.1)"></div>
-      <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:14px;display:flex;align-items:center;gap:8px"><span>◆</span>the payoff of the asset abstraction</div>
-      <div style="font-family:var(--fs);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin-bottom:10px">One profile. <em style="font-style:italic;color:var(--red)">Applied to dozens</em> of identical assets.</div>
-      <div style="font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--ink-2);margin-bottom:14px">Sarah has 45 wellheads. They're mostly the same. Without assets, she'd configure 45 missions. With assets plus templates, she configures one Inspection Profile and reuses it. <em style="font-style:italic;color:var(--ink)">Setup time collapses from hours to minutes.</em></div>
-      <div style="font-family:var(--fh);font-weight:600;font-size:17px;color:var(--ink-3);padding-top:12px;border-top:1px dashed rgba(40,35,25,.18)">— why the abstraction matters operationally</div>
-    </div>
-
-    <!-- §04 — the two profile types -->
-    <div class="sticky artifact" id="obj-profile-types" data-anchor="3" data-anchor-offset="460" data-side="left" data-gap="60" data-width="300" style="position:absolute;transform:rotate(3deg);width:300px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
-      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— two profile types —</div>
-      <em style="font-style:normal;color:var(--red);font-weight:700">Grid</em> for area inspections — area, GSD, overlap.<br><br><em style="font-style:normal;color:var(--red);font-weight:700">Viewpoints</em> for discrete points — waypoints, lens, zoom, gimbal, per-waypoint actions.
+      <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:14px;display:flex;align-items:center;gap:8px"><span>◆</span>why the abstraction unlocks templates</div>
+      <div style="font-family:var(--fs);font-weight:700;font-size:26px;line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin-bottom:10px">Setup work used to scale with the fleet. <em style="font-style:italic;color:var(--red)">Now it scales with asset types.</em></div>
+      <div style="font-family:var(--fs);font-size:13px;line-height:1.55;color:var(--ink-2);margin-bottom:14px">A flight-first system has no concept of "all wellheads" to template against. An asset-first system does. The number of asset types is much smaller than the number of asset instances — and grows much slower. <em style="font-style:italic;color:var(--ink)">The cost of new operations stops growing with the size of the fleet.</em></div>
+      <div style="font-family:var(--fh);font-weight:600;font-size:17px;color:var(--ink-3);padding-top:12px;border-top:1px dashed rgba(40,35,25,.18)">— the second-order effect of the abstraction</div>
     </div>
 
     <!-- §05 FIVE PAGES — printout showing the real left-rail nav + tree + map -->
@@ -330,13 +325,7 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
     <!-- §05 — Arpita/Reports quiet attribution sticky -->
     <div class="sticky blue artifact" id="obj-arpita-reports" data-anchor="4" data-anchor-offset="480" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(-3deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#a8d0f0;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
       <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— credit where due —</div>
-      <em style="font-style:normal;color:var(--red);font-weight:700">Reports</em> — designed by Arpita. Prototyped in Lovable. I handed over the data model and integration points; she built the surface.
-    </div>
-
-    <!-- §05 — nav-is-the-schema insight -->
-    <div class="sticky artifact" id="obj-nav-schema" data-anchor="4" data-anchor-offset="820" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(2deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
-      <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— design rule —</div>
-      Each page is a <em style="font-style:normal;color:var(--red);font-weight:700">slice</em> of the same data. The navigation IS the schema.
+      <em style="font-style:normal;color:var(--red);font-weight:700">Reports</em> — design by me. Prototyped in Lovable by Arpita Gangan, who took the design and made it real for the M1 ship. The collaboration shipped a surface neither of us would have shipped alone in the time we had.
     </div>
 
     <!-- §06 OUTCOME — M1 receipt -->
