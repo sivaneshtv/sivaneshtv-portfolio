@@ -69,11 +69,7 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
             <div class="persona-tape"></div>
             <div class="persona-role">Role · 01</div>
             <div class="persona-head">
-              <svg class="persona-avatar" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="40" cy="40" r="34" fill="#c6a87a"/>
-                <circle cx="40" cy="28" r="12" fill="#8a6d4a"/>
-                <path d="M 18 54 Q 40 42 62 54 L 62 74 L 18 74 Z" fill="#8a6d4a"/>
-              </svg>
+              <img class="persona-avatar" src="/assets/fleet/persona-pilot.jpg" alt="Pilot persona" />
               <div class="persona-ident">
                 <div class="persona-name">The pilot.</div>
                 <div class="persona-sub">In the seat. In command.</div>
@@ -105,11 +101,7 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
             <div class="persona-tape"></div>
             <div class="persona-role persona-role-manager">Role · 02</div>
             <div class="persona-head">
-              <svg class="persona-avatar" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="40" cy="40" r="34" fill="#a8c0d8"/>
-                <circle cx="40" cy="28" r="12" fill="#5a7a9a"/>
-                <path d="M 18 54 Q 40 42 62 54 L 62 74 L 18 74 Z" fill="#5a7a9a"/>
-              </svg>
+              <img class="persona-avatar" src="/assets/fleet/persona-manager.jpg" alt="Manager persona" />
               <div class="persona-ident">
                 <div class="persona-name">The manager.</div>
                 <div class="persona-sub">Watching the operation.</div>
@@ -424,7 +416,7 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
   .persona-role{font-family:var(--fm);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:#e8654a;margin-bottom:14px}
   .persona-role-manager{color:#5a9de8}
   .persona-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
-  .persona-avatar{width:56px;height:56px;flex-shrink:0}
+  .persona-avatar{width:56px;height:56px;flex-shrink:0;border-radius:50%;object-fit:cover}
   .persona-ident{min-width:0}
   .persona-name{font-family:var(--fh);font-weight:700;font-size:34px;line-height:1;color:#f0ece4;margin-bottom:2px}
   .persona-sub{font-family:var(--fs);font-size:12px;font-style:italic;color:rgba(240,236,228,.6)}
