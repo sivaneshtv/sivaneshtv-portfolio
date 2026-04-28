@@ -697,6 +697,7 @@ export class CanvasEngine {
     // §3.9 — Touch
     this.wrap.addEventListener('touchstart', (e) => {
       if (e.touches.length === 2) {
+        e.preventDefault(); // stop iOS native pinch-zoom from firing alongside our handler
         // Cancel any active pointer pan so it doesn't fight with pinch
         this.isPanning = false;
         this.wrap.classList.remove('grabbing');
