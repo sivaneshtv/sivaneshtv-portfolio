@@ -56,6 +56,11 @@ export class CanvasEngine {
   private flightAnim: number | null = null;
   private currentZone: string | null = null;
 
+  // rAF-throttled apply state
+  private rafScheduled = false;
+  private mmW = 0;
+  private mmH = 0;
+
   // Drag tracking
   private panStartX = 0; private panStartY = 0;
   private panStartTX = 0; private panStartTY = 0;
@@ -124,6 +129,16 @@ export class CanvasEngine {
     this.zoomLabel.textContent = Math.round(this.scale * 100) + '%';
     this.updateMinimap();
     this.updateActiveZone();
+  }
+
+  // Batches DOM writes to one per animation frame — eliminates forced layout during pan
+  private scheduleApply(): void {
+    if (this.rafScheduled) return;
+    this.rafScheduled = true;
+    requestAnimationFrame(() => {
+      this.rafScheduled = false;
+      this.apply();
+    });
   }
 
   // §3.4
@@ -455,9 +470,11 @@ export class CanvasEngine {
   // §3.11 — Minimap
   private buildMinimap(): void {
     requestAnimationFrame(() => {
+      this.mmW = this.minimap.clientWidth - 8;
+      this.mmH = this.minimap.clientHeight - 8;
       this.minimapCanvas.innerHTML = '';
-      const mw = this.minimap.clientWidth - 8;
-      const mh = this.minimap.clientHeight - 8;
+      const mw = this.mmW;
+      const mh = this.mmH;
       const sx = mw / this.CANVAS_W;
       const sy = mh / this.CANVAS_H;
       const sel = this.mode === 'case'
@@ -479,8 +496,8 @@ export class CanvasEngine {
   }
 
   private updateMinimap(): void {
-    const mw = this.minimap.clientWidth - 8;
-    const mh = this.minimap.clientHeight - 8;
+    const mw = this.mmW; const mh = this.mmH;
+    if (!mw || !mh) return;
     const sx = mw / this.CANVAS_W; const sy = mh / this.CANVAS_H;
     const cw = innerWidth / 2; const ch = innerHeight / 2;
     const vx = (0 - cw - this.tx) / this.scale;
@@ -552,6 +569,8 @@ export class CanvasEngine {
         this.refreshZoneTargets();
       }
       this.preJumpState = null;
+      this.mmW = this.minimap.clientWidth - 8;
+      this.mmH = this.minimap.clientHeight - 8;
       this.apply();
       this.buildMinimap();
       this.updateMinimap();
@@ -567,7 +586,7 @@ export class CanvasEngine {
         this.zoomAt(Math.pow(0.9985, e.deltaY), e.clientX, e.clientY);
       } else {
         this.tx -= e.deltaX; this.ty -= e.deltaY;
-        this.apply();
+        this.scheduleApply();
       }
     }, { passive: false });
 
@@ -615,7 +634,7 @@ export class CanvasEngine {
           this.showFirstPanHint();
         }
       }
-      this.apply();
+      this.scheduleApply();
     });
 
     this.wrap.addEventListener('pointerup', () => {
@@ -701,7 +720,7 @@ export class CanvasEngine {
         const cy = (this.touchState.cy - ch - this.touchState.startTY) / this.touchState.startScale;
         this.tx = this.touchState.cx - cw - cx * newScale;
         this.ty = this.touchState.cy - ch - cy * newScale;
-        this.scale = newScale; this.apply();
+        this.scale = newScale; this.scheduleApply();
       }
     }, { passive: false });
     this.wrap.addEventListener('touchend', () => { this.touchState = null; });
