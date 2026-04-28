@@ -61,6 +61,12 @@ export class CanvasEngine {
   private mmW = 0;
   private mmH = 0;
 
+  // Minimap viewport cached size — avoids layout-property writes during pan
+  private mmVpW = -1;
+  private mmVpH = -1;
+  // Cached zoom label value — avoids toolbar texture re-upload during pan
+  private lastZoomPct = -1;
+
   // Drag tracking
   private panStartX = 0; private panStartY = 0;
   private panStartTX = 0; private panStartTY = 0;
@@ -126,7 +132,12 @@ export class CanvasEngine {
     this.clampTranslate();
     this.canvas.style.transform =
       `translate3d(${this.tx.toFixed(2)}px,${this.ty.toFixed(2)}px,0) scale(${this.scale.toFixed(4)})`;
-    this.zoomLabel.textContent = Math.round(this.scale * 100) + '%';
+    // Guard: skip textContent write during pan (value unchanged = toolbar GPU re-upload avoided)
+    const pct = Math.round(this.scale * 100);
+    if (pct !== this.lastZoomPct) {
+      this.lastZoomPct = pct;
+      this.zoomLabel.textContent = pct + '%';
+    }
     this.updateMinimap();
     this.updateActiveZone();
   }
@@ -503,10 +514,22 @@ export class CanvasEngine {
     const vx = (0 - cw - this.tx) / this.scale;
     const vy = (0 - ch - this.ty) / this.scale;
     const vw = innerWidth / this.scale; const vh = innerHeight / this.scale;
-    this.minimapViewport.style.left = (vx * sx + 4) + 'px';
-    this.minimapViewport.style.top = (vy * sy + 4) + 'px';
-    this.minimapViewport.style.width = (vw * sx) + 'px';
-    this.minimapViewport.style.height = (vh * sy) + 'px';
+
+    // Position via transform (compositor-only) — eliminates layout trigger and GPU texture
+    // re-upload on every pan frame. left:0;top:0 set in CSS as anchor.
+    const vpX = vx * sx + 4;
+    const vpY = vy * sy + 4;
+    this.minimapViewport.style.transform = `translate(${vpX.toFixed(1)}px,${vpY.toFixed(1)}px)`;
+
+    // Size only changes during zoom, not pan — guard to skip redundant layout writes
+    const vpW = vw * sx;
+    const vpH = vh * sy;
+    if (Math.abs(vpW - this.mmVpW) > 0.5 || Math.abs(vpH - this.mmVpH) > 0.5) {
+      this.mmVpW = vpW;
+      this.mmVpH = vpH;
+      this.minimapViewport.style.width = vpW.toFixed(1) + 'px';
+      this.minimapViewport.style.height = vpH.toFixed(1) + 'px';
+    }
   }
 
   // §3.18 — Clock
