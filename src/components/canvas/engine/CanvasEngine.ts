@@ -46,7 +46,7 @@ export class CanvasEngine {
   private scale = 0.5;
   private tx = 0;
   private ty = 0;
-  private minScale = 0.2;
+  private minScale = 0.25;
   private maxScale = 2.4;
   private vx = 0;
   private vy = 0;
