@@ -14,6 +14,8 @@
   position:fixed;inset:0;z-index:1;
   cursor:grab;
   overflow:hidden;
+  -webkit-transform:translateZ(0);
+  transform:translateZ(0);
 }
 .canvas-wrap.grabbing{cursor:grabbing}
 .canvas-wrap.space-pan{cursor:grab}
