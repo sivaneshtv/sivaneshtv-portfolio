@@ -92,6 +92,10 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   .tb-divider{width:1px;height:22px;background:rgba(40,35,25,.15);margin:0 4px;flex-shrink:0}
   .tb-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);transition:background .2s,color .2s;border-radius:2px}
   .tb-btn:hover{background:rgba(40,35,25,.08);color:var(--ink)}
+  .tb-btn.active{color:var(--marker-red);background:rgba(216,53,42,.08)}
+  .tb-btn.active:hover{background:rgba(216,53,42,.14)}
+  [data-theme="dark"] .tb-btn.active{color:var(--marker-red);background:rgba(216,53,42,.12)}
+  [data-theme="dark"] .tb-btn.active:hover{background:rgba(216,53,42,.18)}
   .tb-btn svg{display:block}
   .tb-zoom{font-family:var(--fm);font-size:11px;letter-spacing:.08em;color:var(--ink-2);padding:0 12px;min-width:58px;text-align:center}
   .minimap{position:fixed;bottom:20px;right:20px;z-index:30;width:160px;height:112px;background:rgba(232,228,219,.97);border:1px solid rgba(40,35,25,.15);box-shadow:0 4px 16px rgba(40,35,25,.12);overflow:hidden;cursor:pointer;contain:layout style;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
@@ -177,7 +181,13 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     canvasWidth: 5000,
     canvasHeight: 6800,
     mode: 'case',
+    onReadingModeChange: (on) => {
+      document.getElementById('btnReader')?.classList.toggle('active', on);
+    },
   });
+
+  // Case pages always boot in reading mode — sync button immediately
+  document.getElementById('btnReader')?.classList.add('active');
 
   (window as any).__canvasEngine = engine;
 
@@ -185,7 +195,7 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   document.getElementById('btnZoomOut')?.addEventListener('click', () => engine.zoomOut());
   document.getElementById('btnFit')?.addEventListener('click', () => engine.fit());
   document.getElementById('btnReader')?.addEventListener('click', () => {
-    engine.setReadingMode(true);
+    engine.toggleReadingMode();
   });
 
   // Margin-ref click → jumpToArtifact (MARGIN-REF-SPEC.md §4)
@@ -219,6 +229,18 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
         mobileHint.classList.remove('on');
         sessionStorage.setItem('sivanesh.mobileHintSeen', '1');
       }, 5000);
+    }
+  }
+
+  // Reading mode hint — show once on first case study visit
+  if (!sessionStorage.getItem('sivanesh.rmHintSeen')) {
+    const rmHint = document.querySelector<HTMLElement>('.reading-hint');
+    if (rmHint) {
+      setTimeout(() => rmHint.classList.add('on'), 1200);
+      setTimeout(() => {
+        rmHint.classList.remove('on');
+        sessionStorage.setItem('sivanesh.rmHintSeen', '1');
+      }, 6200);
     }
   }
 

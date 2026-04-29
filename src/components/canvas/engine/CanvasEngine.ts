@@ -26,6 +26,7 @@ export interface CanvasEngineConfig {
   canvasHeight: number;
   mode: 'workbench' | 'case';
   onZoneChange?: (zone: string | null) => void;
+  onReadingModeChange?: (on: boolean) => void;
 }
 
 export class CanvasEngine {
@@ -92,6 +93,8 @@ export class CanvasEngine {
   private readingScale = 0.55;
   private firstPanHintShown = false;
   private preJumpState: { tx: number; ty: number; scale: number; readingMode: boolean } | null = null;
+  private lastReadingPos: { tx: number; ty: number; scale: number } | null = null;
+  private onReadingModeChange: ((on: boolean) => void) | null = null;
 
   constructor(config: CanvasEngineConfig) {
     this.canvas = config.canvasEl;
@@ -106,6 +109,7 @@ export class CanvasEngine {
     this.CANVAS_H = config.canvasHeight;
     this.mode = config.mode;
     this.onZoneChange = config.onZoneChange ?? null;
+    this.onReadingModeChange = config.onReadingModeChange ?? null;
     this.helpSeen = sessionStorage.getItem('sivanesh.helpSeen') === '1';
 
     if (this.mode === 'case') {
@@ -363,24 +367,25 @@ export class CanvasEngine {
 
   // Reading mode helpers
   setReadingMode(on: boolean): void {
-    this.readingMode = on;
     if (on) {
+      this.readingMode = true;
       this.computeReaderLayout();
       this.refreshZoneTargets();
-      // Fly to nearest zone
-      this.goToZone('top');
+      // Return to last reading position; fall back to top zone on first open
+      if (this.lastReadingPos) {
+        this.flyToRaw(this.lastReadingPos.tx, this.lastReadingPos.ty, this.lastReadingPos.scale);
+      } else {
+        this.goToZone('top');
+      }
+    } else {
+      // Snapshot current position so re-enabling returns here
+      this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
+      this.readingMode = false;
     }
+    this.onReadingModeChange?.(on);
   }
 
-  private showFirstPanHint(): void {
-    if (this.firstPanHintShown) return;
-    this.firstPanHintShown = true;
-    const hint = document.querySelector<HTMLElement>('.reading-hint');
-    if (hint) {
-      hint.classList.add('on');
-      setTimeout(() => hint.classList.remove('on'), 4000);
-    }
-  }
+  toggleReadingMode(): void { this.setReadingMode(!this.readingMode); }
 
   // MARGIN-REF-SPEC — jumpToArtifact (with preJumpState snapshot)
   jumpToArtifact(slug: string): void {
@@ -400,6 +405,7 @@ export class CanvasEngine {
 
     // Exit reading mode so user sees the canvas
     this.readingMode = false;
+    this.onReadingModeChange?.(false);
 
     // Compute artifact center in canvas coords
     const targetCX = el.offsetLeft + el.offsetWidth / 2;
@@ -431,9 +437,14 @@ export class CanvasEngine {
     this.preJumpState = null;
 
     this.readingMode = snapshot.readingMode;
+    if (snapshot.readingMode) {
+      // Persist the restored position so future re-enables return here, not to top
+      this.lastReadingPos = { tx: snapshot.tx, ty: snapshot.ty, scale: snapshot.scale };
+    }
 
     // Fly back to exact prior camera position
     this.flyToRaw(snapshot.tx, snapshot.ty, snapshot.scale, 600);
+    this.onReadingModeChange?.(this.readingMode);
   }
 
   private returnPillTimer = 0;
@@ -640,23 +651,20 @@ export class CanvasEngine {
 
     this.wrap.addEventListener('pointermove', (e: PointerEvent) => {
       if (!this.isPanning || this.touchState) return;
-      this.tx = this.panStartTX + (e.clientX - this.panStartX);
-      this.ty = this.panStartTY + (e.clientY - this.panStartY);
+      if (this.mode === 'case' && this.readingMode) {
+        // Reading mode: vertical-only pan — horizontal axis locked
+        this.tx = this.panStartTX;
+        this.ty = this.panStartTY + (e.clientY - this.panStartY);
+      } else {
+        this.tx = this.panStartTX + (e.clientX - this.panStartX);
+        this.ty = this.panStartTY + (e.clientY - this.panStartY);
+      }
       const now = performance.now(); const dt = now - this.lastMoveTime;
       if (dt > 0) {
         this.vx = (e.clientX - this.lastMoveX) / dt * 16;
         this.vy = (e.clientY - this.lastMoveY) / dt * 16;
       }
       this.lastMoveX = e.clientX; this.lastMoveY = e.clientY; this.lastMoveTime = now;
-
-      // §3.5 case: exit reading mode on drag > 30px
-      if (this.mode === 'case' && this.readingMode) {
-        const dragDist = Math.hypot(e.clientX - this.panStartX, e.clientY - this.panStartY);
-        if (dragDist > 30) {
-          this.readingMode = false;
-          this.showFirstPanHint();
-        }
-      }
       this.scheduleApply();
     });
 
@@ -777,4 +785,5 @@ export class CanvasEngine {
   reset(): void { this.mode === 'workbench' ? this.resetView() : this.goToZone('top'); }
   rebuild(): void { this.buildMinimap(); }
   dismissHelp(): void { this.helpSeen = true; sessionStorage.setItem('sivanesh.helpSeen', '1'); }
+  getReadingMode(): boolean { return this.readingMode; }
 }
