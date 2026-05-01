@@ -95,6 +95,7 @@ export class CanvasEngine {
   private preJumpState: { tx: number; ty: number; scale: number; readingMode: boolean } | null = null;
   private lastReadingPos: { tx: number; ty: number; scale: number } | null = null;
   private hasHorizontallyPanned = false;
+  private readingPosTimer = 0;
   private onReadingModeChange: ((on: boolean) => void) | null = null;
 
   constructor(config: CanvasEngineConfig) {
@@ -162,10 +163,14 @@ export class CanvasEngine {
     const newScale = clamp(this.scale * deltaScale, this.minScale, this.maxScale);
     if (newScale === this.scale) return;
     const cw = innerWidth / 2; const ch = innerHeight / 2;
-    const canvasX = (screenX - cw - this.tx) / this.scale;
-    const canvasY = (screenY - ch - this.ty) / this.scale;
-    this.tx = screenX - cw - canvasX * newScale;
-    this.ty = screenY - ch - canvasY * newScale;
+    // Reading mode: anchor zoom to viewport center so the reading column
+    // never shifts left/right — zoom always feels "in place"
+    const anchorX = (this.mode === 'case' && this.readingMode) ? cw : screenX;
+    const anchorY = (this.mode === 'case' && this.readingMode) ? ch : screenY;
+    const canvasX = (anchorX - cw - this.tx) / this.scale;
+    const canvasY = (anchorY - ch - this.ty) / this.scale;
+    this.tx = anchorX - cw - canvasX * newScale;
+    this.ty = anchorY - ch - canvasY * newScale;
     this.scale = newScale;
     this.apply();
   }
@@ -631,9 +636,19 @@ export class CanvasEngine {
       } else {
         // Reading mode: block horizontal wheel/trackpad scroll
         if (!(this.mode === 'case' && this.readingMode)) this.tx -= e.deltaX;
-        // Detect horizontal wheel as intentional X movement
-        if (this.mode === 'case' && !this.readingMode && !this.hasHorizontallyPanned && Math.abs(e.deltaX) > 8) {
-          this.hasHorizontallyPanned = true;
+        if (this.mode === 'case' && !this.readingMode) {
+          if (!this.hasHorizontallyPanned && Math.abs(e.deltaX) > 8) {
+            this.hasHorizontallyPanned = true;
+          }
+          // Debounced update: track vertical-only wheel scroll position
+          if (!this.hasHorizontallyPanned) {
+            clearTimeout(this.readingPosTimer);
+            this.readingPosTimer = window.setTimeout(() => {
+              if (!this.hasHorizontallyPanned) {
+                this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
+              }
+            }, 200);
+          }
         }
         this.ty -= e.deltaY;
         this.scheduleApply();
