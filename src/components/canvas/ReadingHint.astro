@@ -1,17 +1,30 @@
 ---
 ---
-<div class="reading-hint">Reading mode on — tap <kbd>⊟</kbd> to explore the canvas freely</div>
+<div class="reading-hint">Reading mode on</div>
 
 <style>
   /* §6.6 */
   .reading-hint{
-    position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:25;
+    position:fixed;
+    /* left/bottom overridden by JS to anchor above reader button */
+    bottom:80px;left:50%;
+    transform:translateX(-50%);
+    z-index:35;
     background:rgba(26,26,28,.92);color:#f5ede0;
-    padding:8px 14px;
-    font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    padding:6px 12px;
+    font-family:var(--fm);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
     white-space:nowrap;
-    opacity:0;pointer-events:none;transition:opacity .4s;
+    opacity:0;pointer-events:none;transition:opacity .35s;
+    border-radius:2px;
+  }
+  /* Downward arrow pointing at the reader button below */
+  .reading-hint::after{
+    content:'';
+    position:absolute;
+    top:100%;left:50%;
+    transform:translateX(-50%);
+    border:5px solid transparent;
+    border-top-color:rgba(26,26,28,.92);
   }
   :global(.reading-hint.on){opacity:.95}
-  .reading-hint kbd{background:rgba(255,240,200,.1);padding:2px 6px;border-radius:2px;margin:0 2px}
 </style>

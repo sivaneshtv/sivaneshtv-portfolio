@@ -94,6 +94,7 @@ export class CanvasEngine {
   private firstPanHintShown = false;
   private preJumpState: { tx: number; ty: number; scale: number; readingMode: boolean } | null = null;
   private lastReadingPos: { tx: number; ty: number; scale: number } | null = null;
+  private hasHorizontallyPanned = false;
   private onReadingModeChange: ((on: boolean) => void) | null = null;
 
   constructor(config: CanvasEngineConfig) {
@@ -369,6 +370,7 @@ export class CanvasEngine {
   setReadingMode(on: boolean): void {
     if (on) {
       this.readingMode = true;
+      this.hasHorizontallyPanned = false;
       this.computeReaderLayout();
       this.refreshZoneTargets();
       // Return to last reading position; fall back to top zone on first open
@@ -468,11 +470,19 @@ export class CanvasEngine {
   // §3.5 — Inertia
   private inertiaTick = (): void => {
     if (!this.decelerating) return;
+    // Reading mode: zero out horizontal velocity so inertia can't drift X
+    if (this.mode === 'case' && this.readingMode) this.vx = 0;
     this.tx += this.vx; this.ty += this.vy;
     this.vx *= 0.92; this.vy *= 0.92;
     this.apply();
     if (Math.hypot(this.vx, this.vy) > 0.3) requestAnimationFrame(this.inertiaTick);
-    else this.decelerating = false;
+    else {
+      this.decelerating = false;
+      // Inertia settled — if still vertical-only, keep lastReadingPos current
+      if (this.mode === 'case' && !this.readingMode && !this.hasHorizontallyPanned) {
+        this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
+      }
+    }
   };
 
   // Zone detection
@@ -619,7 +629,13 @@ export class CanvasEngine {
       if (e.ctrlKey || e.metaKey) {
         this.zoomAt(Math.pow(0.9985, e.deltaY), e.clientX, e.clientY);
       } else {
-        this.tx -= e.deltaX; this.ty -= e.deltaY;
+        // Reading mode: block horizontal wheel/trackpad scroll
+        if (!(this.mode === 'case' && this.readingMode)) this.tx -= e.deltaX;
+        // Detect horizontal wheel as intentional X movement
+        if (this.mode === 'case' && !this.readingMode && !this.hasHorizontallyPanned && Math.abs(e.deltaX) > 8) {
+          this.hasHorizontallyPanned = true;
+        }
+        this.ty -= e.deltaY;
         this.scheduleApply();
       }
     }, { passive: false });
@@ -658,6 +674,10 @@ export class CanvasEngine {
       } else {
         this.tx = this.panStartTX + (e.clientX - this.panStartX);
         this.ty = this.panStartTY + (e.clientY - this.panStartY);
+        // Track whether horizontal movement has occurred since reading mode was last exited
+        if (this.mode === 'case' && !this.hasHorizontallyPanned) {
+          if (Math.abs(e.clientX - this.panStartX) > 12) this.hasHorizontallyPanned = true;
+        }
       }
       const now = performance.now(); const dt = now - this.lastMoveTime;
       if (dt > 0) {
@@ -675,6 +695,9 @@ export class CanvasEngine {
       if (Math.hypot(this.vx, this.vy) > 2) {
         this.decelerating = true;
         requestAnimationFrame(this.inertiaTick);
+      } else if (this.mode === 'case' && !this.readingMode && !this.hasHorizontallyPanned) {
+        // Purely vertical pan ended — keep lastReadingPos current
+        this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
       }
     });
     this.wrap.addEventListener('pointercancel', () => {

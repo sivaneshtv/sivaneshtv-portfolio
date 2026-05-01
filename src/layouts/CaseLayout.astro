@@ -232,17 +232,32 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     }
   }
 
-  // Reading mode hint — show once on first case study visit
-  if (!sessionStorage.getItem('sivanesh.rmHintSeen')) {
+  // Reading mode hint — show on every page load, anchored above reader button
+  (() => {
     const rmHint = document.querySelector<HTMLElement>('.reading-hint');
-    if (rmHint) {
-      setTimeout(() => rmHint.classList.add('on'), 1200);
-      setTimeout(() => {
-        rmHint.classList.remove('on');
-        sessionStorage.setItem('sivanesh.rmHintSeen', '1');
-      }, 6200);
-    }
-  }
+    const btn = document.getElementById('btnReader');
+    if (!rmHint || !btn) return;
+
+    // Position hint above the reader button
+    const anchorHint = () => {
+      const r = btn.getBoundingClientRect();
+      rmHint.style.left = (r.left + r.width / 2) + 'px';
+      rmHint.style.bottom = (window.innerHeight - r.top + 10) + 'px';
+    };
+    anchorHint();
+
+    let dismissed = false;
+    const dismiss = () => {
+      if (dismissed) return;
+      dismissed = true;
+      rmHint.classList.remove('on');
+    };
+    setTimeout(() => { anchorHint(); rmHint.classList.add('on'); }, 800);
+    setTimeout(dismiss, 9000);
+    const once = { once: true } as const;
+    document.getElementById('canvasWrap')?.addEventListener('pointerdown', dismiss, once);
+    btn.addEventListener('click', dismiss, once);
+  })();
 
   // Theme toggle
   document.getElementById('themeToggle')?.addEventListener('click', () => {
