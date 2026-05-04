@@ -96,6 +96,20 @@ export class CanvasEngine {
   private lastReadingPos: { tx: number; ty: number; scale: number } | null = null;
   private hasHorizontallyPanned = false;
   private readingPosTimer = 0;
+
+  // Dynamic will-change management — enables GPU layer during animation,
+  // removes it at rest so canvas rasterises at device pixel resolution (crisp text)
+  private willChangeTimer = 0;
+  private activateWillChange(): void {
+    clearTimeout(this.willChangeTimer);
+    this.canvas.style.willChange = 'transform';
+  }
+  private deactivateWillChange(delay = 400): void {
+    clearTimeout(this.willChangeTimer);
+    this.willChangeTimer = window.setTimeout(() => {
+      this.canvas.style.willChange = 'auto';
+    }, delay);
+  }
   private onReadingModeChange: ((on: boolean) => void) | null = null;
 
   constructor(config: CanvasEngineConfig) {
@@ -179,6 +193,7 @@ export class CanvasEngine {
   private flyTo(targetCX: number, targetCY: number, targetScale: number, duration = 650): void {
     if (this.flightAnim) cancelAnimationFrame(this.flightAnim);
     this.decelerating = false;
+    this.activateWillChange();
     const startTX = this.tx; const startTY = this.ty; const startScale = this.scale;
 
     let yBias = 0;
@@ -199,7 +214,7 @@ export class CanvasEngine {
       this.scale = startScale + (targetScale - startScale) * e;
       this.apply();
       if (t < 1) this.flightAnim = requestAnimationFrame(step);
-      else this.flightAnim = null;
+      else { this.flightAnim = null; this.deactivateWillChange(); }
     };
     this.flightAnim = requestAnimationFrame(step);
   }
@@ -208,6 +223,7 @@ export class CanvasEngine {
   private flyToRaw(endTX: number, endTY: number, endScale: number, duration = 600): void {
     if (this.flightAnim) cancelAnimationFrame(this.flightAnim);
     this.decelerating = false;
+    this.activateWillChange();
     const startTX = this.tx; const startTY = this.ty; const startScale = this.scale;
     const t0 = performance.now();
     const step = (now: number) => {
@@ -218,7 +234,7 @@ export class CanvasEngine {
       this.scale = startScale + (endScale - startScale) * e;
       this.apply();
       if (t < 1) this.flightAnim = requestAnimationFrame(step);
-      else this.flightAnim = null;
+      else { this.flightAnim = null; this.deactivateWillChange(); }
     };
     this.flightAnim = requestAnimationFrame(step);
   }
@@ -483,10 +499,10 @@ export class CanvasEngine {
     if (Math.hypot(this.vx, this.vy) > 0.3) requestAnimationFrame(this.inertiaTick);
     else {
       this.decelerating = false;
-      // Inertia settled — if still vertical-only, keep lastReadingPos current
       if (this.mode === 'case' && !this.readingMode && !this.hasHorizontallyPanned) {
         this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
       }
+      this.deactivateWillChange();
     }
   };
 
@@ -631,6 +647,8 @@ export class CanvasEngine {
     // §3.8 — Wheel
     this.wrap.addEventListener('wheel', (e: WheelEvent) => {
       e.preventDefault();
+      this.activateWillChange();
+      this.deactivateWillChange(300);
       if (e.ctrlKey || e.metaKey) {
         this.zoomAt(Math.pow(0.9985, e.deltaY), e.clientX, e.clientY);
       } else {
@@ -671,6 +689,7 @@ export class CanvasEngine {
         if (e.button !== 0 && e.button !== undefined) return;
       } else { e.preventDefault(); }
       this.isPanning = true; this.decelerating = false;
+      this.activateWillChange();
       this.vx = 0; this.vy = 0;
       this.panStartX = e.clientX; this.panStartY = e.clientY;
       this.panStartTX = this.tx; this.panStartTY = this.ty;
@@ -710,9 +729,11 @@ export class CanvasEngine {
       if (Math.hypot(this.vx, this.vy) > 2) {
         this.decelerating = true;
         requestAnimationFrame(this.inertiaTick);
-      } else if (this.mode === 'case' && !this.readingMode && !this.hasHorizontallyPanned) {
-        // Purely vertical pan ended — keep lastReadingPos current
-        this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
+      } else {
+        if (this.mode === 'case' && !this.readingMode && !this.hasHorizontallyPanned) {
+          this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
+        }
+        this.deactivateWillChange();
       }
     });
     this.wrap.addEventListener('pointercancel', () => {
@@ -782,6 +803,7 @@ export class CanvasEngine {
     this.wrap.addEventListener('touchmove', (e) => {
       if (this.touchState && this.touchState.mode === 'pinch' && e.touches.length === 2) {
         e.preventDefault();
+        this.activateWillChange();
         const t1 = e.touches[0], t2 = e.touches[1];
         const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
         const newScale = clamp(this.touchState.startScale * (dist / this.touchState.startDist), this.minScale, this.maxScale);
@@ -793,7 +815,7 @@ export class CanvasEngine {
         this.scale = newScale; this.scheduleApply();
       }
     }, { passive: false });
-    this.wrap.addEventListener('touchend', () => { this.touchState = null; });
+    this.wrap.addEventListener('touchend', () => { this.touchState = null; this.deactivateWillChange(); });
 
     // §3.17 — Click-vs-drag
     this.wrap.addEventListener('pointerdown', (e) => { this.clickStart = { x: e.clientX, y: e.clientY }; }, true);

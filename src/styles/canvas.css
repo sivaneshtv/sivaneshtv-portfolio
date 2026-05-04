@@ -26,7 +26,12 @@
   position:absolute;top:50%;left:50%;
   transform-origin:0 0;
   transition:none;
-  will-change:transform;
+  /* will-change managed dynamically in CanvasEngine — enabled during animation,
+     removed at rest so the GPU layer rasterises at device pixel resolution (DPR)
+     instead of CSS pixel resolution, which keeps text crisp on retina screens */
+  will-change:auto;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
   background-image:radial-gradient(circle at 1px 1px,rgba(40,35,25,.22) 1px,transparent 1px);
   background-size:28px 28px;
   background-position:0 0;

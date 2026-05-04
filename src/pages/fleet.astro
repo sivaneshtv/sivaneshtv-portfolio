@@ -33,11 +33,9 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         { k: 'Domain', v: 'Drone Autonomy · ROC Operations' },
       ]} />
 
-      <ImgSlot variant="hero"
-        label="Image slot 01 · Hero shot"
-        title="Fleet View in live operation"
-        desc={"Full screenshot of Fleet View with multiple active drones, live video feeds from several, the map showing all positions, and the alert panel with a few mixed-severity alerts. The \"one operator, many drones\" moment."}
-        dims="16 : 10 · ideally 2400 × 1500 px"
+      <ImgSlot variant="wide"
+        src="/assets/fleet/fleet-hero.png"
+        alt="Fleet View — multiple active drones, live video feeds, map and alert panel in live operation"
         cap="Fleet View — 8 drones, 2 sites, 13 alerts · live"
         capMeta="the interface"
       />
@@ -151,10 +149,8 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <MarginRef jump="grouping">↗ see the grouping architecture</MarginRef>
 
         <ImgSlot variant="wide"
-          label="Image slot 03 · The grouping model"
-          title="Grouping vs filtering"
-          desc="Side-by-side comparison showing how standard filtering removes rows vs how grouping keeps drones visible with collapsed summaries. Ideally shows the actual Fleet View list with a group collapsed, the header count still visible."
-          dims="16 : 9 · ideally 2000 × 1125 px"
+          src="/assets/fleet/fleet-grouping.png"
+          alt="Fleet View grouping architecture — drones grouped by state, collapsed groups showing count"
           cap="Grouping preserves awareness — filtering destroys it"
           capMeta="the rule"
         />
@@ -174,10 +170,8 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <Callout><p><em>App drawer hosts two kinds of tools.</em> Layer 0 squeezes the body to make space. Layer 1 overlays it without displacement. Never both at once. The operator always knows whether their workspace shrank or stayed.</p></Callout>
 
         <ImgSlot variant="wide"
-          label="Image slot 04 · Four-panel layout"
-          title="The always-on fleet environment"
-          desc="Annotated Fleet View screenshot calling out the four panels — list, map, video wall, alerts — with arrows showing one cross-panel sync moment (e.g., operator clicks an alert, map highlights drone, video border lights up)."
-          dims="16 : 9 · ideally 2200 × 1240 px"
+          src="/assets/fleet/fleet-interface.png"
+          alt="Fleet View four-panel interface — drone list, map, video wall, and alerts panel all synchronised"
           cap="Four panels, synchronised state · every drone always visible"
           capMeta="the layout"
         />
@@ -202,11 +196,9 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         </Body>
         <MarginRef jump="alarm-flow">↗ see the alarm dispatch flow</MarginRef>
 
-        <ImgSlot variant="square"
-          label="Image slot 05 · Alarm response"
-          title="The alarm card — open"
-          desc="Screenshot of the alarm response workspace expanded in the right panel: alarm name, description, automation state, drone assignment, Mission/GTL configuration, Send Drone button. Ideally a 2-frame sequence showing Auto state vs Manual state of the same alarm."
-          dims="4 : 3 · ideally 1600 × 1200 px"
+        <ImgSlot variant="wide"
+          src="/assets/fleet/fleet-alarm.png"
+          alt="Fleet View alarm response card — automation state, drone assignment, Mission and GTL configuration"
           cap="Alarm response · Manual path, drone being assigned"
           capMeta="the moment"
         />

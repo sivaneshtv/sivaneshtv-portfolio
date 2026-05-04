@@ -114,5 +114,10 @@ const isSplit = variant === 'split' && halves;
   .img-slot.split .img-slot-desc{font-size:11px}
 
   .img-slot :global(img){width:100%;height:auto;display:block}
-  .img-slot:has(> img){aspect-ratio:auto !important;overflow:visible !important}
+  .img-slot:has(> img){
+    aspect-ratio:auto !important;
+    overflow:visible !important;
+    border:none;
+    background:transparent;
+  }
 </style>
