@@ -808,10 +808,14 @@ export class CanvasEngine {
         const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
         const newScale = clamp(this.touchState.startScale * (dist / this.touchState.startDist), this.minScale, this.maxScale);
         const cw = innerWidth / 2, ch = innerHeight / 2;
-        const cx = (this.touchState.cx - cw - this.touchState.startTX) / this.touchState.startScale;
-        const cy = (this.touchState.cy - ch - this.touchState.startTY) / this.touchState.startScale;
-        this.tx = this.touchState.cx - cw - cx * newScale;
-        this.ty = this.touchState.cy - ch - cy * newScale;
+        // Reading mode: anchor pinch zoom to viewport center (= reading column center)
+        // so the column never shifts sideways during pinch — matches zoomAt() behaviour
+        const anchorX = (this.mode === 'case' && this.readingMode) ? cw : this.touchState.cx;
+        const anchorY = (this.mode === 'case' && this.readingMode) ? ch : this.touchState.cy;
+        const cx = (anchorX - cw - this.touchState.startTX) / this.touchState.startScale;
+        const cy = (anchorY - ch - this.touchState.startTY) / this.touchState.startScale;
+        this.tx = anchorX - cw - cx * newScale;
+        this.ty = anchorY - ch - cy * newScale;
         this.scale = newScale; this.scheduleApply();
       }
     }, { passive: false });
