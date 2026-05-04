@@ -72,7 +72,7 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   .topbar{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:center;padding:20px 28px;pointer-events:none;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .topbar > *{pointer-events:auto}
   .tb-logo-wrap{position:relative}
-  .tb-logo{display:flex;align-items:center;gap:10px;font-family:var(--fs);font-weight:600;font-size:14px;color:var(--ink);background:rgba(232,228,219,.97);padding:8px 12px 8px 10px;border:1px solid rgba(40,35,25,.12);box-shadow:0 4px 14px rgba(40,35,25,.08);cursor:pointer;transition:background .2s,border-color .2s;text-decoration:none}
+  .tb-logo{display:flex;align-items:center;gap:10px;font-family:var(--fs);font-weight:600;font-size:14px;color:var(--ink);background:#e8e4db;padding:8px 12px 8px 10px;border:1px solid rgba(40,35,25,.12);box-shadow:0 4px 14px rgba(40,35,25,.08);cursor:pointer;transition:background .2s,border-color .2s;text-decoration:none}
   .tb-logo:hover{background:rgba(232,228,219,1);border-color:rgba(40,35,25,.25)}
   .tb-logo-sub{color:var(--ink-3);font-weight:400;font-size:12px}
   .back-ic{display:inline-flex;align-items:center;justify-content:center;width:14px;color:var(--ink-2);transition:transform .2s,color .2s}
@@ -88,7 +88,7 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     transition:background .2s,border-color .2s;
   }
   .tb-contact:hover{background:#b82b22;border-color:#b82b22}
-  .toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateZ(0);-webkit-transform:translateX(-50%) translateZ(0);z-index:30;display:flex;align-items:center;gap:2px;background:rgba(232,228,219,.97);border:1px solid rgba(40,35,25,.12);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+  .toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateZ(0);-webkit-transform:translateX(-50%) translateZ(0);z-index:30;display:flex;align-items:center;gap:2px;background:#e8e4db;border:1px solid rgba(40,35,25,.12);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .tb-divider{width:1px;height:22px;background:rgba(40,35,25,.15);margin:0 4px;flex-shrink:0}
   .tb-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);transition:background .2s,color .2s;border-radius:2px}
   .tb-btn:hover{background:rgba(40,35,25,.08);color:var(--ink)}
@@ -98,7 +98,7 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   [data-theme="dark"] .tb-btn.active:hover{background:rgba(216,53,42,.18)}
   .tb-btn svg{display:block}
   .tb-zoom{font-family:var(--fm);font-size:11px;letter-spacing:.08em;color:var(--ink-2);padding:0 12px;min-width:58px;text-align:center}
-  .minimap{position:fixed;bottom:20px;right:20px;z-index:30;width:160px;height:112px;background:rgba(232,228,219,.97);border:1px solid rgba(40,35,25,.15);box-shadow:0 4px 16px rgba(40,35,25,.12);overflow:hidden;cursor:pointer;contain:layout style;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+  .minimap{position:fixed;bottom:20px;right:20px;z-index:30;width:160px;height:112px;background:#e8e4db;border:1px solid rgba(40,35,25,.15);box-shadow:0 4px 16px rgba(40,35,25,.12);overflow:hidden;cursor:pointer;contain:layout style;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .minimap-canvas{position:absolute;inset:4px;background:transparent}
   .minimap-dot{position:absolute;background:var(--ink);border-radius:1px;opacity:.55}
   .minimap-dot.work{background:var(--marker-red);opacity:.75}
@@ -111,11 +111,11 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     .tb-logo{padding:6px 10px;font-size:12px}
     .tb-logo-sub{display:none}
     .tb-contact{font-size:9px;height:32px;padding:0 10px}
-    .toolbar{bottom:12px;padding:4px;gap:1px}
+    .toolbar{bottom:12px;left:12px;-webkit-transform:translateZ(0);transform:translateZ(0);padding:4px;gap:1px}
     .tb-btn{width:32px;height:32px}
     .tb-zoom{padding:0 6px;min-width:46px;font-size:10px}
     .tb-divider{height:18px;margin:0 2px}
-    .minimap{width:96px;height:68px;bottom:62px;right:12px}
+    .minimap{width:96px;height:68px;bottom:12px;right:12px}
     .mobile-hint{display:block}
   }
   @media(prefers-reduced-motion:reduce){
