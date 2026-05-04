@@ -27,17 +27,15 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
       />
 
       <MetaRow items={[
-        { k: 'Role', v: 'Lead Product Designer' },
+        { k: 'Role', v: 'Product designer' },
         { k: 'Year', v: '2025' },
-        { k: 'Scope', v: 'Full module design · Reports page by Arpita' },
-        { k: 'Tools', v: 'Figma · Lovable · Claude Code' },
+        { k: 'Scope', v: 'End-to-end UX, Prototype' },
+        { k: 'Tools', v: 'Figma · Lovable' },
       ]} />
 
       <ImgSlot variant="hero"
-        label="Image slot 01 · Hero shot"
-        title="The Assets dashboard"
-        desc="Screenshot of the Assets page — left nav rail, asset tree with sector grouping, map with annotated zones and asset pins. The &quot;this is what it is&quot; frame."
-        dims="16 : 9 · ideally 2400 × 1350 px"
+        src="/assets/asset/asset-hero.png"
+        alt="Asset Management dashboard — left nav rail, asset tree grouped by sector, map with zone annotations and asset pins"
         cap="Asset Management · the main view"
         capMeta="the interface"
       />
@@ -79,12 +77,24 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <MarginRef jump="shift-principle">↗ see the shift principle</MarginRef>
 
         <ImgSlot variant="wide"
-          label="Image slot 02 · Asset detail"
-          title="One asset, complete"
-          desc="Screenshot of the Asset Detail page (Industrial Generator Unit). Shows the depth a single asset holds — category, status, inspection history, reference images, location on the map. This is the record that didn't exist before."
-          dims="16 : 9 · ideally 2200 × 1240 px"
+          src="/assets/asset/asset-detail-generator.png"
+          alt="Asset Detail page — Industrial Generator Unit showing category, status, inspection history, reference images and map location"
           cap="Asset Detail · Industrial Generator Unit"
           capMeta="a first-class record"
+        />
+
+        <ImgSlot variant="wide"
+          src="/assets/asset/asset-image-collab.png"
+          alt="Asset media viewer with image annotation and collaboration — comments threaded to inspection captures"
+          cap="Asset Detail · image viewer and collaboration"
+          capMeta="media in context"
+        />
+
+        <ImgSlot variant="wide"
+          src="/assets/asset/asset-compare.png"
+          alt="Asset compare view — two inspection captures from different dates side by side showing change over time"
+          cap="Asset Detail · inspection comparison"
+          capMeta="change over time"
         />
       </Section>
 
@@ -99,12 +109,17 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         </Body>
 
         <ImgSlot variant="wide"
-          label="Image slot 03 · Inspection profiles"
-          title="Templates in action"
-          desc="Screenshot of the Inspection Profiles tab — profile cards with named viewpoints (8th Avenue, 9th Drive, 10th Avenue), drone model, camera, distance, viewpoint count. Plus the asset map showing numbered viewpoints 1-4 around the asset. The payoff of the abstraction."
-          dims="16 : 9 · ideally 2200 × 1240 px"
+          src="/assets/asset/asset-inspection-profiles.png"
+          alt="Inspection Profiles tab — named viewpoint profile cards showing drone model, camera, distance and viewpoint count with asset map"
           cap="Inspection Profiles · reusable viewpoint definitions"
           capMeta="templatization"
+        />
+
+        <ImgSlot variant="wide"
+          src="/assets/asset/asset-profile-creation.png"
+          alt="Inspection profile creation flow — grid and viewpoint type selection with drone, camera and coverage parameter configuration"
+          cap="Profile creation · Grid and Viewpoints types"
+          capMeta="setup once, reuse always"
         />
       </Section>
 
@@ -122,12 +137,38 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         </Body>
 
         <ImgSlot variant="wide"
-          label="Image slot 04 · The module home"
-          title="Five pages, one model"
-          desc="Screenshot of the Assets page (the module's home and canonical record view) — left nav rail showing the five pages, asset tree with sector grouping in the centre, map with annotated zones and asset pins on the right. The frame that anchors the whole module."
-          dims="16 : 9 · ideally 2200 × 1240 px"
-          cap="Asset Management home · the module anchor"
-          capMeta="the architecture"
+          src="/assets/asset/asset-page.png"
+          alt="Assets page — the canonical record. Left nav rail, asset tree with sector grouping, map with annotated zones and asset pins"
+          cap="Assets · the canonical record and module home"
+          capMeta="1 of 5"
+        />
+
+        <ImgSlot variant="wide"
+          src="/assets/asset/asset-inspection-logs.png"
+          alt="Inspection Logs page — every inspection searchable with media and map context"
+          cap="Inspection Logs · every inspection, searchable"
+          capMeta="2 of 5 · sliced by flight"
+        />
+
+        <ImgSlot variant="wide"
+          src="/assets/asset/asset-media.png"
+          alt="Media page — all captured images and video chronologically tagged and annotated"
+          cap="Media · every capture, tagged and annotated"
+          capMeta="3 of 5 · sliced by image"
+        />
+
+        <ImgSlot variant="wide"
+          src="/assets/asset/asset-reports.png"
+          alt="Reports page — compliance, maintenance and custom reports generated from asset records"
+          cap="Reports · compliance, maintenance, custom"
+          capMeta="4 of 5 · sliced by stakeholder"
+        />
+
+        <ImgSlot variant="wide"
+          src="/assets/asset/asset-tags.png"
+          alt="Tag Management page — tags as records, create merge rename retire with 1000+ assets"
+          cap="Tag Management · tags as records, not strings"
+          capMeta="5 of 5 · sliced by classification"
         />
       </Section>
 
@@ -136,15 +177,6 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <SectionLabel text="What shipped" num="§ 06" />
         <H2>M1 went live as a <em>second product.</em></H2>
         <Lead>Asset Management shipped as a standalone dashboard inside the FlytBase ecosystem — same authentication, same customer account, separate surface. It's the first FlytBase module that isn't about flying a drone.</Lead>
-
-        <ImgSlot variant="wide"
-          label="Image slot 05 · In production"
-          title="Asset Management, shipped"
-          desc="One of: (a) photo of the module being used by a customer's operations team, (b) a Loom thumbnail of a deployment demo, (c) a redacted screenshot showing the module in a real customer's account with their actual asset count visible."
-          dims="16 : 9 · ideally 2200 × 1240 px"
-          cap="Asset Management — live in production"
-          capMeta="evidence"
-        />
 
         <Outcome items={[
           { n: '1000+', l: 'Assets at import', d: 'KML and CSV import handles the scale Devon Energy and enterprise customers actually have.' },
