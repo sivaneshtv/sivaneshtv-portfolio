@@ -21,6 +21,19 @@ const { items } = Astro.props;
   }
   .r-meta-item{padding:4px 16px;border-left:1px dashed rgba(40,35,25,.15)}
   .r-meta-item:first-child{border-left:none;padding-left:0}
-  .r-meta-k{font-family:var(--fm);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
-  .r-meta-v{font-family:var(--fs);font-size:13px;color:var(--ink);font-weight:500}
+  .r-meta-k{font-family:var(--fm);font-size:calc(9px * var(--reader-fs,1));letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
+  .r-meta-v{font-family:var(--fs);font-size:calc(13px * var(--reader-fs,1));color:var(--ink);font-weight:500}
+
+  /* 2×2 grid on mobile */
+  @media(max-width:640px){
+    .r-meta{grid-template-columns:repeat(2,1fr)}
+    /* Reset all left borders, then re-apply only to even items */
+    .r-meta-item{border-left:none;padding-left:16px}
+    .r-meta-item:nth-child(even){border-left:1px dashed rgba(40,35,25,.15)}
+    .r-meta-item:first-child{padding-left:0}
+    .r-meta-item:nth-child(2){padding-left:16px}
+    /* Top separator for the second row */
+    .r-meta-item:nth-child(3),.r-meta-item:nth-child(4){border-top:1px dashed rgba(40,35,25,.12);margin-top:12px;padding-top:14px}
+    .r-meta-item:nth-child(3){padding-left:0}
+  }
 </style>

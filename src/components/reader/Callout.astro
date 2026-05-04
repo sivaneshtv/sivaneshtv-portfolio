@@ -16,11 +16,11 @@ const { label = 'the hard part' } = Astro.props;
   }
   .r-callout::before{
     content:attr(data-label);position:absolute;top:-9px;left:16px;
-    font-family:var(--fm);font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);
+    font-family:var(--fm);font-size:calc(8px * var(--reader-fs,1));letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3);
     background:var(--paper);padding:0 8px;
   }
   .r-callout :global(p){
-    font-family:var(--fk);font-weight:400;font-size:17px;line-height:1.55;color:var(--ink);
+    font-family:var(--fk);font-weight:400;font-size:calc(17px * var(--reader-fs,1));line-height:1.55;color:var(--ink);
     margin:0;max-width:none;
   }
   .r-callout :global(p em){color:var(--red)}

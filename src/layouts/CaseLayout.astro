@@ -111,11 +111,11 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     .tb-logo{padding:6px 10px;font-size:12px}
     .tb-logo-sub{display:none}
     .tb-contact{font-size:9px;height:32px;padding:0 10px}
-    .toolbar{bottom:12px;left:12px;-webkit-transform:translateZ(0);transform:translateZ(0);padding:4px;gap:1px}
+    .toolbar{bottom:12px;left:50%;-webkit-transform:translateX(-50%) translateZ(0);transform:translateX(-50%) translateZ(0);padding:4px;gap:1px}
     .tb-btn{width:32px;height:32px}
     .tb-zoom{padding:0 6px;min-width:46px;font-size:10px}
     .tb-divider{height:18px;margin:0 2px}
-    .minimap{width:96px;height:68px;bottom:12px;right:12px}
+    .minimap{display:none}
     .mobile-hint{display:block}
   }
   @media(prefers-reduced-motion:reduce){
