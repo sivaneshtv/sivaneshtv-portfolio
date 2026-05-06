@@ -4,19 +4,19 @@
  */
 
 export const zones = {
-  hello:   { cx: 2400, cy: 2000, scale: 0.29 },
-  about:   { cx: 900, cy: 2100, scale: 0.65 },
-  work:    { cx: 4100, cy: 2200, scale: 0.55 },
-  howwork: { cx: 1700, cy: 3450, scale: 0.55 },
-  contact: { cx: 4200, cy: 3620, scale: 0.65 },
+  hello:   { cx: 2313, cy: 1910, scale: 0.90 },
+  about:   { cx: 900,  cy: 2135, scale: 0.65 },
+  work:    { cx: 4080, cy: 1960, scale: 0.72 },
+  howwork: { cx: 1700, cy: 3465, scale: 0.84 },
+  contact: { cx: 4200, cy: 3540, scale: 0.90 },
 } as const;
 
 export const zoneBounds = {
-  hello:   { x1: 1800, y1: 1400, x2: 3200, y2: 2100 },
-  about:   { x1:  450, y1: 1500, x2: 1400, y2: 2700 },
-  work:    { x1: 3400, y1: 1600, x2: 4800, y2: 2900 },
-  howwork: { x1: 1100, y1: 3000, x2: 2400, y2: 4000 },
-  contact: { x1: 3500, y1: 3200, x2: 4700, y2: 3850 },
+  hello:   { x1: 1800, y1: 1380, x2: 3300, y2: 2400 },
+  about:   { x1:  380, y1: 1500, x2: 1450, y2: 2700 },
+  work:    { x1: 3400, y1: 1380, x2: 4800, y2: 2700 },
+  howwork: { x1: 1050, y1: 2900, x2: 2400, y2: 4000 },
+  contact: { x1: 3500, y1: 3200, x2: 4800, y2: 4000 },
 } as const;
 
 export const zoneNav = [

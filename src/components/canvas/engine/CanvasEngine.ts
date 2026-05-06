@@ -201,6 +201,9 @@ export class CanvasEngine {
       if (innerWidth <= 420)       yBias = innerHeight * 0.18;
       else if (innerWidth <= 640)  yBias = innerHeight * 0.14;
       else if (innerWidth <= 1100) yBias = innerHeight * 0.08;
+    } else if (this.mode === 'workbench') {
+      // Push zone content below the topbar (~64px) so it lands in the usable viewport
+      yBias = 40;
     }
 
     const endTX = -targetCX * targetScale;
@@ -246,15 +249,12 @@ export class CanvasEngine {
       const vw = innerWidth;
       let targetScale = z.scale;
       let targetCX = z.cx;
-      // Hello zone: fixed 29% for all screen sizes — no mobile multiplier
-      if (name !== 'hello') {
-        if (vw <= 520) {
-          targetScale = z.scale * 0.55;
-          // Work zone: zoom out more + shift left so polaroids have left breathing space
-          if (name === 'work') { targetScale = z.scale * 0.46; targetCX = z.cx - 20; }
-        } else if (vw <= 820) targetScale = z.scale * 0.72;
-        else if (vw <= 1100) targetScale = z.scale * 0.88;
-      }
+      if (vw <= 520) {
+        targetScale = z.scale * 0.55;
+        // Work zone: zoom out more + center on polaroid cluster
+        if (name === 'work') { targetScale = z.scale * 0.46; targetCX = z.cx - 20; }
+      } else if (vw <= 820) targetScale = z.scale * 0.72;
+      else if (vw <= 1100) targetScale = z.scale * 0.88;
       this.flyTo(targetCX, z.cy, targetScale, 700);
     } else {
       this.flyTo(z.cx, z.cy, z.scale, 700);
@@ -268,18 +268,16 @@ export class CanvasEngine {
     let targetCX = z.cx;
     if (this.mode === 'workbench') {
       const vw = innerWidth;
-      // Hello zone: fixed 29% for all screen sizes — no mobile multiplier
-      if (name !== 'hello') {
-        if (vw <= 520) {
-          targetScale = z.scale * 0.55;
-          if (name === 'work') { targetScale = z.scale * 0.46; targetCX = z.cx - 20; }
-        } else if (vw <= 820) targetScale = z.scale * 0.72;
-        else if (vw <= 1100) targetScale = z.scale * 0.88;
-      }
+      if (vw <= 520) {
+        targetScale = z.scale * 0.55;
+        if (name === 'work') { targetScale = z.scale * 0.46; targetCX = z.cx - 20; }
+      } else if (vw <= 820) targetScale = z.scale * 0.72;
+      else if (vw <= 1100) targetScale = z.scale * 0.88;
     }
+    const yBias = this.mode === 'workbench' ? 40 : 0;
     this.scale = targetScale;
     this.tx = -targetCX * targetScale;
-    this.ty = -z.cy * targetScale;
+    this.ty = -z.cy * targetScale + yBias;
     this.apply();
   }
 
@@ -289,6 +287,11 @@ export class CanvasEngine {
   }
 
   private fitView(): void {
+    // On mobile workbench, "fit" means "go home" — full canvas fit is meaningless at small size
+    if (this.mode === 'workbench' && innerWidth <= 820) {
+      this.goToZone('hello');
+      return;
+    }
     const s = Math.min(innerWidth / this.CANVAS_W, innerHeight / this.CANVAS_H) * 0.92;
     this.flyTo(this.CANVAS_W / 2, this.CANVAS_H / 2, clamp(s, this.minScale, this.maxScale));
   }
@@ -650,6 +653,12 @@ export class CanvasEngine {
 
   // ── Event binding ────────────────────────────────────
   private bindEvents(): void {
+    // Mobile: blur focused element on touchend so buttons don't stay in pressed state
+    document.addEventListener('touchend', () => {
+      const el = document.activeElement;
+      if (el instanceof HTMLElement) el.blur();
+    }, { passive: true });
+
     // §3.8 — Wheel
     this.wrap.addEventListener('wheel', (e: WheelEvent) => {
       e.preventDefault();
