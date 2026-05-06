@@ -309,6 +309,11 @@ import {
   .nav-row .nav-name{flex:1;line-height:1}
   .nav-row .nav-ar{font-family:var(--fm);font-size:11px;color:var(--ink-4);transition:color .18s,transform .2s}
   .nav-row:hover .nav-ar{color:var(--marker-red);transform:translate(2px,-2px)}
+  /* Contact CTA — tonal orange tint */
+  .nav-row[data-zone="contact"]{background:rgba(216,53,42,.1);color:var(--red);margin-top:4px}
+  .nav-row[data-zone="contact"] .nav-ic,.nav-row[data-zone="contact"] .nav-ar{color:var(--red)}
+  .nav-row[data-zone="contact"]:hover{background:rgba(216,53,42,.18);color:var(--red)}
+  .nav-row[data-zone="contact"]:hover .nav-ic,.nav-row[data-zone="contact"]:hover .nav-ar{color:var(--red)}
   .toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:2px;background:#e8e4db;border:1px solid rgba(40,35,25,.12);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08);-webkit-transform:translateX(-50%) translateZ(0);transform:translateX(-50%) translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .tb-divider{width:1px;height:22px;background:rgba(40,35,25,.15);margin:0 4px;flex-shrink:0}
   .tb-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);transition:background .2s,color .2s;border-radius:2px}

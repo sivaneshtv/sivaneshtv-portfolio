@@ -19,6 +19,8 @@
   --tape:#f5e6a8;
   --tape-2:#d8d2c0;
   --paper:#fbfaf4;
+  --meta-rule:rgba(40,35,25,.2);
+  --meta-rule-soft:rgba(40,35,25,.15);
   --fs:'Inter',sans-serif;
   --fm:'JetBrains Mono',monospace;
   --fh:'Caveat',cursive;
@@ -46,4 +48,6 @@
   --tape:#4a4230;
   --tape-2:#3a3830;
   --paper:#2a2a2c;
+  --meta-rule:rgba(240,236,228,.2);
+  --meta-rule-soft:rgba(240,236,228,.15);
 }

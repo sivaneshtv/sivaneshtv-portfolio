@@ -119,11 +119,11 @@ export const workZone = {
   polaroids: [
     {
       x: 3500, y: 1700, rotation: -3, href: '/cockpit',
-      caption: 'Cockpit View <em>2.0</em>', meta: '2024 · Drone Autonomy',
+      caption: 'Cockpit View <em>2.0</em>', meta: '2026 · Drone Autonomy',
     },
     {
       x: 3920, y: 1950, rotation: 4, href: '/fleet',
-      caption: 'Fleet <em>View</em>', meta: '2024–25 · Fleet Operations',
+      caption: 'Fleet <em>View</em>', meta: '2025 · Fleet Operations',
     },
     {
       x: 3490, y: 2200, rotation: 2, href: '/asset',

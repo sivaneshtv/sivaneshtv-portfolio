@@ -54,7 +54,7 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
       <!-- § 02 The problem -->
       <Section>
         <SectionLabel text="The problem" num="§ 02" />
-        <PullQuote>You could fly missions. You couldn't track <em>places.</em></PullQuote>
+        <PullQuote>You could fly missions. You couldn't manage <em>things.</em></PullQuote>
         <Body>
           <p>The existing system recorded flights beautifully — every waypoint, every telemetry reading, every piece of captured media. But infrastructure only existed as a string inside a mission's name. "Wellhead NC-0217 - Monthly Inspection" was the only thread tying a place to a flight, and that thread broke the moment someone mistyped the name, changed the naming convention, or inspected the same asset under a different mission.</p>
           <p>There was no list of Sarah's wellheads anywhere in the product. No inspection history per asset. No way to see how a wellhead's condition had changed over six months. No templates for "here's how you always inspect this type of thing." Every monthly report Sarah filed, she built from scratch by scavenging across dozens of mission logs.</p>
@@ -239,21 +239,21 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <!-- Before: flight-first -->
         <g transform="translate(10 20)">
           <text x="90" y="0" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7770" letter-spacing="1">BEFORE — FLIGHT-FIRST</text>
-          <circle cx="90" cy="50" r="28" fill="#1a1a1c"/>
-          <text x="90" y="54" text-anchor="middle" font-family="Inter" font-size="10" fill="#fdf8ea" font-weight="700">FLIGHT</text>
+          <rect x="63" y="37" width="54" height="26" rx="3" style="fill:var(--ink)"/>
+          <text x="90" y="54" text-anchor="middle" font-family="Inter" font-size="10" style="fill:var(--paper)" font-weight="700">FLIGHT</text>
           <!-- children: waypoints, media, telemetry, asset as ghost -->
-          <circle cx="30" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
-          <text x="30" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">waypoints</text>
-          <circle cx="90" cy="130" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
-          <text x="90" y="133" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">media</text>
-          <circle cx="150" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
-          <text x="150" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">telemetry</text>
-          <line x1="90" y1="78" x2="30" y2="108" stroke="#1a1a1c" stroke-width=".7"/>
-          <line x1="90" y1="78" x2="90" y2="116" stroke="#1a1a1c" stroke-width=".7"/>
-          <line x1="90" y1="78" x2="150" y2="108" stroke="#1a1a1c" stroke-width=".7"/>
+          <rect x="10" y="113" width="40" height="14" rx="2" fill="none" style="stroke:var(--ink-2)" stroke-width="1"/>
+          <text x="30" y="123" text-anchor="middle" font-family="Inter" font-size="7" style="fill:var(--ink-2)">waypoints</text>
+          <rect x="70" y="123" width="40" height="14" rx="2" fill="none" style="stroke:var(--ink-2)" stroke-width="1"/>
+          <text x="90" y="133" text-anchor="middle" font-family="Inter" font-size="7" style="fill:var(--ink-2)">media</text>
+          <rect x="130" y="113" width="40" height="14" rx="2" fill="none" style="stroke:var(--ink-2)" stroke-width="1"/>
+          <text x="150" y="123" text-anchor="middle" font-family="Inter" font-size="7" style="fill:var(--ink-2)">telemetry</text>
+          <line x1="90" y1="63" x2="30" y2="113" style="stroke:var(--ink-2)" stroke-width=".7"/>
+          <line x1="90" y1="63" x2="90" y2="123" style="stroke:var(--ink-2)" stroke-width=".7"/>
+          <line x1="90" y1="63" x2="150" y2="113" style="stroke:var(--ink-2)" stroke-width=".7"/>
           <!-- asset as ghost -->
-          <circle cx="90" cy="175" r="12" fill="none" stroke="#1a1a1c" stroke-width=".5" stroke-dasharray="2 2" opacity=".4"/>
-          <text x="90" y="178" text-anchor="middle" font-family="Inter" font-size="7" fill="#7a7770" opacity=".5">"asset"</text>
+          <rect x="70" y="167" width="40" height="16" rx="2" fill="none" style="stroke:var(--ink-3)" stroke-width=".5" stroke-dasharray="2 2" opacity=".5"/>
+          <text x="90" y="178" text-anchor="middle" font-family="Inter" font-size="7" style="fill:var(--ink-3)" opacity=".6">"asset"</text>
           <text x="90" y="210" text-anchor="middle" font-family="Caveat" font-size="13" fill="#7a7770">asset = string in mission name</text>
         </g>
         <!-- divider -->
@@ -261,23 +261,23 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <!-- After: asset-first -->
         <g transform="translate(220 20)">
           <text x="90" y="0" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#d8352a" letter-spacing="1">AFTER — ASSET-FIRST</text>
-          <circle cx="90" cy="50" r="28" fill="#d8352a"/>
+          <rect x="63" y="37" width="54" height="26" rx="3" fill="#d8352a"/>
           <text x="90" y="54" text-anchor="middle" font-family="Inter" font-size="10" fill="#fdf8ea" font-weight="700">ASSET</text>
-          <circle cx="30" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
-          <text x="30" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">inspections</text>
-          <circle cx="90" cy="130" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
-          <text x="90" y="133" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">media</text>
-          <circle cx="150" cy="120" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
-          <text x="150" y="123" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">profiles</text>
-          <circle cx="30" cy="170" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
-          <text x="30" y="173" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">alerts</text>
-          <circle cx="150" cy="170" r="14" fill="none" stroke="#1a1a1c" stroke-width="1"/>
-          <text x="150" y="173" text-anchor="middle" font-family="Inter" font-size="7" fill="#4a4945">reports</text>
-          <line x1="90" y1="78" x2="30" y2="108" stroke="#d8352a" stroke-width=".9"/>
-          <line x1="90" y1="78" x2="90" y2="116" stroke="#d8352a" stroke-width=".9"/>
-          <line x1="90" y1="78" x2="150" y2="108" stroke="#d8352a" stroke-width=".9"/>
-          <line x1="90" y1="78" x2="30" y2="156" stroke="#d8352a" stroke-width=".9"/>
-          <line x1="90" y1="78" x2="150" y2="156" stroke="#d8352a" stroke-width=".9"/>
+          <rect x="6" y="113" width="48" height="14" rx="2" fill="none" style="stroke:var(--ink-2)" stroke-width="1"/>
+          <text x="30" y="123" text-anchor="middle" font-family="Inter" font-size="7" style="fill:var(--ink-2)">inspections</text>
+          <rect x="70" y="123" width="40" height="14" rx="2" fill="none" style="stroke:var(--ink-2)" stroke-width="1"/>
+          <text x="90" y="133" text-anchor="middle" font-family="Inter" font-size="7" style="fill:var(--ink-2)">media</text>
+          <rect x="128" y="113" width="44" height="14" rx="2" fill="none" style="stroke:var(--ink-2)" stroke-width="1"/>
+          <text x="150" y="123" text-anchor="middle" font-family="Inter" font-size="7" style="fill:var(--ink-2)">profiles</text>
+          <rect x="10" y="163" width="40" height="14" rx="2" fill="none" style="stroke:var(--ink-2)" stroke-width="1"/>
+          <text x="30" y="173" text-anchor="middle" font-family="Inter" font-size="7" style="fill:var(--ink-2)">alerts</text>
+          <rect x="128" y="163" width="44" height="14" rx="2" fill="none" style="stroke:var(--ink-2)" stroke-width="1"/>
+          <text x="150" y="173" text-anchor="middle" font-family="Inter" font-size="7" style="fill:var(--ink-2)">reports</text>
+          <line x1="90" y1="63" x2="30" y2="113" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="63" x2="90" y2="123" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="63" x2="150" y2="113" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="63" x2="30" y2="163" stroke="#d8352a" stroke-width=".9"/>
+          <line x1="90" y1="63" x2="150" y2="163" stroke="#d8352a" stroke-width=".9"/>
           <text x="90" y="215" text-anchor="middle" font-family="Caveat" font-size="13" fill="#d8352a" font-weight="700">asset = record with a life</text>
         </g>
       </svg>
@@ -302,17 +302,17 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
           <!-- Left nav rail -->
           <rect x="10" y="10" width="40" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
           <!-- Five nav items -->
-          <g font-family="JetBrains Mono" font-size="7" letter-spacing=".5">
-            <circle cx="30" cy="40" r="7" fill="#d8352a"/>
-            <text x="30" y="43" text-anchor="middle" fill="#fdf8ea" font-size="6">ASSET</text>
-            <circle cx="30" cy="75" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
-            <text x="30" y="77" text-anchor="middle" fill="#d8352a" font-size="6">LOG</text>
-            <circle cx="30" cy="110" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
-            <text x="30" y="112" text-anchor="middle" fill="#d8352a" font-size="6">MEDIA</text>
-            <circle cx="30" cy="145" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
-            <text x="30" y="147" text-anchor="middle" fill="#d8352a" font-size="6">RPT</text>
-            <circle cx="30" cy="180" r="6" fill="none" stroke="#d8352a" stroke-width="1"/>
-            <text x="30" y="182" text-anchor="middle" fill="#d8352a" font-size="6">TAG</text>
+          <g font-family="JetBrains Mono" font-size="6" letter-spacing=".5">
+            <rect x="14" y="33" width="32" height="13" rx="2" fill="#d8352a"/>
+            <text x="30" y="43" text-anchor="middle" fill="#fdf8ea">ASSET</text>
+            <rect x="14" y="68" width="32" height="13" rx="2" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="78" text-anchor="middle" fill="#d8352a">LOG</text>
+            <rect x="14" y="103" width="32" height="13" rx="2" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="113" text-anchor="middle" fill="#d8352a">MEDIA</text>
+            <rect x="14" y="138" width="32" height="13" rx="2" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="148" text-anchor="middle" fill="#d8352a">RPT</text>
+            <rect x="14" y="173" width="32" height="13" rx="2" fill="none" stroke="#d8352a" stroke-width="1"/>
+            <text x="30" y="183" text-anchor="middle" fill="#d8352a">TAG</text>
           </g>
           <!-- Content area: tree + map -->
           <rect x="58" y="10" width="140" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
@@ -354,7 +354,7 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
     <!-- §05 — Arpita/Reports quiet attribution sticky -->
     <div class="sticky blue artifact" id="obj-arpita-reports" data-anchor="4" data-anchor-offset="480" data-side="left" data-gap="60" data-width="280" style="position:absolute;transform:rotate(-3deg);width:280px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:#a8d0f0;box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
       <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— credit where due —</div>
-      <em style="font-style:normal;color:var(--red);font-weight:700">Reports</em> — design by me. Prototyped in Lovable by Arpita Gangan, who took the design and made it real for the M1 ship. The collaboration shipped a surface neither of us would have shipped alone in the time we had.
+      <em style="font-style:normal;color:var(--red);font-weight:700">Reports</em> — design by me. Prototyped in Lovable by Arpita, who took the design and made it real for the M1 ship. The collaboration shipped a surface neither of us would have shipped alone in the time we had.
     </div>
 
     <!-- §06 OUTCOME — M1 receipt -->
