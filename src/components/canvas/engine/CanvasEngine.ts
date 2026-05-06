@@ -714,11 +714,22 @@ export class CanvasEngine {
         }
       }
       const now = performance.now(); const dt = now - this.lastMoveTime;
-      if (dt > 0) {
-        this.vx = (e.clientX - this.lastMoveX) / dt * 16;
-        this.vy = (e.clientY - this.lastMoveY) / dt * 16;
+      if (dt >= 8) {
+        // Raw instantaneous velocity (px/frame at 60fps)
+        const rawVx = (e.clientX - this.lastMoveX) / dt * 16;
+        const rawVy = (e.clientY - this.lastMoveY) / dt * 16;
+        // Clamp raw to prevent spikes from tiny-dt events, then blend with EMA
+        const MAX_RAW = 80;
+        const cRx = clamp(rawVx, -MAX_RAW, MAX_RAW);
+        const cRy = clamp(rawVy, -MAX_RAW, MAX_RAW);
+        this.vx = this.vx * 0.25 + cRx * 0.75;
+        this.vy = this.vy * 0.25 + cRy * 0.75;
+        // Hard cap on smoothed velocity
+        const MAX_V = 50;
+        this.vx = clamp(this.vx, -MAX_V, MAX_V);
+        this.vy = clamp(this.vy, -MAX_V, MAX_V);
+        this.lastMoveX = e.clientX; this.lastMoveY = e.clientY; this.lastMoveTime = now;
       }
-      this.lastMoveX = e.clientX; this.lastMoveY = e.clientY; this.lastMoveTime = now;
       this.scheduleApply();
     });
 
@@ -726,6 +737,9 @@ export class CanvasEngine {
       if (!this.isPanning) return;
       this.isPanning = false;
       this.wrap.classList.remove('grabbing');
+      // If the pointer was stationary for >80ms before release, the stored
+      // velocity is stale — user was decelerating. Zero it to prevent phantom launch.
+      if (performance.now() - this.lastMoveTime > 80) { this.vx = 0; this.vy = 0; }
       if (Math.hypot(this.vx, this.vy) > 2) {
         this.decelerating = true;
         requestAnimationFrame(this.inertiaTick);
