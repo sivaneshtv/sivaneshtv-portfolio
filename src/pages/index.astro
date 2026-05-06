@@ -6,6 +6,7 @@ import Polaroid from '../components/artifacts/Polaroid.astro';
 import Marker from '../components/artifacts/Marker.astro';
 import ContactCard from '../components/artifacts/ContactCard.astro';
 import PhotoFrame from '../components/artifacts/PhotoFrame.astro';
+import profileImg from '../assets/workbench/Profile image.jpeg';
 import TodoList from '../components/artifacts/TodoList.astro';
 import ZoneLabel from '../components/artifacts/ZoneLabel.astro';
 import Masthead from '../components/artifacts/Masthead.astro';
@@ -38,8 +39,9 @@ import {
         pos={{x:photo.x, y:photo.y}}
         rotation={photo.rotation}
         caption={photo.caption}
-        char={photo.char}
-      />
+      >
+        <img src={profileImg.src} alt="Sivanesh TV" />
+      </PhotoFrame>
 
       <!-- §7.4 — Arrow 1 (masthead → work) -->
       <svg style="position:absolute;left:2900px;top:2050px;width:340px;height:180px;pointer-events:none" viewBox="0 0 340 180" xmlns="http://www.w3.org/2000/svg">
@@ -201,7 +203,7 @@ import {
 
       <!-- Footer credit -->
       <div class="marker sm black" style="position:absolute;left:2450px;top:3850px;transform:rotate(-1deg);font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:500">
-        © 2026 Sivanesh TV · hand-built · last updated apr 2026
+        © 2026 Sivanesh TV · AI-BUILT
       </div>
 
     </div>
@@ -244,7 +246,7 @@ import {
       <span class="sep">·</span>
       <span id="clock">—:— IST</span>
       <span class="sep">·</span>
-      <span>Pune, IN</span>
+      <span>Chennai, IN</span>
     </div>
   </div>
 
@@ -333,8 +335,7 @@ import {
     .topbar{padding:14px 16px;flex-wrap:wrap;gap:10px}
     .tb-logo{padding:6px 10px;font-size:12px}
     .tb-logo-sub{display:none}
-    .tb-status{font-size:9px;padding:8px 12px;gap:10px}
-    .tb-status .avail span:not(.avail-dot){display:none}
+    .tb-status{display:none}
     .nav-menu{min-width:calc(100vw - 32px);max-width:280px}
     .toolbar{bottom:12px;left:50%;-webkit-transform:translateX(-50%) translateZ(0);transform:translateX(-50%) translateZ(0);padding:4px;gap:1px}
     .tb-btn{width:32px;height:32px}

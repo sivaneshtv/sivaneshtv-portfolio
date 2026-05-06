@@ -14,14 +14,15 @@
     padding:6px 12px;
     font-family:var(--fm);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
     white-space:nowrap;
+    max-width:calc(100vw - 24px);
     opacity:0;pointer-events:none;transition:opacity .35s;
     border-radius:2px;
   }
-  /* Downward arrow pointing at the reader button below */
+  /* Downward arrow — JS sets --arrow-x to compensate if hint is clamped */
   .reading-hint::after{
     content:'';
     position:absolute;
-    top:100%;left:50%;
+    top:100%;left:var(--arrow-x,50%);
     transform:translateX(-50%);
     border:5px solid transparent;
     border-top-color:rgba(26,26,28,.92);

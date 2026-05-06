@@ -27,10 +27,10 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
       />
 
       <MetaRow items={[
-        { k: 'Role', v: 'Co-designer · with Arpita' },
-        { k: 'Year', v: '2024–25' },
-        { k: 'Scope', v: 'Product Design · Design System' },
-        { k: 'Domain', v: 'Drone Autonomy · ROC Operations' },
+        { k: 'Role', v: 'Product designer' },
+        { k: 'Year', v: '2025' },
+        { k: 'Scope', v: 'End-to-end Product design' },
+        { k: 'Tools', v: 'Figma · Claude · Lovable' },
       ]} />
 
       <ImgSlot variant="wide"
@@ -211,15 +211,6 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
         <SectionLabel text="What it enabled" num="§ 06" />
         <H2>The receipts.</H2>
 
-        <ImgSlot variant="wide"
-          label="Image slot 06 · In production"
-          title="Fleet View, deployed"
-          desc={"One of: (a) photo of Fleet View on an actual ROC operator's workstation, (b) a Loom thumbnail showing a demo flight, (c) a redacted screenshot from a CAA waiver submission showing Fleet View as evidence."}
-          dims="16 : 9 · ideally 2000 × 1125 px"
-          cap="Fleet View — the primary environment in enterprise deployments"
-          capMeta="evidence"
-        />
-
         <Outcome items={[
           { n: 'Live', l: 'Deployed', d: 'Fleet View shipped as the primary multi-drone interface across FlytBase enterprise deployments, replacing the multi-tab, multi-monitor workarounds operators had built themselves.' },
           { n: 'CAA', l: 'Evidence-ready', d: 'The grouping architecture became part of the evidence case for One-to-Many waivers — proof that an operator cannot accidentally remove an armed drone from their field of awareness.' },
@@ -249,12 +240,12 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
     <!-- §01 PROJECT — dark CAA context card (the regulatory framing) -->
     <div class="context-card artifact" id="obj-caa-context" data-anchor="0" data-anchor-offset="380" data-side="left" data-gap="60" data-width="380" style="position:absolute;transform:rotate(-2deg);width:380px;padding:24px;background:var(--ink);color:var(--paper);box-shadow:3px 5px 0 rgba(40,35,25,.06),6px 14px 28px rgba(40,35,25,.2)">
       <div style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px">— CAA context · one-to-many waivers —</div>
-      <div style="font-family:var(--fs);font-weight:700;font-size:20px;line-height:1.25;margin-bottom:10px">This wasn't just a product. It was part of a <em style="font-style:italic;color:var(--red)">safety case.</em></div>
-      <div style="font-family:var(--fs);font-size:13px;line-height:1.55;color:rgba(255,255,255,.7)">CAAs worldwide were beginning to grant One-to-Many waivers — a single licensed pilot commanding multiple armed drones. Fleet View had to function as <em style="font-style:italic;color:rgba(255,255,255,.9)">evidence</em> that the operator maintained genuine situational awareness across every drone at once.</div>
+      <div style="font-family:var(--fs);font-weight:700;font-size:20px;line-height:1.25;margin-bottom:10px;color:#fdf8ea">This wasn't just a product. It was part of a <em style="font-style:italic;color:var(--red)">safety case.</em></div>
+      <div style="font-family:var(--fs);font-size:13px;line-height:1.55;color:rgba(253,248,234,.8)">CAAs worldwide were beginning to grant One-to-Many waivers — a single licensed pilot commanding multiple armed drones. Fleet View had to function as <em style="font-style:italic;color:#fdf8ea">evidence</em> that the operator maintained genuine situational awareness across every drone at once.</div>
     </div>
 
     <!-- §01 — stakes sticky -->
-    <div class="sticky artifact" id="obj-stakes" data-anchor="0" data-anchor-offset="760" data-side="left" data-gap="60" data-width="260" style="position:absolute;transform:rotate(3deg);width:260px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
+    <div class="sticky artifact" id="obj-stakes" data-anchor="1" data-anchor-offset="240" data-side="left" data-gap="60" data-width="260" style="position:absolute;transform:rotate(3deg);width:260px;min-height:180px;padding:22px 20px 18px;font-family:var(--fh);font-weight:500;font-size:20px;line-height:1.35;color:var(--ink);background:var(--yellow);box-shadow:2px 4px 0 rgba(40,35,25,.05),4px 8px 16px rgba(40,35,25,.18)">
       <div class="sticky-eyebrow" style="font-family:var(--fm);font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px">— the operational pressure —</div>
       More drones, <em style="font-style:normal;color:var(--red);font-weight:700">same pilots.</em> Alarm integrations firing at any hour. The interface hadn't caught up.
     </div>
@@ -316,33 +307,25 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
     </div>
 
     <!-- §04 INTERFACE — real 4-panel printout -->
-    <div class="printout artifact" id="obj-four-panel" data-anchor="3" data-anchor-offset="80" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(2deg);padding:12px;background:#fbfaf4;box-shadow:2px 3px 0 rgba(40,35,25,.05),5px 10px 22px rgba(40,35,25,.22)">
+    <div class="printout artifact" id="obj-four-panel" data-anchor="3" data-anchor-offset="160" data-side="right" data-gap="60" data-width="460" style="position:absolute;width:460px;transform:rotate(2deg);padding:12px;background:#fbfaf4;box-shadow:2px 3px 0 rgba(40,35,25,.05),5px 10px 22px rgba(40,35,25,.22)">
       <div style="position:absolute;top:-12px;left:30%;width:70px;height:24px;background:var(--tape);opacity:.85;transform:rotate(-4deg);box-shadow:0 2px 5px rgba(40,35,25,.12)"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 4px 10px;border-bottom:1px dashed rgba(40,35,25,.15);margin-bottom:10px"><div style="display:flex;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(40,35,25,.2);display:inline-block"></span></div><div style="font-family:var(--fm);font-size:9px;color:var(--ink-3);letter-spacing:.1em">— fleet view · layer 0 —</div></div>
       <div style="aspect-ratio:16/10;background:var(--board);display:flex;align-items:center;justify-content:center;overflow:hidden">
         <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
           <rect width="400" height="250" fill="#f5ede0"/>
-          <!-- Drone list (left, tall) -->
-          <rect x="10" y="10" width="120" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
-          <!-- Map (big, middle-right) -->
-          <rect x="136" y="10" width="220" height="170" fill="none" stroke="#d8352a" stroke-width="1"/>
-          <!-- Live stream wall (bottom right) -->
-          <rect x="136" y="186" width="220" height="54" fill="none" stroke="#d8352a" stroke-width="1"/>
-          <!-- Application drawer (right skinny) -->
-          <rect x="362" y="10" width="28" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <!-- Left column: one outer rect, divider inside -->
+          <rect x="10" y="10" width="225" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <line x1="10" y1="155" x2="235" y2="155" stroke="#d8352a" stroke-width="1"/>
+          <!-- Map (right, ~32% width) -->
+          <rect x="241" y="10" width="120" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
+          <!-- Application drawer (far right skinny) -->
+          <rect x="367" y="10" width="23" height="230" fill="none" stroke="#d8352a" stroke-width="1"/>
           <g fill="#d8352a" font-family="JetBrains Mono" font-size="8" letter-spacing="1">
             <text x="18" y="28">DRONE LIST</text>
-            <text x="146" y="28">MAP (3D)</text>
-            <text x="146" y="204">LIVE STREAM WALL</text>
+            <text x="18" y="172">LIVE STREAM WALL</text>
+            <text x="249" y="28">MAP (3D)</text>
           </g>
-          <text x="376" y="120" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#d8352a" transform="rotate(90 376 120)" letter-spacing="1">APP DRAWER</text>
-          <!-- Sync lines -->
-          <g stroke="#d8352a" stroke-width=".5" stroke-dasharray="3 2" opacity=".6">
-            <line x1="70" y1="100" x2="240" y2="100"/>
-            <line x1="70" y1="213" x2="240" y2="213"/>
-            <line x1="240" y1="100" x2="240" y2="213"/>
-          </g>
-          <text x="200" y="250" text-anchor="middle" font-family="Caveat" font-size="12" fill="#d8352a" font-weight="700"></text>
+          <text x="378" y="120" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#d8352a" transform="rotate(90 378 120)" letter-spacing="1">APP DRAWER</text>
         </svg>
       </div>
       <div style="margin-top:10px;font-family:var(--fh);font-weight:700;font-size:18px;color:var(--ink);display:flex;justify-content:space-between;align-items:baseline"><span>Fleet View <em style="font-style:italic;color:var(--marker-red)">layout</em></span><small style="font-family:var(--fm);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:normal">— resizable boundaries</small></div>

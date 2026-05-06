@@ -52,8 +52,6 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     <div class="minimap-viewport" id="minimapViewport"></div>
   </div>
 
-  <!-- Mobile hint -->
-  <div class="mobile-hint" id="mobileHint">pinch to zoom · drag to pan</div>
 
   <!-- Reading hint -->
   <ReadingHint />
@@ -104,8 +102,6 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   .minimap-dot.work{background:var(--marker-red);opacity:.75}
   .minimap-viewport{position:absolute;left:0;top:0;border:1.5px solid var(--marker-red);background:rgba(216,53,42,.08);pointer-events:none;transition:none}
   .minimap-label{position:absolute;top:4px;left:8px;font-family:var(--fm);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);pointer-events:none}
-  .mobile-hint{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:25;background:#1a1a1c;color:#f5ede0;padding:10px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;box-shadow:0 4px 16px rgba(40,35,25,.25);white-space:nowrap;opacity:0;transition:opacity .4s ease;pointer-events:none;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
-  .mobile-hint.on{opacity:1}
   @media(max-width:820px){
     .topbar{padding:14px 16px;flex-wrap:wrap;gap:10px}
     .tb-logo{padding:6px 10px;font-size:12px}
@@ -116,7 +112,6 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     .tb-zoom{padding:0 6px;min-width:46px;font-size:10px}
     .tb-divider{height:18px;margin:0 2px}
     .minimap{display:none}
-    .mobile-hint{display:block}
   }
   @media(prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
@@ -219,39 +214,31 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     // Does NOT clear preJumpState — R key still works as silent fallback
   });
 
-  // Mobile hint: show briefly on first mobile visit, then auto-hide
-  const mobileHint = document.getElementById('mobileHint');
-  if (mobileHint && sessionStorage.getItem('sivanesh.mobileHintSeen') !== '1') {
-    const mq = matchMedia('(max-width:820px)');
-    if (mq.matches) {
-      setTimeout(() => mobileHint.classList.add('on'), 800);
-      setTimeout(() => {
-        mobileHint.classList.remove('on');
-        sessionStorage.setItem('sivanesh.mobileHintSeen', '1');
-      }, 5000);
-    }
-  }
-
-  // Reading mode hint — show on every page load, anchored above reader button
+  // Reading mode hint — anchored above reader button, centered on mobile
   (() => {
     const rmHint = document.querySelector<HTMLElement>('.reading-hint');
     const btn = document.getElementById('btnReader');
     if (!rmHint || !btn) return;
 
-    // Position hint above the reader button
     const anchorHint = () => {
       const r = btn.getBoundingClientRect();
-      rmHint.style.left = (r.left + r.width / 2) + 'px';
+      const hintW = rmHint.getBoundingClientRect().width || rmHint.offsetWidth || 220;
+      const margin = 8;
+      // Ideal: center the hint over the button
+      const idealLeft = r.left + r.width / 2;
+      // Clamp so the hint never clips the screen edge
+      const clampedLeft = Math.max(hintW / 2 + margin, Math.min(window.innerWidth - hintW / 2 - margin, idealLeft));
+      rmHint.style.left = clampedLeft + 'px';
       rmHint.style.bottom = (window.innerHeight - r.top + 10) + 'px';
+      // If clamping shifted the hint, move the arrow to still point at the button
+      const arrowShift = idealLeft - clampedLeft; // px the hint moved left
+      const arrowPct = 50 + (arrowShift / hintW) * 100;
+      rmHint.style.setProperty('--arrow-x', Math.max(8, Math.min(92, arrowPct)) + '%');
     };
     anchorHint();
 
     let dismissed = false;
-    const dismiss = () => {
-      if (dismissed) return;
-      dismissed = true;
-      rmHint.classList.remove('on');
-    };
+    const dismiss = () => { if (dismissed) return; dismissed = true; rmHint.classList.remove('on'); };
     setTimeout(() => { anchorHint(); rmHint.classList.add('on'); }, 800);
     setTimeout(dismiss, 9000);
     const once = { once: true } as const;

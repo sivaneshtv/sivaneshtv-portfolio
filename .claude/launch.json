@@ -1,0 +1,27 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Astro Dev",
+      "runtimeExecutable": "C:\\Users\\sivanesh\\AppData\\Local\\Programs\\nodejs\\node.exe",
+      "runtimeArgs": [
+        "C:\\Users\\sivanesh\\sivaneshtv-portfolio\\node_modules\\astro\\bin\\astro.mjs",
+        "dev",
+        "--root",
+        "C:\\Users\\sivanesh\\sivaneshtv-portfolio"
+      ],
+      "port": 4321
+    },
+    {
+      "name": "Astro Preview (prod build)",
+      "runtimeExecutable": "C:\\Users\\sivanesh\\AppData\\Local\\Programs\\nodejs\\node.exe",
+      "runtimeArgs": [
+        "C:\\Users\\sivanesh\\sivaneshtv-portfolio\\node_modules\\astro\\bin\\astro.mjs",
+        "preview",
+        "--root",
+        "C:\\Users\\sivanesh\\sivaneshtv-portfolio"
+      ],
+      "port": 4321
+    }
+  ]
+}

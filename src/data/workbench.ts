@@ -40,14 +40,14 @@ export const zoneLabels = [
 export const masthead = {
   eyebrow: 'hey, I\'m —',
   title: 'Sivanesh <em>TV</em>,<br>a designer<br>who <span class="strike">talks</span> <em>ships.</em>',
-  sub: 'Product design for <em>critical operations</em> — drone autonomy, fleet tools, interfaces where a wrong tap costs more than time. Based in Pune · open to briefs.',
+  sub: 'Product design for <em>critical operations</em> — drone autonomy, fleet tools, interfaces where a wrong tap costs more than time. Based in Chennai · open to briefs.',
 };
 
 // §7.3 — Photo
 export const photo = {
   x: 1830, y: 1640, rotation: -5,
   char: 'S',
-  caption: '— that\'s me, Pune IN —',
+  caption: '— that\'s me, Chennai IN —',
 };
 
 // §7.5 — About stickies
@@ -76,9 +76,9 @@ export const howIWork = {
     title: 'how <span style="font-style:italic;color:var(--marker-red)">I</span> actually work',
     sub: '— typical week —',
     rows: [
-      { label: 'Sit close to CS + PM', value: 'calls, transcripts' },
+      { label: 'Sit close with CS + PM', value: 'calls, transcripts' },
       { label: 'Turn findings into structure', value: 'IA, flows, rules' },
-      { label: 'Prototype in the real tool', value: 'Figma → Lovable → code' },
+      { label: 'Prototype in the real tool', value: 'Figma / Claude / Lovable' },
       { label: 'Pair with engineering', value: 'daily, ship weeks' },
       { label: 'Deep work', value: '<em>10:00 – 14:00 IST</em>' },
       { label: 'Collab hours', value: '15:00 – 18:00 IST' },
@@ -99,8 +99,8 @@ export const howIWork = {
   },
   toolsSticky: {
     x: 1200, y: 3600, rotation: 2, width: 240, variant: 'blue' as const,
-    eyebrow: '— tools, apr \'26 —',
-    body: 'Figma · <em>Claude</em> · Lovable · Cursor · iA Writer · MacBook Pro M3.',
+    eyebrow: '— tools —',
+    body: 'Figma · <em>Claude suite</em> · Lovable · Cursor · AI Studio · Flow.',
   },
   whatIBring: {
     x: 1730, y: 3620, rotation: -2.5, width: 260, variant: 'pink' as const,
@@ -149,6 +149,6 @@ export const contactZone = {
   availSticky: {
     x: 4380, y: 3520, rotation: -3, width: 220,
     eyebrow: '— availability —',
-    body: 'Open to <em>Q2 \'26</em> briefs. Pune-based, work across IST hours.',
+    body: 'Open to <em>Q2 \'26</em> briefs. Chennai-based, work across IST hours.',
   },
 };

@@ -7,6 +7,7 @@ import Printout from '../components/artifacts/Printout.astro';
 import Marker from '../components/artifacts/Marker.astro';
 import ContactCard from '../components/artifacts/ContactCard.astro';
 import PhotoFrame from '../components/artifacts/PhotoFrame.astro';
+import profileImg from '../assets/workbench/Profile image.jpeg';
 import TodoList from '../components/artifacts/TodoList.astro';
 import ZoneLabel from '../components/artifacts/ZoneLabel.astro';
 import Masthead from '../components/artifacts/Masthead.astro';
@@ -45,9 +46,9 @@ import Masthead from '../components/artifacts/Masthead.astro';
         title='how <em>I</em> actually work'
         sub="— typical week —"
         rows={[
-          { label: 'Sit close to CS + PM', value: 'calls, transcripts' },
+          { label: 'Sit close with CS + PM', value: 'calls, transcripts' },
           { label: 'Turn findings into structure', value: 'IA, flows, rules' },
-          { label: 'Prototype in the real tool', value: 'Figma → Lovable → code' },
+          { label: 'Prototype in the real tool', value: 'Figma / Claude / Lovable' },
           { label: 'Pair with engineering', value: 'daily, ship weeks' },
           { label: 'Deep work', value: '<em>10:00 – 14:00 IST</em>' },
           { label: 'Collab hours', value: '15:00 – 18:00 IST' },
@@ -109,7 +110,9 @@ import Masthead from '../components/artifacts/Masthead.astro';
 
     <!-- 9. Photo Frame -->
     <div style="position:relative;height:260px;margin-bottom:60px;">
-      <PhotoFrame rotation={-5} caption="— that's me, Pune IN —" />
+      <PhotoFrame rotation={-5} caption="— that's me, Chennai IN —">
+        <img src={profileImg.src} alt="Sivanesh TV" />
+      </PhotoFrame>
     </div>
 
     <!-- 10. Todo List -->
@@ -142,7 +145,7 @@ import Masthead from '../components/artifacts/Masthead.astro';
       <Masthead
         eyebrow="hey, I'm —"
         title='Sivanesh <em>TV</em>,<br>a designer<br>who <span class="strike">talks</span> <em>ships.</em>'
-        sub='Product design for <em>critical operations</em> — drone autonomy, fleet tools, interfaces where a wrong tap costs more than time. Based in Pune · open to briefs.'
+        sub='Product design for <em>critical operations</em> — drone autonomy, fleet tools, interfaces where a wrong tap costs more than time. Based in Chennai · open to briefs.'
       />
     </div>
 
