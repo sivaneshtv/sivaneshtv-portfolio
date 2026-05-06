@@ -22,7 +22,7 @@ import {
   <div class="board-bg"></div>
 
   <div class="canvas-wrap" id="canvasWrap">
-    <div class="canvas" id="canvas" style="width:6000px;height:4200px">
+    <div class="canvas" id="canvas" style="width:6000px;height:5000px">
 
       <!-- §7.1 — Zone labels -->
       {zoneLabels.map((z) => (
@@ -365,7 +365,7 @@ import {
     zones: { ...zones },
     zoneBounds: { ...zoneBounds },
     canvasWidth: 6000,
-    canvasHeight: 4200,
+    canvasHeight: 5000,
     mode: 'workbench',
     onZoneChange: (zone) => {
       document.querySelectorAll<HTMLElement>('[data-zone]').forEach((el) => {

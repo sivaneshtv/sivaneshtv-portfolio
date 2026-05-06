@@ -4,7 +4,7 @@
  */
 
 export const zones = {
-  hello:   { cx: 2550, cy: 1900, scale: 0.60 },
+  hello:   { cx: 2400, cy: 2000, scale: 0.29 },
   about:   { cx: 900, cy: 2100, scale: 0.65 },
   work:    { cx: 4100, cy: 2200, scale: 0.55 },
   howwork: { cx: 1700, cy: 3450, scale: 0.55 },

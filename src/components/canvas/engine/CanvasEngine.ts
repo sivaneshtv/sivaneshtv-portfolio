@@ -245,10 +245,17 @@ export class CanvasEngine {
     if (this.mode === 'workbench') {
       const vw = innerWidth;
       let targetScale = z.scale;
-      if (vw <= 520) targetScale = z.scale * 0.55;
-      else if (vw <= 820) targetScale = z.scale * 0.72;
-      else if (vw <= 1100) targetScale = z.scale * 0.88;
-      this.flyTo(z.cx, z.cy, targetScale, 700);
+      let targetCX = z.cx;
+      // Hello zone: fixed 29% for all screen sizes — no mobile multiplier
+      if (name !== 'hello') {
+        if (vw <= 520) {
+          targetScale = z.scale * 0.55;
+          // Work zone: zoom out more + shift left so polaroids have left breathing space
+          if (name === 'work') { targetScale = z.scale * 0.46; targetCX = z.cx - 20; }
+        } else if (vw <= 820) targetScale = z.scale * 0.72;
+        else if (vw <= 1100) targetScale = z.scale * 0.88;
+      }
+      this.flyTo(targetCX, z.cy, targetScale, 700);
     } else {
       this.flyTo(z.cx, z.cy, z.scale, 700);
     }
@@ -258,28 +265,27 @@ export class CanvasEngine {
   goToZoneInstant(name: string): void {
     const z = this.zones[name]; if (!z) return;
     let targetScale = z.scale;
+    let targetCX = z.cx;
     if (this.mode === 'workbench') {
       const vw = innerWidth;
-      if (vw <= 520) targetScale = z.scale * 0.55;
-      else if (vw <= 820) targetScale = z.scale * 0.72;
-      else if (vw <= 1100) targetScale = z.scale * 0.88;
+      // Hello zone: fixed 29% for all screen sizes — no mobile multiplier
+      if (name !== 'hello') {
+        if (vw <= 520) {
+          targetScale = z.scale * 0.55;
+          if (name === 'work') { targetScale = z.scale * 0.46; targetCX = z.cx - 20; }
+        } else if (vw <= 820) targetScale = z.scale * 0.72;
+        else if (vw <= 1100) targetScale = z.scale * 0.88;
+      }
     }
     this.scale = targetScale;
-    this.tx = -z.cx * targetScale;
+    this.tx = -targetCX * targetScale;
     this.ty = -z.cy * targetScale;
     this.apply();
   }
 
-  // §3.13 — Reset (workbench)
+  // §3.13 — Reset (workbench) — delegates to hello zone so landing = zone redirect
   private resetView(): void {
-    const vw = innerWidth;
-    if (vw <= 520)       this.scale = 0.35;
-    else if (vw <= 820)  this.scale = 0.47;
-    else if (vw <= 1100) this.scale = 0.57;
-    else                 this.scale = 0.65;
-    this.tx = -2400 * this.scale;
-    this.ty = -2000 * this.scale;
-    this.apply();
+    this.goToZoneInstant('hello');
   }
 
   private fitView(): void {
