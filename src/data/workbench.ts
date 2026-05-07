@@ -6,9 +6,19 @@
 export const zones = {
   hello:   { cx: 2313, cy: 1910, scale: 0.90 },
   about:   { cx: 900,  cy: 2135, scale: 0.65 },
-  work:    { cx: 4080, cy: 1960, scale: 0.72 },
+  work:    { cx: 3870, cy: 1960, scale: 0.72 },
   howwork: { cx: 1700, cy: 3465, scale: 0.84 },
   contact: { cx: 4200, cy: 3540, scale: 0.90 },
+} as const;
+
+// Mobile zone overrides — absolute cx/cy/scale for ≤520 px screens.
+// cx/cy are canvas coords; scale is the literal zoom (no multiplier applied).
+export const mobileZones = {
+  hello:   { cx: 2313, cy: 1910, scale: 0.40 },
+  about:   { cx: 900,  cy: 2135, scale: 0.45 },
+  work:    { cx: 3700, cy: 2100, scale: 0.45 }, // centred on polaroid cluster; ignores work-note sticky
+  howwork: { cx: 1600, cy: 3465, scale: 0.44 }, // pulls left so both cards + stickies sit in frame
+  contact: { cx: 4200, cy: 3540, scale: 0.45 },
 } as const;
 
 export const zoneBounds = {

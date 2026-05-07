@@ -22,6 +22,8 @@ export interface CanvasEngineConfig {
   zoomLabel: HTMLElement;
   zones: Record<string, Zone>;
   zoneBounds: Record<string, ZoneBounds>;
+  /** Absolute-scale zone overrides for ≤520 px screens. */
+  mobileZones?: Record<string, Zone>;
   canvasWidth: number;
   canvasHeight: number;
   mode: 'workbench' | 'case';
@@ -38,6 +40,7 @@ export class CanvasEngine {
   private zoomLabel: HTMLElement;
   private zones: Record<string, Zone>;
   private zoneBounds: Record<string, ZoneBounds>;
+  private mobileZones: Record<string, Zone> = {};
   private CANVAS_W: number;
   private CANVAS_H: number;
   private mode: 'workbench' | 'case';
@@ -121,6 +124,7 @@ export class CanvasEngine {
     this.zoomLabel = config.zoomLabel;
     this.zones = config.zones;
     this.zoneBounds = config.zoneBounds;
+    this.mobileZones = config.mobileZones ?? {};
     this.CANVAS_W = config.canvasWidth;
     this.CANVAS_H = config.canvasHeight;
     this.mode = config.mode;
@@ -247,15 +251,15 @@ export class CanvasEngine {
     const z = this.zones[name]; if (!z) return;
     if (this.mode === 'workbench') {
       const vw = innerWidth;
-      let targetScale = z.scale;
-      let targetCX = z.cx;
+      // ≤520px: use absolute mobile overrides so each zone has its own tuned scale/cx/cy
       if (vw <= 520) {
-        targetScale = z.scale * 0.55;
-        // Work zone: zoom out more + center on polaroid cluster
-        if (name === 'work') { targetScale = z.scale * 0.46; targetCX = z.cx - 20; }
-      } else if (vw <= 820) targetScale = z.scale * 0.72;
+        const mz = this.mobileZones[name];
+        if (mz) { this.flyTo(mz.cx, mz.cy, mz.scale, 700); return; }
+      }
+      let targetScale = z.scale;
+      if (vw <= 820) targetScale = z.scale * 0.72;
       else if (vw <= 1100) targetScale = z.scale * 0.88;
-      this.flyTo(targetCX, z.cy, targetScale, 700);
+      this.flyTo(z.cx, z.cy, targetScale, 700);
     } else {
       this.flyTo(z.cx, z.cy, z.scale, 700);
     }
@@ -264,20 +268,30 @@ export class CanvasEngine {
   // Instant zone positioning — no animation
   goToZoneInstant(name: string): void {
     const z = this.zones[name]; if (!z) return;
-    let targetScale = z.scale;
-    let targetCX = z.cx;
+    const yBias = this.mode === 'workbench' ? 40 : 0;
     if (this.mode === 'workbench') {
       const vw = innerWidth;
+      // ≤520px: use absolute mobile overrides
       if (vw <= 520) {
-        targetScale = z.scale * 0.55;
-        if (name === 'work') { targetScale = z.scale * 0.46; targetCX = z.cx - 20; }
-      } else if (vw <= 820) targetScale = z.scale * 0.72;
+        const mz = this.mobileZones[name];
+        if (mz) {
+          this.scale = mz.scale;
+          this.tx = -mz.cx * mz.scale;
+          this.ty = -mz.cy * mz.scale + yBias;
+          this.apply(); return;
+        }
+      }
+      let targetScale = z.scale;
+      if (vw <= 820) targetScale = z.scale * 0.72;
       else if (vw <= 1100) targetScale = z.scale * 0.88;
+      this.scale = targetScale;
+      this.tx = -z.cx * targetScale;
+      this.ty = -z.cy * targetScale + yBias;
+    } else {
+      this.scale = z.scale;
+      this.tx = -z.cx * z.scale;
+      this.ty = -z.cy * z.scale + yBias;
     }
-    const yBias = this.mode === 'workbench' ? 40 : 0;
-    this.scale = targetScale;
-    this.tx = -targetCX * targetScale;
-    this.ty = -z.cy * targetScale + yBias;
     this.apply();
   }
 

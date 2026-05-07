@@ -358,7 +358,7 @@ import {
 
 <script>
   import { CanvasEngine } from '../components/canvas/engine/CanvasEngine';
-  import { zones, zoneBounds } from '../data/workbench';
+  import { zones, zoneBounds, mobileZones } from '../data/workbench';
 
   const engine = new CanvasEngine({
     canvasEl: document.getElementById('canvas')!,
@@ -369,6 +369,7 @@ import {
     zoomLabel: document.getElementById('zoomVal')!,
     zones: { ...zones },
     zoneBounds: { ...zoneBounds },
+    mobileZones: { ...mobileZones },
     canvasWidth: 6000,
     canvasHeight: 5000,
     mode: 'workbench',
