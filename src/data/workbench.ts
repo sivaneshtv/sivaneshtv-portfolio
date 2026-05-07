@@ -16,9 +16,9 @@ export const zones = {
 export const mobileZones = {
   hello:   { cx: 2313, cy: 1910, scale: 0.40 },
   about:   { cx: 900,  cy: 2135, scale: 0.45 },
-  work:    { cx: 3700, cy: 2100, scale: 0.45 }, // centred on polaroid cluster; ignores work-note sticky
+  work:    { cx: 3920, cy: 2100, scale: 0.45 }, // cockpit+asset flush left edge, fleet fills centre-right
   howwork: { cx: 1600, cy: 3465, scale: 0.44 }, // pulls left so both cards + stickies sit in frame
-  contact: { cx: 4200, cy: 3540, scale: 0.45 },
+  contact: { cx: 4100, cy: 4100, scale: 0.40 }, // cy>canvas clamps to bottom so label sits near top
 } as const;
 
 export const zoneBounds = {
