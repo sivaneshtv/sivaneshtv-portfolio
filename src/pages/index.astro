@@ -300,20 +300,22 @@ import {
   .tb-status .avail-dot{width:6px;height:6px;background:#4a9d5f;border-radius:50%;animation:pulse 2.4s infinite ease-in-out}
   @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}}
   .tb-status .sep{color:rgba(40,35,25,.3)}
-  .nav-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:200px;background:#e8e4db;border:1px solid rgba(40,35,25,.14);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08);opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .2s ease,transform .2s ease;z-index:31}
+  .nav-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:200px;background:var(--board);border:1px solid var(--meta-rule-soft);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08);opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .2s ease,transform .2s ease;z-index:31}
   .nav-menu.on{opacity:1;pointer-events:auto;transform:translateY(0)}
   .nav-row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 14px;border-radius:2px;font-family:var(--fs);font-size:13px;font-weight:500;color:var(--ink-2);transition:background .18s,color .18s}
-  .nav-row:hover{background:rgba(40,35,25,.08);color:var(--ink)}
+  .nav-row:hover{background:var(--board-2);color:var(--ink)}
   .nav-row .nav-ic{display:inline-flex;align-items:center;justify-content:center;width:14px;color:var(--ink-3);transition:color .18s}
   .nav-row:hover .nav-ic{color:var(--marker-red)}
   .nav-row .nav-name{flex:1;line-height:1}
   .nav-row .nav-ar{font-family:var(--fm);font-size:11px;color:var(--ink-4);transition:color .18s,transform .2s}
   .nav-row:hover .nav-ar{color:var(--marker-red);transform:translate(2px,-2px)}
-  /* Contact CTA — tonal orange tint */
-  .nav-row[data-zone="contact"]{background:rgba(216,53,42,.1);color:var(--red);margin-top:4px}
+  /* Contact CTA — tonal red tint, adapts to theme */
+  .nav-row[data-zone="contact"]{background:rgba(216,53,42,.12);color:var(--red);margin-top:4px}
   .nav-row[data-zone="contact"] .nav-ic,.nav-row[data-zone="contact"] .nav-ar{color:var(--red)}
-  .nav-row[data-zone="contact"]:hover{background:rgba(216,53,42,.18);color:var(--red)}
+  .nav-row[data-zone="contact"]:hover{background:rgba(216,53,42,.22);color:var(--red)}
   .nav-row[data-zone="contact"]:hover .nav-ic,.nav-row[data-zone="contact"]:hover .nav-ar{color:var(--red)}
+  [data-theme="dark"] .nav-row[data-zone="contact"]{background:rgba(232,74,63,.22)}
+  [data-theme="dark"] .nav-row[data-zone="contact"]:hover{background:rgba(232,74,63,.32)}
   .toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:2px;background:#e8e4db;border:1px solid rgba(40,35,25,.12);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08);-webkit-transform:translateX(-50%) translateZ(0);transform:translateX(-50%) translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .tb-divider{width:1px;height:22px;background:rgba(40,35,25,.15);margin:0 4px;flex-shrink:0}
   .tb-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);transition:background .2s,color .2s;border-radius:2px}

@@ -6,7 +6,7 @@
 export const zones = {
   hello:   { cx: 2313, cy: 1910, scale: 0.90 },
   about:   { cx: 900,  cy: 2135, scale: 0.65 },
-  work:    { cx: 3870, cy: 1960, scale: 0.72 },
+  work:    { cx: 3870, cy: 2065, scale: 0.72 }, // cy raised so label sits ~100px below topbar on large screens
   howwork: { cx: 1700, cy: 3465, scale: 0.84 },
   contact: { cx: 4200, cy: 3540, scale: 0.90 },
 } as const;
@@ -16,9 +16,9 @@ export const zones = {
 export const mobileZones = {
   hello:   { cx: 2313, cy: 1910, scale: 0.40 },
   about:   { cx: 900,  cy: 2135, scale: 0.45 },
-  work:    { cx: 3920, cy: 2100, scale: 0.45 }, // cockpit+asset flush left edge, fleet fills centre-right
-  howwork: { cx: 1600, cy: 3465, scale: 0.44 }, // pulls left so both cards + stickies sit in frame
-  contact: { cx: 4100, cy: 4100, scale: 0.40 }, // cy>canvas clamps to bottom so label sits near top
+  work:    { cx: 3920, cy: 2180, scale: 0.45 }, // cy raised so cluster sits higher on phone screen
+  howwork: { cx: 1600, cy: 3465, scale: 0.44 },
+  contact: { cx: 3950, cy: 3550, scale: 0.70 }, // 70% zoom centred on contact card; sticky off-screen right
 } as const;
 
 export const zoneBounds = {
