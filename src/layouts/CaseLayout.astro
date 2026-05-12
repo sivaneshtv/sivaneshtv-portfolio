@@ -88,12 +88,10 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   .tb-contact:hover{background:#b82b22;border-color:#b82b22}
   .toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateZ(0);-webkit-transform:translateX(-50%) translateZ(0);z-index:30;display:flex;align-items:center;gap:2px;background:#e8e4db;border:1px solid rgba(40,35,25,.12);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .tb-divider{width:1px;height:22px;background:rgba(40,35,25,.15);margin:0 4px;flex-shrink:0}
-  .tb-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);transition:background .2s,color .2s;border-radius:2px}
+  .tb-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);border-radius:2px;transition:background .15s,color .15s}
   .tb-btn:hover{background:rgba(40,35,25,.08);color:var(--ink)}
-  .tb-btn.active{color:var(--marker-red);background:rgba(216,53,42,.08)}
-  .tb-btn.active:hover{background:rgba(216,53,42,.14)}
-  [data-theme="dark"] .tb-btn.active{color:var(--marker-red);background:rgba(216,53,42,.12)}
-  [data-theme="dark"] .tb-btn.active:hover{background:rgba(216,53,42,.18)}
+  .tb-btn.active,.tb-btn.active:hover{color:var(--marker-red)!important;background:rgba(216,53,42,.18)!important;transition:none!important}
+  [data-theme="dark"] .tb-btn.active,[data-theme="dark"] .tb-btn.active:hover{color:var(--marker-red)!important;background:rgba(232,74,63,.22)!important}
   .tb-btn svg{display:block}
   .tb-zoom{font-family:var(--fm);font-size:11px;letter-spacing:.08em;color:var(--ink-2);padding:0 12px;min-width:58px;text-align:center}
   .minimap{position:fixed;bottom:20px;right:20px;z-index:30;width:160px;height:112px;background:#e8e4db;border:1px solid rgba(40,35,25,.15);box-shadow:0 4px 16px rgba(40,35,25,.12);overflow:hidden;cursor:pointer;contain:layout style;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
@@ -179,14 +177,8 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     onReadingModeChange: (on) => {
       const btn = document.getElementById('btnReader');
       if (!btn) return;
-      // Always remove first, then force a synchronous reflow so the browser
-      // commits the inactive state before re-applying .active — this restarts
-      // the CSS transition cleanly and prevents it getting stuck mid-animation.
-      btn.classList.remove('active');
-      if (on) {
-        void btn.offsetWidth; // flush pending style/transition state
-        btn.classList.add('active');
-      }
+      if (on) btn.classList.add('active');
+      else btn.classList.remove('active');
     },
   });
 
@@ -200,6 +192,11 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   document.getElementById('btnFit')?.addEventListener('click', () => engine.fit());
   document.getElementById('btnReader')?.addEventListener('click', () => {
     engine.toggleReadingMode();
+    const btn = document.getElementById('btnReader');
+    if (btn) {
+      if (engine.getReadingMode()) btn.classList.add('active');
+      else btn.classList.remove('active');
+    }
   });
 
   // Margin-ref click → jumpToArtifact (MARGIN-REF-SPEC.md §4)
