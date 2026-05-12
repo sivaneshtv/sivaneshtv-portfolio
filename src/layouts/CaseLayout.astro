@@ -177,7 +177,16 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     canvasHeight: 6800,
     mode: 'case',
     onReadingModeChange: (on) => {
-      document.getElementById('btnReader')?.classList.toggle('active', on);
+      const btn = document.getElementById('btnReader');
+      if (!btn) return;
+      // Always remove first, then force a synchronous reflow so the browser
+      // commits the inactive state before re-applying .active — this restarts
+      // the CSS transition cleanly and prevents it getting stuck mid-animation.
+      btn.classList.remove('active');
+      if (on) {
+        void btn.offsetWidth; // flush pending style/transition state
+        btn.classList.add('active');
+      }
     },
   });
 

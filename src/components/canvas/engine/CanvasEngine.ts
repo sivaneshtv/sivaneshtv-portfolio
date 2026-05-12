@@ -301,11 +301,7 @@ export class CanvasEngine {
   }
 
   private fitView(): void {
-    // On mobile workbench, "fit" means "go home" — full canvas fit is meaningless at small size
-    if (this.mode === 'workbench' && innerWidth <= 820) {
-      this.goToZone('hello');
-      return;
-    }
+    // Always do a true fit — Home (btnReset) handles the hello-zone redirect.
     const s = Math.min(innerWidth / this.CANVAS_W, innerHeight / this.CANVAS_H) * 0.92;
     this.flyTo(this.CANVAS_W / 2, this.CANVAS_H / 2, clamp(s, this.minScale, this.maxScale));
   }
@@ -415,6 +411,9 @@ export class CanvasEngine {
     if (on) {
       this.readingMode = true;
       this.hasHorizontallyPanned = false;
+      // Fire callback immediately when state changes — before compute/fly so it
+      // always fires even if layout or animation setup hits an edge-case path.
+      this.onReadingModeChange?.(true);
       this.computeReaderLayout();
       this.refreshZoneTargets();
       // Return to last reading position; fall back to top zone on first open
@@ -427,8 +426,8 @@ export class CanvasEngine {
       // Snapshot current position so re-enabling returns here
       this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
       this.readingMode = false;
+      this.onReadingModeChange?.(false);
     }
-    this.onReadingModeChange?.(on);
   }
 
   toggleReadingMode(): void { this.setReadingMode(!this.readingMode); }
