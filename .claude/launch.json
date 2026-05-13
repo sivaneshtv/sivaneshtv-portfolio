@@ -8,9 +8,11 @@
         "C:\\Users\\sivanesh\\sivaneshtv-portfolio\\node_modules\\astro\\bin\\astro.mjs",
         "dev",
         "--root",
-        "C:\\Users\\sivanesh\\sivaneshtv-portfolio"
+        "C:\\Users\\sivanesh\\sivaneshtv-portfolio",
+        "--port=4322",
+        "--host=127.0.0.1"
       ],
-      "port": 4321
+      "port": 4322
     },
     {
       "name": "Astro Preview (prod build)",

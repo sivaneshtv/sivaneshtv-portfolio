@@ -8,4 +8,5 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://sivanesh.tv',
   integrations: [mdx(), sitemap()],
+  server: { port: 4322, host: '127.0.0.1' },
 });

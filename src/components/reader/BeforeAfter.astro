@@ -157,31 +157,59 @@ const {
   document.querySelectorAll<HTMLElement>('[data-ba-slider]').forEach(slider => {
     const before = slider.querySelector<HTMLElement>('[data-ba-before]')!;
     const handle = slider.querySelector<HTMLElement>('[data-ba-handle]')!;
-    let dragging = false;
 
-    function setPosition(x: number) {
-      const rect = slider.getBoundingClientRect();
-      const pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width));
-      before.style.width = (pct * 100) + '%';
-      handle.style.left = (pct * 100) + '%';
-      before.style.setProperty('--ba-full-width', slider.offsetWidth + 'px');
+    // True when the primary input is touch (no hover capability)
+    const isTouch = () => !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    function syncWidth() {
+      before.style.setProperty('--ba-full-width', slider.getBoundingClientRect().width + 'px');
     }
 
-    // Initialize — use offsetWidth (CSS layout px, not scaled)
-    requestAnimationFrame(() => {
-      before.style.setProperty('--ba-full-width', slider.offsetWidth + 'px');
+    function setPos(pct: number, smooth = false) {
+      const p = Math.max(0, Math.min(1, pct));
+      const pStr = (p * 100).toFixed(3) + '%';
+      before.style.transition = smooth ? 'width .35s ease' : 'none';
+      handle.style.transition  = smooth ? 'left .35s ease'  : 'none';
+      before.style.width = pStr;
+      handle.style.left  = pStr;
+      syncWidth();
+    }
+
+    // Initialize synchronously at 50% to prevent the v1 image flashing at wrong size
+    syncWidth();
+    before.style.width = '50%';
+    handle.style.left  = '50%';
+
+    // Keep --ba-full-width in sync if the reader column resizes
+    new ResizeObserver(syncWidth).observe(slider);
+
+    // ── Desktop: hover-to-compare ──────────────────────────────────────────
+    slider.addEventListener('mousemove', (e: MouseEvent) => {
+      if (isTouch()) return;
+      const rect = slider.getBoundingClientRect();
+      setPos((e.clientX - rect.left) / rect.width);
     });
 
-    slider.addEventListener('pointerdown', (e) => {
+    slider.addEventListener('mouseleave', () => {
+      if (isTouch()) return;
+      setPos(0.5, true); // smooth reset to centre
+    });
+
+    // ── Mobile: drag-to-compare ────────────────────────────────────────────
+    let dragging = false;
+    slider.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (!isTouch()) return;
       dragging = true;
       slider.setPointerCapture(e.pointerId);
-      setPosition(e.clientX);
+      const rect = slider.getBoundingClientRect();
+      setPos((e.clientX - rect.left) / rect.width);
     });
-    slider.addEventListener('pointermove', (e) => {
-      if (!dragging) return;
-      setPosition(e.clientX);
+    slider.addEventListener('pointermove', (e: PointerEvent) => {
+      if (!isTouch() || !dragging) return;
+      const rect = slider.getBoundingClientRect();
+      setPos((e.clientX - rect.left) / rect.width);
     });
-    slider.addEventListener('pointerup', () => { dragging = false; });
+    slider.addEventListener('pointerup',     () => { dragging = false; });
     slider.addEventListener('pointercancel', () => { dragging = false; });
   });
 </script>

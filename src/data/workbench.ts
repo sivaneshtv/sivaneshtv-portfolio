@@ -75,7 +75,7 @@ export const aboutStickies = {
   music: {
     x: 730, y: 2440, rotation: -2, width: 240, variant: 'green' as const,
     eyebrow: '— always on —',
-    body: 'Can\'t get through a day without good music. Obsessed.',
+    body: 'Pop, K-pop, J-pop, EDM. The genre changes by the hour. The headphones stay.',
   },
 };
 
