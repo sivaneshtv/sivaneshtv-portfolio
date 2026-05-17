@@ -152,7 +152,7 @@ export const contactZone = {
     emailHref: 'mailto:sssiva.1999@gmail.com',
     socials: [
       { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sivanesh-t-v-product-designer' },
-      { label: 'Read.cv', url: '/resume' },
+      { label: 'Read.cv', url: '/resume.pdf' },
       { label: 'Twitter', url: 'https://x.com/dunkadamics' },
     ],
   },
