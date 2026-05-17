@@ -17,7 +17,22 @@ import EndRow from '../components/reader/EndRow.astro';
 import ImgSlot from '../components/reader/ImgSlot.astro';
 ---
 
-<CaseLayout title="Fleet View — Sivanesh TV" caseNum="02" caseName="Fleet View">
+<CaseLayout
+  title="Fleet View — Sivanesh TV"
+  caseNum="02"
+  caseName="Fleet View"
+  description="Building Fleet View — a real-time operations dashboard for managing multiple drone fleets across sites, missions, and operators at FlytBase."
+  ogImage="/assets/fleet/fleet-hero.png"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'Fleet View',
+    description: 'Building Fleet View — a real-time operations dashboard for managing multiple drone fleets across sites, missions, and operators at FlytBase.',
+    url: 'https://sivanesh.tv/fleet',
+    author: { '@type': 'Person', name: 'Sivanesh TV', url: 'https://sivanesh.tv' },
+    keywords: 'product design, fleet management, drone operations, dashboard design',
+  }}
+>
   <Fragment slot="reader">
     <ReaderColumn>
       <Hero

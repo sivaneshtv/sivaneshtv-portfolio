@@ -212,30 +212,30 @@ import {
   <!-- UI chrome (§7.9) -->
   <div class="topbar">
     <div class="tb-logo-wrap">
-      <button class="tb-logo" id="menuToggle" aria-expanded="false" aria-label="Open layers panel">
+      <button class="tb-logo" id="menuToggle" aria-expanded="false" aria-haspopup="menu">
         <span class="menu-ic"><span></span><span></span><span></span></span>
         <span>Sivanesh.tv</span>
         <span class="tb-logo-sub">— the workbench</span>
         <span class="menu-chev">▾</span>
       </button>
       <div class="nav-menu" id="layersPanel" role="menu">
-        <button class="nav-row" data-zone="hello">
+        <button class="nav-row" role="menuitem" data-zone="hello">
           <span class="nav-ic"><svg viewBox="0 0 14 14" width="11" height="11"><circle cx="7" cy="7" r="2.8" fill="currentColor"/></svg></span>
           <span class="nav-name">Intro</span><span class="nav-ar">↗</span>
         </button>
-        <button class="nav-row" data-zone="about">
+        <button class="nav-row" role="menuitem" data-zone="about">
           <span class="nav-ic"><svg viewBox="0 0 14 14" width="11" height="11"><path d="M2 2h10v10H2z M2 6h10 M2 9h10" stroke="currentColor" stroke-width="1.1" fill="none"/></svg></span>
           <span class="nav-name">About</span><span class="nav-ar">↗</span>
         </button>
-        <button class="nav-row" data-zone="work">
+        <button class="nav-row" role="menuitem" data-zone="work">
           <span class="nav-ic"><svg viewBox="0 0 14 14" width="11" height="11"><rect x="1" y="2" width="5" height="4" stroke="currentColor" stroke-width="1.1" fill="none"/><rect x="8" y="2" width="5" height="4" stroke="currentColor" stroke-width="1.1" fill="none"/><rect x="1" y="8" width="5" height="4" stroke="currentColor" stroke-width="1.1" fill="none"/><rect x="8" y="8" width="5" height="4" stroke="currentColor" stroke-width="1.1" fill="none"/></svg></span>
           <span class="nav-name">Work</span><span class="nav-ar">↗</span>
         </button>
-        <button class="nav-row" data-zone="howwork">
+        <button class="nav-row" role="menuitem" data-zone="howwork">
           <span class="nav-ic"><svg viewBox="0 0 14 14" width="11" height="11"><path d="M2 4h10 M2 7h7 M2 10h10" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linecap="round"/></svg></span>
           <span class="nav-name">Process</span><span class="nav-ar">↗</span>
         </button>
-        <button class="nav-row" data-zone="contact">
+        <button class="nav-row" role="menuitem" data-zone="contact">
           <span class="nav-ic"><svg viewBox="0 0 14 14" width="11" height="11"><path d="M1 3h12v8H1z M1 3l6 5 6-5" stroke="currentColor" stroke-width="1.1" fill="none" stroke-linejoin="round"/></svg></span>
           <span class="nav-name">Contact</span><span class="nav-ar">↗</span>
         </button>
@@ -343,7 +343,7 @@ import {
   .help-keys{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap}
   .help-key{font-family:var(--fm);font-size:11px;letter-spacing:.1em;padding:5px 10px;background:rgba(255,240,200,.08);border:1px solid rgba(255,240,200,.2);display:inline-flex;align-items:center;gap:6px}
   .help-key kbd{font-family:var(--fm);background:rgba(255,240,200,.12);padding:2px 6px;border-radius:2px;font-size:10px}
-  .help-dismiss{margin-top:20px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:10px 20px;background:var(--marker-red);color:#fff;cursor:pointer}
+  .help-dismiss{margin-top:20px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:10px 20px;background:#b82b22;color:#fff;cursor:pointer}
   .mobile-hint{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:25;background:#1a1a1c;color:#f5ede0;padding:10px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;box-shadow:0 4px 16px rgba(40,35,25,.25);white-space:nowrap;opacity:0;transition:opacity .4s ease;pointer-events:none;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .mobile-hint.on{opacity:1}
   @media(max-width:820px){

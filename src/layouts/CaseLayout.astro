@@ -7,12 +7,15 @@ interface Props {
   caseNum: string;
   caseName: string;
   backHref?: string;
+  description?: string;
+  ogImage?: string;
+  jsonLd?: Record<string, unknown>;
 }
 
-const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
+const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jsonLd } = Astro.props;
 ---
 
-<BaseLayout title={title}>
+<BaseLayout title={title} description={description} ogImage={ogImage} jsonLd={jsonLd}>
   <div class="board-bg"></div>
 
   <div class="canvas-wrap" id="canvasWrap">
@@ -71,10 +74,12 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
   .topbar > *{pointer-events:auto}
   .tb-logo-wrap{position:relative}
   .tb-logo{display:flex;align-items:center;gap:10px;font-family:var(--fs);font-weight:600;font-size:14px;color:var(--ink);background:#e8e4db;padding:8px 12px 8px 10px;border:1px solid rgba(40,35,25,.12);box-shadow:0 4px 14px rgba(40,35,25,.08);cursor:pointer;transition:background .2s,border-color .2s;text-decoration:none}
-  .tb-logo:hover{background:rgba(232,228,219,1);border-color:rgba(40,35,25,.25)}
+  @media(hover:hover){.tb-logo:hover{background:rgba(232,228,219,1);border-color:rgba(40,35,25,.25)}}
+  .tb-logo:active{background:rgba(220,216,207,1);border-color:rgba(40,35,25,.35)}
   .tb-logo-sub{color:var(--ink-3);font-weight:400;font-size:12px}
   .back-ic{display:inline-flex;align-items:center;justify-content:center;width:14px;color:var(--ink-2);transition:transform .2s,color .2s}
-  .tb-logo:hover .back-ic{transform:translateX(-2px);color:var(--red)}
+  @media(hover:hover){.tb-logo:hover .back-ic{transform:translateX(-2px);color:var(--red)}}
+  .tb-logo:active .back-ic{transform:translateX(-2px);color:var(--red)}
   .tb-contact{
     display:flex;align-items:center;
     font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
@@ -85,13 +90,15 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     height:39px;box-sizing:border-box;
     transition:background .2s,border-color .2s;
   }
-  .tb-contact:hover{background:#b82b22;border-color:#b82b22}
+  @media(hover:hover){.tb-contact:hover{background:#b82b22;border-color:#b82b22}}
+  .tb-contact:active{background:#b82b22;border-color:#b82b22}
   .toolbar{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateZ(0);-webkit-transform:translateX(-50%) translateZ(0);z-index:30;display:flex;align-items:center;gap:2px;background:#e8e4db;border:1px solid rgba(40,35,25,.12);padding:6px;box-shadow:0 8px 30px rgba(40,35,25,.15),0 2px 6px rgba(40,35,25,.08);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .tb-divider{width:1px;height:22px;background:rgba(40,35,25,.15);margin:0 4px;flex-shrink:0}
   .tb-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;font-family:var(--fm);font-size:13px;color:var(--ink-2);border-radius:2px;transition:background .15s,color .15s}
-  .tb-btn:hover{background:rgba(40,35,25,.08);color:var(--ink)}
-  .tb-btn.active,.tb-btn.active:hover{color:var(--marker-red)!important;background:rgba(216,53,42,.18)!important;transition:none!important}
-  [data-theme="dark"] .tb-btn.active,[data-theme="dark"] .tb-btn.active:hover{color:var(--marker-red)!important;background:rgba(232,74,63,.22)!important}
+  @media(hover:hover){.tb-btn:hover{background:rgba(40,35,25,.08);color:var(--ink)}}
+  .tb-btn:active{background:rgba(40,35,25,.14);color:var(--ink)}
+  .tb-btn.active{color:var(--marker-red)!important;background:rgba(216,53,42,.18)!important;transition:none!important}
+  [data-theme="dark"] .tb-btn.active{color:var(--marker-red)!important;background:rgba(232,74,63,.22)!important}
   .tb-btn svg{display:block}
   .tb-zoom{font-family:var(--fm);font-size:11px;letter-spacing:.08em;color:var(--ink-2);padding:0 12px;min-width:58px;text-align:center}
   .minimap{position:fixed;bottom:20px;right:20px;z-index:30;width:160px;height:112px;background:#e8e4db;border:1px solid rgba(40,35,25,.15);box-shadow:0 4px 16px rgba(40,35,25,.12);overflow:hidden;cursor:pointer;contain:layout style;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
@@ -133,7 +140,8 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     color:#fff;background:var(--red);border:none;padding:7px 12px;cursor:pointer;transition:background .2s;
   }
-  .return-pill-btn:hover{background:#b82b22}
+  @media(hover:hover){.return-pill-btn:hover{background:#b82b22}}
+  .return-pill-btn:active{background:#b82b22}
   .return-pill-close{
     display:flex;align-items:center;justify-content:center;
     background:transparent;
@@ -142,7 +150,8 @@ const { title, caseNum, caseName, backHref = '/#work' } = Astro.props;
     padding:7px 12px;
     cursor:pointer;transition:border-color .2s,color .2s;
   }
-  .return-pill-close:hover{border-color:rgba(245,237,224,.5);color:#f5ede0}
+  @media(hover:hover){.return-pill-close:hover{border-color:rgba(245,237,224,.5);color:#f5ede0}}
+  .return-pill-close:active{border-color:rgba(245,237,224,.5);color:#f5ede0}
   @media(max-width:640px){
     .return-pill{bottom:72px;padding:6px 8px 6px 12px;gap:8px;font-size:9px}
     .return-pill-btn{padding:6px 10px;font-size:9px}

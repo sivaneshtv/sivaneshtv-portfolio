@@ -17,7 +17,7 @@ const style = [
 ---
 
 <div class="contact-card" style={style}>
-  <h3 set:html={title} />
+  <h2 set:html={title} />
   <p>{body}</p>
   <a class="email" href={emailHref}>
     <span>{email}</span>
@@ -48,11 +48,11 @@ const style = [
     background:var(--tape);opacity:.85;transform:rotate(3deg);
     box-shadow:0 2px 5px rgba(40,35,25,.15);
   }
-  h3{
+  h2{
     font-family:var(--fh);font-weight:700;font-size:36px;line-height:1;
     margin-bottom:14px;letter-spacing:-.02em;
   }
-  h3 :global(em){font-style:italic;color:var(--marker-red)}
+  h2 :global(em){font-style:italic;color:var(--marker-red)}
   p{font-size:13px;line-height:1.55;opacity:.85;margin-bottom:18px}
   .email{
     display:flex;justify-content:space-between;align-items:center;

@@ -18,7 +18,22 @@ import ImgSlot from '../components/reader/ImgSlot.astro';
 import BeforeAfter from '../components/reader/BeforeAfter.astro';
 ---
 
-<CaseLayout title="Cockpit View 2.0 — Sivanesh TV" caseNum="01" caseName="Cockpit View 2.0">
+<CaseLayout
+  title="Cockpit View 2.0 — Sivanesh TV"
+  caseNum="01"
+  caseName="Cockpit View 2.0"
+  description="Redesigning the primary control interface for autonomous drone operations at FlytBase — composable chrome, modular body, zero layout thrash on mode change."
+  ogImage="/assets/cockpit/cockpit-hero.png"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'Cockpit View 2.0',
+    description: 'Redesigning the primary control interface for autonomous drone operations at FlytBase — composable chrome, modular body, zero layout thrash on mode change.',
+    url: 'https://sivanesh.tv/cockpit',
+    author: { '@type': 'Person', name: 'Sivanesh TV', url: 'https://sivanesh.tv' },
+    keywords: 'product design, drone UX, safety-critical systems, interface design',
+  }}
+>
   <Fragment slot="reader">
     <ReaderColumn>
       <Hero

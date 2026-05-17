@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    @font-face {
+      font-family: 'Caveat';
+      src: url('/fonts/Caveat[wght].woff2') format('woff2');
+      font-weight: 700;
+    }
+    text {
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+    }
+  </style>
+  <circle cx="16" cy="16" r="16" fill="#1a1a1c"/>
+  <text x="17" y="25" font-size="26" fill="#d8352a" text-anchor="middle">S</text>
+</svg>

@@ -50,7 +50,7 @@ export const zoneLabels = [
 export const masthead = {
   eyebrow: 'hey, I\'m —',
   title: 'Sivanesh <em>TV</em>,<br>a designer<br>who <span class="strike">talks</span> <em>ships.</em>',
-  sub: 'Product design for <em>critical operations</em> — drone autonomy, fleet tools, interfaces where a wrong tap costs more than time. Based in Chennai · open to briefs.',
+  sub: 'Product design for <em>critical operations</em> — safety-critical systems, fleet tools, interfaces where a wrong tap costs more than time. Based in Chennai · open to briefs.',
 };
 
 // §7.3 — Photo
@@ -152,7 +152,7 @@ export const contactZone = {
     emailHref: 'mailto:sssiva.1999@gmail.com',
     socials: [
       { label: 'LinkedIn', url: 'https://www.linkedin.com/in/sivanesh-t-v-product-designer' },
-      { label: 'Read.cv', url: '/assets/sivanesh-tv-resume.pdf' },
+      { label: 'Read.cv', url: '/resume' },
       { label: 'Twitter', url: 'https://x.com/dunkadamics' },
     ],
   },

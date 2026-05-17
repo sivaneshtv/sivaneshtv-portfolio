@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>OG Preview — sivanesh.tv</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0d0d0f;font-family:system-ui,-apple-system,sans-serif;padding:40px 24px;min-height:100vh}
+  h1{color:#888;font-size:11px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:40px;font-weight:400}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(480px,1fr));gap:40px;max-width:1160px;margin:0 auto}
+  .label{color:#555;font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+
+  /* LinkedIn card */
+  .li-card{background:#1b1f23;border:1px solid #30363d;border-radius:4px;overflow:hidden}
+  .li-card img{width:100%;height:252px;object-fit:cover;display:block}
+  .li-body{padding:12px 14px;border-top:1px solid #30363d}
+  .li-domain{color:#8b949e;font-size:12px;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+  .li-title{color:#e6edf3;font-size:15px;font-weight:600;line-height:1.35;margin-bottom:5px}
+  .li-desc{color:#8b949e;font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+  /* Twitter/X card */
+  .tw-card{background:#000;border:1px solid #2f3336;border-radius:16px;overflow:hidden}
+  .tw-card img{width:100%;height:252px;object-fit:cover;display:block}
+  .tw-body{padding:12px 14px}
+  .tw-domain{color:#71767b;font-size:13px;margin-bottom:2px}
+  .tw-title{color:#e7e9ea;font-size:15px;font-weight:700;line-height:1.3;margin-bottom:3px}
+  .tw-desc{color:#71767b;font-size:13px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+  /* Google result */
+  .gg-card{background:#202124;border:1px solid #3c4043;border-radius:8px;padding:16px 20px}
+  .gg-url{color:#bdc1c6;font-size:12px;margin-bottom:3px}
+  .gg-title{color:#8ab4f8;font-size:20px;font-weight:400;line-height:1.3;margin-bottom:6px;cursor:pointer}
+  .gg-title:hover{text-decoration:underline}
+  .gg-desc{color:#bdc1c6;font-size:14px;line-height:1.58;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+  /* Favicon tab strip */
+  .tab-strip{background:#292a2d;border-radius:8px 8px 0 0;padding:10px 16px;display:flex;align-items:center;gap:10px;max-width:360px;margin:0 auto 0}
+  .tab-fav{width:16px;height:16px;border-radius:2px;overflow:hidden;flex-shrink:0}
+  .tab-fav img{width:100%;height:100%}
+  .tab-title{color:#e8eaed;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+
+  .section{margin-bottom:48px}
+  .section-title{color:#444;font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #1e1e20;max-width:1160px;margin-left:auto;margin-right:auto}
+  .inner{max-width:1160px;margin:0 auto}
+</style>
+</head>
+<body>
+
+<h1 style="max-width:1160px;margin:0 auto 32px">sivanesh.tv — social + search preview</h1>
+
+<!-- Favicon -->
+<div class="section">
+  <div class="section-title">Browser tab · favicon</div>
+  <div class="inner">
+    <div class="tab-strip">
+      <div class="tab-fav"><img src="/favicon.svg" alt=""/></div>
+      <div class="tab-title">Sivanesh TV — Product Designer</div>
+    </div>
+  </div>
+</div>
+
+<!-- Social cards — homepage -->
+<div class="section">
+  <div class="section-title">Homepage · sivanesh.tv</div>
+  <div class="grid">
+    <div>
+      <div class="label">LinkedIn · Slack · iMessage</div>
+      <div class="li-card">
+        <img src="/og.png" alt=""/>
+        <div class="li-body">
+          <div class="li-domain">sivanesh.tv</div>
+          <div class="li-title">Sivanesh TV — Product Designer</div>
+          <div class="li-desc">Product design for critical operations — safety-critical systems, fleet tools, infrastructure management. Based in Chennai, open to briefs.</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="label">Twitter / X</div>
+      <div class="tw-card">
+        <img src="/og.png" alt=""/>
+        <div class="tw-body">
+          <div class="tw-domain">sivanesh.tv</div>
+          <div class="tw-title">Sivanesh TV — Product Designer</div>
+          <div class="tw-desc">Product design for critical operations — safety-critical systems, fleet tools, infrastructure management. Based in Chennai, open to briefs.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Social cards — cockpit -->
+<div class="section">
+  <div class="section-title">Case study · Cockpit View 2.0</div>
+  <div class="grid">
+    <div>
+      <div class="label">LinkedIn · Slack</div>
+      <div class="li-card">
+        <img src="/assets/cockpit/cockpit-hero.png" alt=""/>
+        <div class="li-body">
+          <div class="li-domain">sivanesh.tv</div>
+          <div class="li-title">Cockpit View 2.0 — Sivanesh TV</div>
+          <div class="li-desc">Redesigning the primary control interface for autonomous drone operations at FlytBase — composable chrome, modular body, zero layout thrash on mode change.</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="label">Twitter / X</div>
+      <div class="tw-card">
+        <img src="/assets/cockpit/cockpit-hero.png" alt=""/>
+        <div class="tw-body">
+          <div class="tw-domain">sivanesh.tv</div>
+          <div class="tw-title">Cockpit View 2.0 — Sivanesh TV</div>
+          <div class="tw-desc">Redesigning the primary control interface for autonomous drone operations at FlytBase — composable chrome, modular body, zero layout thrash on mode change.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Google -->
+<div class="section">
+  <div class="section-title">Google search result</div>
+  <div class="inner" style="display:flex;flex-direction:column;gap:16px;max-width:640px">
+    <div class="gg-card">
+      <div class="gg-url">sivanesh.tv</div>
+      <div class="gg-title">Sivanesh TV — Product Designer</div>
+      <div class="gg-desc">Product design for critical operations — safety-critical systems, fleet tools, infrastructure management. Based in Chennai, open to briefs.</div>
+    </div>
+    <div class="gg-card">
+      <div class="gg-url">sivanesh.tv › cockpit</div>
+      <div class="gg-title">Cockpit View 2.0 — Sivanesh TV</div>
+      <div class="gg-desc">Redesigning the primary control interface for autonomous drone operations at FlytBase — composable chrome, modular body, zero layout thrash on mode change.</div>
+    </div>
+    <div class="gg-card">
+      <div class="gg-url">sivanesh.tv › fleet</div>
+      <div class="gg-title">Fleet View — Sivanesh TV</div>
+      <div class="gg-desc">Building Fleet View — a real-time operations dashboard for managing multiple drone fleets across sites, missions, and operators at FlytBase.</div>
+    </div>
+  </div>
+</div>
+
+<div style="max-width:1160px;margin:0 auto;padding:24px 0 8px;color:#333;font-size:10px;letter-spacing:.1em;text-transform:uppercase;border-top:1px solid #1a1a1c">
+  Note — og:image currently uses the cockpit hero screenshot. A dedicated 1200×630 card (dark bg, your name + tagline) will look sharper on all platforms.
+</div>
+
+</body>
+</html>

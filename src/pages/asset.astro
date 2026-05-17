@@ -17,7 +17,22 @@ import EndRow from '../components/reader/EndRow.astro';
 import ImgSlot from '../components/reader/ImgSlot.astro';
 ---
 
-<CaseLayout title="Asset Management — Sivanesh TV" caseNum="03" caseName="Asset Management">
+<CaseLayout
+  title="Asset Management — Sivanesh TV"
+  caseNum="03"
+  caseName="Asset Management"
+  description="Designing Asset Management for FlytBase — an infrastructure-first module for tracking drones, payloads, and ground equipment across every site."
+  ogImage="/assets/asset/asset-hero.png"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: 'Asset Management',
+    description: 'Designing Asset Management for FlytBase — an infrastructure-first module for tracking drones, payloads, and ground equipment across every site.',
+    url: 'https://sivanesh.tv/asset',
+    author: { '@type': 'Person', name: 'Sivanesh TV', url: 'https://sivanesh.tv' },
+    keywords: 'product design, asset management, infrastructure, inspection systems',
+  }}
+>
   <Fragment slot="reader">
     <ReaderColumn>
       <Hero
