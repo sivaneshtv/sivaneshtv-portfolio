@@ -31,7 +31,7 @@ const isSplit = variant === 'split' && halves;
     </>
   ) : src ? (
     <>
-      <img src={src} alt={alt || title || ''} loading="lazy" />
+      <img src={src} alt={alt || title || ''} loading="lazy" draggable="false" />
       {(cap || capMeta) && (
         <div class="img-slot-cap">
           <span>{cap}</span>
