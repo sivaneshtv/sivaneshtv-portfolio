@@ -333,54 +333,52 @@ Open a case study on a 375px phone: column should fill ~94% of screen width. On 
 
 ---
 
-## G10 · Polaroid click gets swallowed by pan-drag handler
+## G10 · Polaroid click vs. pan-drag — suppress the click, don't refuse the pan
 
 ### Symptom
-User clicks a polaroid on the workbench to open a case study. Instead of navigating, the canvas starts a micro-pan. Click is lost.
+Two failure modes, and fixing the first naively causes the second:
+
+1. User clicks a polaroid to open a case study; instead the canvas micro-pans and the click is lost.
+2. User presses on a polaroid (or any card, link or image) and drags to move the board — nothing moves, because the pan handler refused to start.
 
 ### Root cause
-The pan handler fires on `pointerdown` anywhere on the canvas. It treats any downpress as a potential drag-start — consuming the event before the polaroid's click fires.
+The pan handler fires on `pointerdown` anywhere on the canvas, so it competes with the click. The original fix bailed out of the pan entirely whenever the pointer landed on `A` / `BUTTON` / `.polaroid` / `.printout` / `.email` — which cured (1) and *caused* (2). Cards and links cover a large share of the board, so large regions were simply undraggable.
 
 ### Fix
-Bail out of the pan handler when `pointerdown` lands on an interactive element (link, button, polaroid, etc.):
+Let the pan always start, and cancel the **click** instead when the pointer actually moved. §3.17 already does this in the capture phase, before the anchor's default action:
 
 ```typescript
-canvasWrap.addEventListener('pointerdown', (e: PointerEvent) => {
-  const forcePan = (e.button === 1) || spaceHeld;
-
-  if (!forcePan) {
-    let target = e.target as HTMLElement;
-    while (target && target !== canvasWrap) {
-      if (
-        target.tagName === 'A' ||
-        target.tagName === 'BUTTON' ||
-        target.classList.contains('polaroid') ||
-        target.classList.contains('printout') ||
-        target.classList.contains('email')
-      ) {
-        return; // let the default click bubble through
-      }
-      target = target.parentElement as HTMLElement;
-    }
-    if (e.button !== 0) return; // ignore right-click etc.
-  } else {
-    e.preventDefault(); // suppress middle-click autoscroll
+canvasWrap.addEventListener('pointerdown', (e) => { clickStart = { x: e.clientX, y: e.clientY }; }, true);
+canvasWrap.addEventListener('click', (e) => {
+  if (!clickStart) return;
+  if (Math.hypot(e.clientX - clickStart.x, e.clientY - clickStart.y) > 6) {
+    e.preventDefault(); e.stopPropagation();   // it was a drag, not a click
   }
-
-  // ... set up pan state
-});
+  clickStart = null;
+}, true);
 ```
 
-Middle-click and spacebar bypass the bail logic (`forcePan = true`), so users can still pan over polaroids with those modes when they need to.
+With that guard in place, the `pointerdown` bail list only needs real form controls — anything where a drag would be meaningless:
+
+```typescript
+const tag = target.tagName;
+if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' ||
+    target.hasAttribute?.('data-no-pan')) return;
+```
 
 ### Test
-Click a polaroid. Should navigate to the case study. Middle-click-drag or space-drag over a polaroid: should pan the canvas.
+Click a polaroid → navigates. Press on the same polaroid and drag → the board pans and does **not** navigate. Both must hold; testing only one hides the other.
 
 ---
 
-## G11 · Reading-mode drag should exit reading mode
+## G11 · (retired) Reading-mode drag should exit reading mode
 
-### Symptom
+> **Superseded.** The locked view no longer auto-unlocks on drag. A drag inside the locked
+> view pans vertically and stays locked; unlocking is a deliberate act (padlock button, `L`,
+> or a margin-ref jump). Kept for history — do not re-implement the 30px escape hatch, it
+> made the lock feel accidental and lost the visitor's place.
+
+### Symptom (historical)
 User is in reading mode on a case study. They drag to pan around, expecting to "explore." Instead the camera snaps back to the next section on scroll, fighting their pan.
 
 ### Root cause
@@ -865,3 +863,36 @@ Before shipping, verify these still hold:
 16. ✅ Fonts self-hosted with preload on critical families
 17. ✅ Mobile uses `100dvh` not `100vh` for canvas wrap
 18. ✅ Em styling varies intentionally by component class
+
+---
+
+## G12 · Native image drag kills the canvas pan
+
+### Symptom
+Press on any image on the board — a reader screenshot, a polaroid photo — and drag. The canvas
+does not move. Starting the identical drag one pixel outside the image works fine.
+
+### Root cause
+`<img>` is natively draggable in every browser. The press starts an HTML5 drag-and-drop gesture,
+the browser takes over the pointer, and the pan handler stops receiving `pointermove` mid-gesture.
+Nothing throws — the board just feels dead over every image.
+
+### Fix
+Two layers, because the CSS property and the event have different browser support:
+
+```css
+/* src/styles/base.css — Chrome, Safari */
+img{-webkit-user-drag:none;user-drag:none}
+```
+
+```typescript
+// CanvasEngine.bindEvents() — Firefox, and anything the CSS misses
+this.wrap.addEventListener('dragstart', (e) => e.preventDefault());
+```
+
+`draggable="false"` on `<img>` in ImgSlot.astro is a third belt-and-braces layer for reader images.
+
+### Test
+Press and drag starting on a reader image: the canvas pans and no ghost drag-image appears.
+Check `getComputedStyle(img).webkitUserDrag === 'none'` and that a dispatched `dragstart`
+comes back `defaultPrevented === true`.

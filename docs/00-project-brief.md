@@ -64,7 +64,7 @@ The rebuild is successful if:
 
 - **Workbench homepage** — `/` — hero + about + work + how-I-work + contact, all on one canvas
 - **Three case study pages** — `/cockpit`, `/fleet`, `/asset` — each a reader column + scattered artifacts on its own canvas
-- **Shared canvas engine** — pan, zoom, middle-click pan, spacebar+drag pan, minimap, zone navigation, reading mode (case studies only)
+- **Shared canvas engine** — pan, zoom, middle-click pan, spacebar+drag pan, minimap, zone navigation, locked view + free roam (case studies only)
 - **Responsive** — mobile + tablet + desktop. Case studies have a reading-mode column-fill adaptation on mobile that's essential to get right.
 
 ## Reference files
@@ -91,7 +91,7 @@ The HTML is where you go when a doc is ambiguous about how something should LOOK
 Places where the prototype made a choice but Sivanesh and I both agreed it might need revisiting:
 
 1. **Canvas dimensions.** 6000×4200 for workbench, 5000×6800 for cases. These are decent but not sacred. If a better layout emerges during rebuild, adjust — keep the "content island with whitespace moats" composition approach.
-2. **Reading mode default.** Case studies currently open IN reading mode (column centered, camera auto-flies between sections as you scroll). If your instinct is to open in explore mode and let readers opt in, raise it with Sivanesh before shipping.
+2. **~~Reading mode default.~~ Resolved.** Case studies open locked to the reader column, and exploring the canvas is an explicit unlock ("free roam"). Locking returns the visitor to the exact spot they unlocked from. See `02-interaction-spec.md` §11.
 3. **Zone navigation menu.** The top-left dropdown with Intro/About/Work/Process/Contact works but feels undercooked. Consider a clean sidebar, a minimap-integrated nav, or something else.
 4. **Case study order.** Cockpit → Fleet → Asset is chronological-ish but not thematic. Could reorder to lead with the strongest or newest.
 

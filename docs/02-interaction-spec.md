@@ -87,7 +87,7 @@ Plus a few transient flags:
 ```typescript
 let isPanning: boolean = false;       // true during a drag
 let spaceHeld: boolean = false;       // true while spacebar is down (for pan-anywhere mode)
-let readingMode: boolean = true;      // case studies only; controls camera behavior on scroll
+let freeRoam: boolean = false;        // case studies only; false = locked to the reader column
 let flightAnim: number | null = null; // requestAnimationFrame ID for active zone flight
 let decelerating: boolean = false;    // true during post-drag inertia
 let vx: number = 0, vy: number = 0;   // drag velocity, for inertia
@@ -183,17 +183,9 @@ canvasWrap.addEventListener('wheel', (e: WheelEvent) => {
   }
 
   // Plain wheel / two-finger trackpad swipe → pan
-  // Both deltaX and deltaY respected for horizontal + vertical panning
-  if (readingMode) {
-    // Reading mode: scroll pans the reader column (typically vertical; horizontal ignored visually
-    // but still translates so users don't feel locked)
-    tx -= e.deltaX;
-    ty -= e.deltaY;
-  } else {
-    // Explore mode: pan the board freely
-    tx -= e.deltaX;
-    ty -= e.deltaY;
-  }
+  // Locked: vertical only. Free roam: both axes.
+  if (freeRoam) tx -= e.deltaX;
+  ty -= e.deltaY;
   apply();
 }, { passive: false });  // passive:false is required for preventDefault()
 ```
@@ -284,12 +276,8 @@ canvasWrap.addEventListener('pointermove', (e: PointerEvent) => {
   lastMoveY = e.clientY;
   lastMoveTime = now;
 
-  // If significant drag in reading mode, exit reading mode (the user wants to explore)
-  const dragDist = Math.hypot(e.clientX - panStartX, e.clientY - panStartY);
-  if (dragDist > 30 && readingMode) {
-    readingMode = false;
-    showFirstPanHint?.();
-  }
+  // Locked view never drifts sideways — the X axis is pinned to the drag start.
+  // Nothing auto-unlocks: leaving the reader column is always a deliberate act.
 
   apply();
 });
@@ -633,14 +621,49 @@ function updateActiveZone(): void {
 
 ---
 
-## 11. Reading mode (case studies only)
+## 11. Free roam (case studies only)
 
-Case studies open in **reading mode**: the camera auto-centers on the reader column at a comfortable zoom. Wheel scroll pans vertically down the column. Dragging exits reading mode (the user wants to explore).
+Case studies open **locked**: the camera is pinned to the reader column at a comfortable zoom, and the X axis does not move. Wheel, drag and pinch all pan vertically down the column; horizontal input is ignored and zoom anchors to viewport center so the column never drifts sideways. That locked view *is* the page — there is no "mode" the visitor has to escape.
+
+**Free roam** is the opt-in unlock. Unlocking hands over the whole canvas — both axes, free zoom — so the artifacts around the column can be explored. Locking again flies back to **exactly** the camera position the visitor unlocked from, so exploring never costs them their place in the reading.
 
 ```typescript
-let readingMode: boolean = true;  // default on for case studies
-let readingScale: number = 0.55;  // computed from viewport — see below
+let freeRoam: boolean = false;   // case studies boot locked
+let readingScale: number = 0.55; // computed from viewport — see below
+let lockedPos: { tx: number; ty: number; scale: number } | null = null;
 ```
+
+### The two transitions
+
+```typescript
+function setFreeRoam(on: boolean): void {
+  if (on) {
+    // Snapshot BEFORE anything moves — this is where locking returns to
+    lockedPos = { tx, ty, scale };
+    freeRoam = true;
+    onFreeRoamChange?.(true);
+  } else {
+    freeRoam = false;
+    onFreeRoamChange?.(false);
+    computeReaderLayout();   // viewport may have changed while roaming
+    refreshZoneTargets();
+    if (lockedPos) flyToRaw(lockedPos.tx, lockedPos.ty, lockedPos.scale);
+    else goToZone('top');
+  }
+}
+```
+
+Nothing auto-unlocks. A drag inside the locked view pans vertically and stays locked — the visitor unlocks through the padlock button, the `L` key, or a margin-ref jump (which is a temporary unlock with its own return pill, see MARGIN-REF-SPEC).
+
+### Affordances
+
+| Surface | Locked | Free roam |
+|---|---|---|
+| Toolbar button `#btnLock` | closed padlock, `aria-pressed="false"` | open padlock, `.active`, `aria-pressed="true"` |
+| Roam pill `#roamPill` | hidden | "Free roam · Lock & return" — the touch escape hatch |
+| Hint `.roam-hint` | "Locked view — unlock to free roam" on first load | — |
+
+Every affordance is driven from one `onFreeRoamChange` callback, so button, pill and a11y state can never disagree.
 
 ### Computing the reading scale (responsive)
 
@@ -670,9 +693,9 @@ On mobile, if you center a section's Y in the viewport, the reading content ends
 function flyTo(targetCX: number, targetCY: number, targetScale: number, duration = 700): void {
   // ... standard setup ...
 
-  // Reading-mode Y bias: shift the camera so content lands above geometric center on mobile
+  // Locked-view Y bias: shift the camera so content lands above geometric center on mobile
   let yBias = 0;
-  if (readingMode) {
+  if (!freeRoam) {
     if (innerWidth <= 420)      yBias = innerHeight * 0.18;
     else if (innerWidth <= 640) yBias = innerHeight * 0.14;
     else if (innerWidth <= 1100) yBias = innerHeight * 0.08;
@@ -718,9 +741,10 @@ Use `sessionStorage` not `localStorage` so returning-after-weeks visitors get a 
 | Key | Action |
 |---|---|
 | `F` | Fit entire canvas to viewport (compute scale and center) |
-| `R` | Enter/exit reading mode (case studies) |
+| `L` | Toggle free roam (case studies) |
+| `Esc` / `R` | Lock and return to where free roam was unlocked |
 | `0` | Reset to default view (home/zone:hello) |
-| `Escape` | Dismiss help overlay if open; else exit reading mode |
+| `Escape` | Dismiss help overlay if open; else lock and return |
 | `Space` (hold) | Pan-anywhere mode (cursor becomes grab) |
 | `Cmd/Ctrl + scroll` | Zoom (in wheel handler) |
 | Arrow keys | (optional, lower priority) pan by a fixed step |
@@ -782,7 +806,7 @@ Pan-via-drag still works (direct input, not animation). Wheel-pan still works. H
 4. ✅ Plain wheel = pan (both axes); Cmd/Ctrl wheel = zoom
 5. ✅ Middle-click drag = pan (with autoscroll suppressed)
 6. ✅ Space + drag = pan, grab cursor while held
-7. ✅ Reading mode exits on drag > 30px
+7. ✅ Locked view never drifts sideways; locking returns to the unlock point
 8. ✅ Minimap built via requestAnimationFrame after layout
 9. ✅ Canvas clamps flush to viewport edges — no beyond-canvas void
 10. ✅ `prefers-reduced-motion` respected on flyTo and inertia

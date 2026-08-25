@@ -75,7 +75,7 @@ sivaneshtv-portfolio/
 │   │   ├── canvas/
 │   │   │   ├── CanvasStage.astro      # the <div class="canvas-wrap"><div class="canvas"> wrapper
 │   │   │   ├── Minimap.astro
-│   │   │   ├── Toolbar.astro          # zoom in/out, fit, reading mode
+│   │   │   ├── Toolbar.astro          # zoom in/out, fit, lock / free roam
 │   │   │   ├── Topbar.astro           # logo + case label + clock
 │   │   │   ├── HelpOverlay.astro      # one-time onboarding
 │   │   │   └── engine/
@@ -376,7 +376,7 @@ Use these throughout the CSS:
 
 1. **Canvas unchanged** — the canvas is still 6000×4200 / 5000×6800. What changes is how the user navigates it: default zoom is lower on mobile, reading-mode column fills 94% of viewport, etc.
 
-2. **Reading mode Y-bias** — see `02-interaction-spec.md` §11. Mobile needs content to sit above optical center.
+2. **Locked-view Y-bias** — see `02-interaction-spec.md` §11. Mobile needs content to sit above optical center.
 
 3. **Help overlay copy differs on touch devices** — say "pinch to zoom · drag to pan" instead of "Cmd+scroll to zoom".
 
@@ -429,7 +429,7 @@ Fade in after 800ms, fade out after 4s. Only show once per session.
 - **Focus indicators** on all interactive elements. Custom styling is fine but visible contrast ratio ≥ 3:1.
 - **Color contrast** — all text ≥ 4.5:1 (AA). Display text (≥ 24px or ≥ 19px bold) can be ≥ 3:1.
 - **Alt text on all images** — polaroid thumbnail descriptions, case study screenshots, icons.
-- **aria-labels** on icon buttons (zoom in/out, fit, reading mode).
+- **aria-labels** on icon buttons (zoom in/out, fit, lock / free roam — the padlock also carries `aria-pressed`).
 - **Reduced motion respected** — see interaction spec.
 - **Semantic HTML** in the reader: `<article>` wrapping, `<section>` per section with `<h2>`, `<figure>` for image slots.
 
@@ -568,7 +568,7 @@ const engine = new CanvasEngine({
   zoneBounds: workbenchZoneBounds,
   canvasWidth: 6000,
   canvasHeight: 4200,
-  readingMode: false, // homepage: false, cases: true
+  mode: 'workbench', // cases pass 'case' and boot locked (freeRoam === false)
 });
 
 // Expose for dev tools and shortcut handlers
@@ -588,7 +588,7 @@ document.querySelectorAll('[data-zone]').forEach(btn => {
 
 - **Help overlay shown?** sessionStorage `sivanesh.helpSeen`
 - **Nav menu open?** local component state (Astro's `transition:persist` or vanilla `.classList.toggle`)
-- **Reading mode on?** instance state on `CanvasEngine`, no external sync needed
+- **Free roam unlocked?** instance state on `CanvasEngine`; the `onFreeRoamChange` callback drives every affordance (padlock, roam pill, aria)
 
 No global store. No Redux. No context providers. Small site, local state.
 

@@ -315,7 +315,7 @@ Less, but deliberate.
 - **Zone flight** easing: `easeInOutCubic`, duration 700ms.
 - **Polaroid hover**: 200ms ease-out lift.
 - **Help overlay fade-in**: 400ms ease-out, initial opacity 0 → 1.
-- **Reading mode transition** (enter/exit): 700ms zone-flight using the same easing.
+- **Lock / free-roam transition**: 600ms `flyToRaw` back to the unlock point, same easing.
 - **Respect `prefers-reduced-motion`**: disable all non-essential motion (pan inertia can stay for direct input; zone flight becomes an instant jump; hover animations disable).
 
 ---
