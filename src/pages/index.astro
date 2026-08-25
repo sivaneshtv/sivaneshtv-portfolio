@@ -270,12 +270,18 @@ import {
 
   <div class="help" id="help">
     <div class="help-title">this is a <em>whiteboard.</em></div>
-    <p style="margin-bottom:6px">Scroll to pan around. Click any sketch, sticky, or polaroid to open the full work.</p>
-    <div class="help-keys">
+    <p class="help-copy pointer-only" style="margin-bottom:6px">Scroll to pan around. Click any sketch, sticky, or polaroid to open the full work.</p>
+    <p class="help-copy touch-only" style="margin-bottom:6px">Drag to move around. Tap any sketch, sticky, or polaroid to open the full work.</p>
+    <div class="help-keys pointer-only">
       <span class="help-key"><kbd>scroll</kbd> pan</span>
       <span class="help-key"><kbd>⌘</kbd> + <kbd>scroll</kbd> zoom</span>
       <span class="help-key"><kbd>space</kbd> + <kbd>drag</kbd> pan fast</span>
       <span class="help-key"><kbd>F</kbd> fit</span>
+    </div>
+    <div class="help-keys touch-only">
+      <span class="help-key"><kbd>drag</kbd> pan</span>
+      <span class="help-key"><kbd>pinch</kbd> zoom</span>
+      <span class="help-key"><kbd>tap</kbd> open</span>
     </div>
     <button class="help-dismiss" id="helpDismiss">got it</button>
   </div>
@@ -336,12 +342,19 @@ import {
   .minimap-dot.work{background:var(--marker-red);opacity:.75}
   .minimap-viewport{position:absolute;left:0;top:0;border:1.5px solid var(--marker-red);background:rgba(216,53,42,.08);pointer-events:none;transition:none}
   .minimap-label{position:absolute;top:4px;left:8px;font-family:var(--fm);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);pointer-events:none}
-  .help{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:50;background:#1a1a1c;color:#f5ede0;padding:28px 32px;max-width:400px;text-align:center;font-family:var(--fs);font-size:14px;line-height:1.5;box-shadow:0 20px 60px rgba(40,35,25,.4);opacity:0;pointer-events:none;transition:opacity .4s,transform .4s}
+  .help{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:50;background:#1a1a1c;color:#f5ede0;padding:28px;width:min(400px,calc(100vw - 40px));max-width:400px;text-align:center;font-family:var(--fs);font-size:14px;line-height:1.5;box-shadow:0 20px 60px rgba(40,35,25,.4);opacity:0;pointer-events:none;transition:opacity .4s,transform .4s}
   .help.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
   .help-title{font-family:var(--fh);font-weight:700;font-size:38px;margin-bottom:10px;line-height:1}
   .help-title em{font-style:italic;color:var(--marker-red)}
-  .help-keys{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap}
-  .help-key{font-family:var(--fm);font-size:11px;letter-spacing:.1em;padding:5px 10px;background:rgba(255,240,200,.08);border:1px solid rgba(255,240,200,.2);display:inline-flex;align-items:center;gap:6px}
+  .help-keys{display:flex;justify-content:center;gap:10px;row-gap:8px;margin-top:16px;flex-wrap:wrap}
+  .help-key{font-family:var(--fm);font-size:11px;letter-spacing:.1em;padding:5px 10px;background:rgba(255,240,200,.08);border:1px solid rgba(255,240,200,.2);display:inline-flex;align-items:center;gap:6px;max-width:100%}
+  /* Keyboard hints for pointer devices, gesture hints for touch — never both */
+  .touch-only{display:none}
+  @media(hover:none) and (pointer:coarse){
+    .pointer-only{display:none}
+    .help-copy.touch-only{display:block}
+    .help-keys.touch-only{display:flex}
+  }
   .help-key kbd{font-family:var(--fm);background:rgba(255,240,200,.12);padding:2px 6px;border-radius:2px;font-size:10px}
   .help-dismiss{margin-top:20px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:10px 20px;background:#b82b22;color:#fff;cursor:pointer}
   .mobile-hint{display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:25;background:#1a1a1c;color:#f5ede0;padding:10px 16px;font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;box-shadow:0 4px 16px rgba(40,35,25,.25);white-space:nowrap;opacity:0;transition:opacity .4s ease;pointer-events:none;will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden}
@@ -359,7 +372,13 @@ import {
     .minimap{display:none}
     .mobile-hint{display:block}
     .help-title{font-size:28px}
-    .help{padding:22px;max-width:88vw}
+    .help{padding:22px}
+  }
+  @media(max-width:520px){
+    /* Chips must stay inside the dialog's padding, not sit flush against it */
+    .help-keys{gap:6px;row-gap:6px;margin-top:14px}
+    .help-key{font-size:10px;letter-spacing:.08em;padding:4px 8px;gap:4px}
+    .help-key kbd{padding:2px 5px;font-size:9px}
   }
   @media(prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
