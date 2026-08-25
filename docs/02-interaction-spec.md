@@ -665,6 +665,11 @@ Nothing auto-unlocks. A drag inside the locked view pans vertically and stays lo
 
 Every affordance is driven from one `onFreeRoamChange` callback, so button, pill and a11y state can never disagree.
 
+Both pills occupy the same slot above the toolbar, so they are mutually exclusive by
+construction: `syncLockUI()` shows the roam pill only when unlocked **and** the return pill is
+not on. The engine re-fires the callback whenever the return pill appears or hides (including
+its 10s timeout), so the roam pill takes the slot back and the canvas is never a dead end.
+
 ### Computing the reading scale (responsive)
 
 The reader column has a fixed width (say 720px). We want it to fill ~82% of desktop viewport, ~92% tablet, ~94% mobile.

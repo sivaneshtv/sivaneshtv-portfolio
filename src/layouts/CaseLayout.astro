@@ -209,7 +209,10 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
     lockBtn?.classList.toggle('active', unlocked);
     lockBtn?.setAttribute('aria-pressed', String(unlocked));
     lockBtn?.setAttribute('aria-label', unlocked ? 'Lock view and return' : 'Unlock free roam');
-    roamPill?.classList.toggle('on', unlocked);
+    // Both pills occupy the same slot above the toolbar. The return pill owns it
+    // during a margin-ref jump; the roam pill takes over once it's gone.
+    const returnPillOn = document.getElementById('returnPill')?.classList.contains('on');
+    roamPill?.classList.toggle('on', unlocked && !returnPillOn);
   }
   syncLockUI(false);
 
@@ -228,8 +231,6 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
       const slug = link.dataset.jump;
       if (!slug) return;
       engine.jumpToArtifact(slug);
-      // The return pill is the way back from a jump — don't stack two pills
-      roamPill?.classList.remove('on');
     });
   });
 
@@ -240,10 +241,9 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
   });
 
   document.getElementById('returnPillClose')?.addEventListener('click', () => {
-    engine.hideReturnPill();
     // Does NOT clear preJumpState — Escape/R still work as silent fallbacks.
-    // Hand the way back to the roam pill so the canvas is never a dead end.
-    if (engine.getFreeRoam()) roamPill?.classList.add('on');
+    // hideReturnPill re-syncs, handing the way back to the roam pill.
+    engine.hideReturnPill();
   });
 
   // Free-roam hint — anchored above the lock button, centered on mobile

@@ -366,8 +366,43 @@ if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT
     target.hasAttribute?.('data-no-pan')) return;
 ```
 
+### The part that bites: pointer capture steals the click
+
+Starting the pan on every press means calling `setPointerCapture()` on every press — and
+capture retargets **the compatibility mouse events, `click` included**, to the capturing
+element. The real event trace looked like this:
+
+```
+pointerdown → line            (inside the polaroid)
+pointerup   → DIV.canvas-wrap ← retargeted
+click       → DIV.canvas-wrap ← the <a> never sees it
+```
+
+Every link inside the canvas died: polaroids, contact links, margin-refs. The fix is to
+**defer capture until the press is unmistakably a drag**:
+
+```typescript
+// pointerdown: remember the pointer, do NOT capture (unless middle-click / space-pan)
+this.activePointerId = e.pointerId;
+this.pointerCaptured = false;
+if (forcePan) this.capturePointer();
+
+// pointermove: capture once past the drag threshold — the click is forfeit by then anyway
+if (!this.pointerCaptured &&
+    Math.hypot(e.clientX - this.panStartX, e.clientY - this.panStartY) > DRAG_THRESHOLD) {
+  this.capturePointer();
+}
+```
+
+A clean click never captures, so it reaches the anchor. A drag captures after 6px, so the
+pan survives the cursor leaving the window. Same threshold as the click-vs-drag guard.
+
 ### Test
 Click a polaroid → navigates. Press on the same polaroid and drag → the board pans and does **not** navigate. Both must hold; testing only one hides the other.
+
+**Test with real input.** `el.dispatchEvent(new MouseEvent('click'))` bypasses pointer
+capture retargeting entirely, so a synthetic-event test passes while every real click is
+broken. Drive the page (Playwright, or a real browser) for anything click-related.
 
 ---
 
@@ -896,3 +931,73 @@ this.wrap.addEventListener('dragstart', (e) => e.preventDefault());
 Press and drag starting on a reader image: the canvas pans and no ghost drag-image appears.
 Check `getComputedStyle(img).webkitUserDrag === 'none'` and that a dispatched `dragstart`
 comes back `defaultPrevented === true`.
+
+---
+
+## G13 · Focusing a link scrolls `.canvas-wrap` and displaces the whole board
+
+### Symptom
+A margin-ref link "does nothing", or the board jumps somewhere absurd after clicking a link.
+Afterwards every camera move is off by a constant amount. Feels random — it depends on where
+the camera was when you clicked.
+
+### Root cause
+`.canvas-wrap` is `overflow:hidden`, but hidden boxes are still **programmatically scrollable**,
+and the browser scrolls the nearest scrollable ancestor to reveal a newly **focused** element.
+The canvas moves by `transform`, not layout, so a link that is visually centred can sit
+thousands of px outside the wrap's layout box. Clicking it focuses it, the browser "helpfully"
+scrolls the wrap, and every subsequent camera calculation is wrong by `wrap.scrollTop`.
+
+```js
+document.getElementById('canvasWrap').scrollTop  // → 3723, and nothing in the app set it
+```
+
+### Fix
+Pin it shut in `CanvasEngine.bindEvents()`:
+
+```typescript
+const pinScroll = () => {
+  if (this.wrap.scrollTop !== 0) this.wrap.scrollTop = 0;
+  if (this.wrap.scrollLeft !== 0) this.wrap.scrollLeft = 0;
+};
+this.wrap.addEventListener('scroll', pinScroll, { passive: true });
+this.wrap.addEventListener('focusin', pinScroll);
+```
+
+### Test
+Click any link inside the canvas, then check `canvasWrap.scrollTop === 0`. Assert it after
+every click-related test — a stray scroll silently invalidates every position assertion.
+
+---
+
+## G14 · A jump lands where the artifact *used to be*
+
+### Symptom
+The first margin-ref jump after a page load lands hundreds of px off target — the artifact is
+just off screen, or awkwardly high. Jump again and it is perfect.
+
+### Root cause
+Artifacts are anchored to reader sections (`data-anchor`), and section offsets keep changing
+while images load. `jumpToArtifact()` reads `offsetTop` once, starts an 800ms flight, and an
+image finishing mid-flight pushes the artifact down the canvas — 505px in the observed case.
+The camera lands exactly where the artifact was when the flight started.
+
+### Fix
+Two parts. Re-measure before reading offsets:
+
+```typescript
+this.computeReaderLayout();
+this.refreshZoneTargets();
+```
+
+…and, because layout can still shift *after* the flight begins, keep the camera pinned to the
+artifact with a `ResizeObserver` on `#reader` for a couple of seconds, re-aiming whenever the
+artifact moves. Release the pin on any pointerdown, wheel, or return — user input always wins.
+
+### Test
+Hard-reload a case study and click a margin-ref immediately, before images finish. The
+artifact must end up dead centre:
+
+```js
+(el.offsetTop + el.offsetHeight / 2) - (-matrix.f / matrix.a)   // → 0
+```

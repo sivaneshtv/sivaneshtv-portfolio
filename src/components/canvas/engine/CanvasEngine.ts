@@ -79,6 +79,10 @@ export class CanvasEngine {
 
   // Click-vs-drag §3.17
   private clickStart: { x: number; y: number } | null = null;
+  /** Movement (px) that turns a press into a drag — shared by capture and click suppression */
+  private static readonly DRAG_THRESHOLD = 6;
+  private activePointerId: number | null = null;
+  private pointerCaptured = false;
 
   // Touch §3.9
   private touchState: {
@@ -99,6 +103,9 @@ export class CanvasEngine {
   private preJumpState: { tx: number; ty: number; scale: number; freeRoam: boolean } | null = null;
   /** Camera captured the moment free roam was unlocked — locking returns here. */
   private lockedPos: { tx: number; ty: number; scale: number } | null = null;
+  /** Keeps a jump on target while reader images finish loading and shift the layout. */
+  private jumpPin: ResizeObserver | null = null;
+  private jumpPinTimer = 0;
 
   // Dynamic will-change management — enables GPU layer during animation,
   // removes it at rest so canvas rasterises at device pixel resolution (crisp text)
@@ -438,6 +445,12 @@ export class CanvasEngine {
       return;
     }
 
+    // Artifacts are anchored to reader sections, which shift as images and fonts
+    // settle. Re-measure before reading offsets or the flight targets a stale
+    // position and lands hundreds of px off — worst on the first jump after load.
+    this.computeReaderLayout();
+    this.refreshZoneTargets();
+
     // Snapshot current camera state BEFORE jumping
     this.preJumpState = {
       tx: this.tx,
@@ -474,10 +487,42 @@ export class CanvasEngine {
     // Show return pill
     const label = el.dataset.label || slug;
     this.showReturnPill(label);
+
+    // Reader images finish loading after the flight begins, pushing sections (and
+    // the artifact with them) down the canvas. Track the artifact until it settles,
+    // otherwise the camera lands where the artifact used to be.
+    this.startJumpPin(el, targetScale);
+  }
+
+  private startJumpPin(el: HTMLElement, targetScale: number): void {
+    this.stopJumpPin();
+    const reader = document.getElementById('reader');
+    if (!reader || typeof ResizeObserver === 'undefined') return;
+
+    this.jumpPin = new ResizeObserver(() => {
+      this.refreshZoneTargets();
+      const endTX = -(el.offsetLeft + el.offsetWidth / 2) * targetScale;
+      const endTY = -(el.offsetTop + el.offsetHeight / 2) * targetScale;
+      if (Math.abs(endTX - this.tx) < 1 && Math.abs(endTY - this.ty) < 1) return;
+      if (this.flightAnim) { cancelAnimationFrame(this.flightAnim); this.flightAnim = null; }
+      this.flyToRaw(endTX, endTY, targetScale, 300);
+    });
+    this.jumpPin.observe(reader);
+    // Layout settles within a second or two; never hold the camera longer than that
+    clearTimeout(this.jumpPinTimer);
+    this.jumpPinTimer = window.setTimeout(() => this.stopJumpPin(), 2500);
+  }
+
+  /** Release the camera — called when layout settles or the user takes over. */
+  private stopJumpPin(): void {
+    clearTimeout(this.jumpPinTimer);
+    this.jumpPin?.disconnect();
+    this.jumpPin = null;
   }
 
   // Restore camera to pre-jump position
   restoreFromJump(): void {
+    this.stopJumpPin();
     if (!this.preJumpState) return;
     const snapshot = this.preJumpState;
     this.preJumpState = null;
@@ -501,6 +546,8 @@ export class CanvasEngine {
     if (!pill || !labelEl) return;
     labelEl.textContent = label;
     pill.classList.add('on');
+    // Both pills live at the same spot — re-sync so the roam pill yields to this one
+    this.onFreeRoamChange?.(this.freeRoam);
     clearTimeout(this.returnPillTimer);
     this.returnPillTimer = window.setTimeout(() => this.hideReturnPill(), 10000);
   }
@@ -509,6 +556,19 @@ export class CanvasEngine {
     const pill = document.getElementById('returnPill');
     if (pill) pill.classList.remove('on');
     clearTimeout(this.returnPillTimer);
+    // The pill times out after 10s. If the canvas is still unlocked, hand the way
+    // back to the free-roam pill so the visitor is never left without one.
+    if (this.freeRoam) this.onFreeRoamChange?.(true);
+  }
+
+  private capturePointer(): void {
+    if (this.activePointerId === null || this.pointerCaptured) return;
+    try { this.wrap.setPointerCapture(this.activePointerId); this.pointerCaptured = true; } catch { /* pointer already gone */ }
+  }
+
+  private releasePointer(): void {
+    this.activePointerId = null;
+    this.pointerCaptured = false;
   }
 
   // §3.5 — Inertia
@@ -668,6 +728,18 @@ export class CanvasEngine {
     // CSS -webkit-user-drag covers Chrome/Safari; this covers Firefox.
     this.wrap.addEventListener('dragstart', (e) => e.preventDefault());
 
+    // The wrap is overflow:hidden, but hidden boxes are still programmatically
+    // scrollable — and the browser scrolls one to reveal a focused descendant.
+    // Since the canvas moves by transform, not layout, a link that is visually
+    // centred can sit thousands of px outside the wrap's layout box: focusing it
+    // scrolls the wrap and silently displaces the entire board. Pin it at 0.
+    const pinScroll = () => {
+      if (this.wrap.scrollTop !== 0) this.wrap.scrollTop = 0;
+      if (this.wrap.scrollLeft !== 0) this.wrap.scrollLeft = 0;
+    };
+    this.wrap.addEventListener('scroll', pinScroll, { passive: true });
+    this.wrap.addEventListener('focusin', pinScroll);
+
     // Mobile: blur focused element on touchend so buttons don't stay in pressed state
     document.addEventListener('touchend', () => {
       const el = document.activeElement;
@@ -677,6 +749,7 @@ export class CanvasEngine {
     // §3.8 — Wheel
     this.wrap.addEventListener('wheel', (e: WheelEvent) => {
       e.preventDefault();
+      this.stopJumpPin();
       this.activateWillChange();
       this.deactivateWillChange(300);
       if (e.ctrlKey || e.metaKey) {
@@ -706,6 +779,7 @@ export class CanvasEngine {
         }
         if (e.button !== 0 && e.button !== undefined) return;
       } else { e.preventDefault(); }
+      this.stopJumpPin();
       this.isPanning = true; this.decelerating = false;
       this.activateWillChange();
       this.vx = 0; this.vy = 0;
@@ -714,11 +788,22 @@ export class CanvasEngine {
       this.lastMoveX = e.clientX; this.lastMoveY = e.clientY;
       this.lastMoveTime = performance.now();
       this.wrap.classList.add('grabbing');
-      this.wrap.setPointerCapture(e.pointerId);
+      // Capture is deferred until the press becomes a drag. Taking it here would
+      // retarget the click (and mouseup) to the wrap, so links, polaroids and
+      // margin-refs would never receive their own click. See G10.
+      this.activePointerId = e.pointerId;
+      this.pointerCaptured = false;
+      if (forcePan) this.capturePointer();
     });
 
     this.wrap.addEventListener('pointermove', (e: PointerEvent) => {
       if (!this.isPanning || this.touchState) return;
+      // Once it's unmistakably a drag, take the pointer so the pan survives the
+      // cursor leaving the window. By now the click is already forfeit anyway.
+      if (!this.pointerCaptured &&
+        Math.hypot(e.clientX - this.panStartX, e.clientY - this.panStartY) > CanvasEngine.DRAG_THRESHOLD) {
+        this.capturePointer();
+      }
       if (this.mode === 'case' && !this.freeRoam) {
         // Locked view: vertical-only pan — horizontal axis locked
         this.tx = this.panStartTX;
@@ -748,6 +833,7 @@ export class CanvasEngine {
     });
 
     this.wrap.addEventListener('pointerup', () => {
+      this.releasePointer();
       if (!this.isPanning) return;
       this.isPanning = false;
       this.wrap.classList.remove('grabbing');
@@ -762,6 +848,7 @@ export class CanvasEngine {
       }
     });
     this.wrap.addEventListener('pointercancel', () => {
+      this.releasePointer();
       this.isPanning = false; this.wrap.classList.remove('grabbing');
     });
 
@@ -855,7 +942,7 @@ export class CanvasEngine {
     this.wrap.addEventListener('pointerdown', (e) => { this.clickStart = { x: e.clientX, y: e.clientY }; }, true);
     this.wrap.addEventListener('click', (e) => {
       if (!this.clickStart) return;
-      if (Math.hypot(e.clientX - this.clickStart.x, e.clientY - this.clickStart.y) > 6) {
+      if (Math.hypot(e.clientX - this.clickStart.x, e.clientY - this.clickStart.y) > CanvasEngine.DRAG_THRESHOLD) {
         e.preventDefault(); e.stopPropagation();
       }
       this.clickStart = null;
