@@ -28,7 +28,7 @@ export interface CanvasEngineConfig {
   canvasHeight: number;
   mode: 'workbench' | 'case';
   onZoneChange?: (zone: string | null) => void;
-  onReadingModeChange?: (on: boolean) => void;
+  onFreeRoamChange?: (on: boolean) => void;
 }
 
 export class CanvasEngine {
@@ -89,16 +89,16 @@ export class CanvasEngine {
   // Help
   private helpSeen = false;
 
-  // §3.14 — Case-study reading mode
-  private readingMode = false;
+  // §3.14 — Case-study free roam.
+  // Locked (freeRoam === false) is the default: the reader viewport IS the page.
+  // Unlocking hands over the whole canvas; locking flies back to the unlock point.
+  private freeRoam = false;
   private readerWidth = 1080;
   private readerLeft = 1960;
   private readingScale = 0.55;
-  private firstPanHintShown = false;
-  private preJumpState: { tx: number; ty: number; scale: number; readingMode: boolean } | null = null;
-  private lastReadingPos: { tx: number; ty: number; scale: number } | null = null;
-  private hasHorizontallyPanned = false;
-  private readingPosTimer = 0;
+  private preJumpState: { tx: number; ty: number; scale: number; freeRoam: boolean } | null = null;
+  /** Camera captured the moment free roam was unlocked — locking returns here. */
+  private lockedPos: { tx: number; ty: number; scale: number } | null = null;
 
   // Dynamic will-change management — enables GPU layer during animation,
   // removes it at rest so canvas rasterises at device pixel resolution (crisp text)
@@ -113,7 +113,7 @@ export class CanvasEngine {
       this.canvas.style.willChange = 'auto';
     }, delay);
   }
-  private onReadingModeChange: ((on: boolean) => void) | null = null;
+  private onFreeRoamChange: ((on: boolean) => void) | null = null;
 
   constructor(config: CanvasEngineConfig) {
     this.canvas = config.canvasEl;
@@ -129,12 +129,10 @@ export class CanvasEngine {
     this.CANVAS_H = config.canvasHeight;
     this.mode = config.mode;
     this.onZoneChange = config.onZoneChange ?? null;
-    this.onReadingModeChange = config.onReadingModeChange ?? null;
+    this.onFreeRoamChange = config.onFreeRoamChange ?? null;
     this.helpSeen = sessionStorage.getItem('sivanesh.helpSeen') === '1';
 
-    if (this.mode === 'case') {
-      this.readingMode = true;
-    }
+    // Case pages boot locked (freeRoam === false) — no flag to set.
 
     this.bindEvents();
     this.boot();
@@ -181,10 +179,10 @@ export class CanvasEngine {
     const newScale = clamp(this.scale * deltaScale, this.minScale, this.maxScale);
     if (newScale === this.scale) return;
     const cw = innerWidth / 2; const ch = innerHeight / 2;
-    // Reading mode: anchor zoom to viewport center so the reading column
+    // Locked view: anchor zoom to viewport center so the reading column
     // never shifts left/right — zoom always feels "in place"
-    const anchorX = (this.mode === 'case' && this.readingMode) ? cw : screenX;
-    const anchorY = (this.mode === 'case' && this.readingMode) ? ch : screenY;
+    const anchorX = (this.mode === 'case' && !this.freeRoam) ? cw : screenX;
+    const anchorY = (this.mode === 'case' && !this.freeRoam) ? ch : screenY;
     const canvasX = (anchorX - cw - this.tx) / this.scale;
     const canvasY = (anchorY - ch - this.ty) / this.scale;
     this.tx = anchorX - cw - canvasX * newScale;
@@ -201,7 +199,7 @@ export class CanvasEngine {
     const startTX = this.tx; const startTY = this.ty; const startScale = this.scale;
 
     let yBias = 0;
-    if (this.mode === 'case' && this.readingMode) {
+    if (this.mode === 'case' && !this.freeRoam) {
       if (innerWidth <= 420)       yBias = innerHeight * 0.18;
       else if (innerWidth <= 640)  yBias = innerHeight * 0.14;
       else if (innerWidth <= 1100) yBias = innerHeight * 0.08;
@@ -406,31 +404,31 @@ export class CanvasEngine {
     });
   }
 
-  // Reading mode helpers
-  setReadingMode(on: boolean): void {
+  // Free-roam helpers — locked is the default state on case pages
+  setFreeRoam(on: boolean): void {
     if (on) {
-      this.readingMode = true;
-      this.hasHorizontallyPanned = false;
+      // Snapshot the locked camera BEFORE anything moves — locking flies back here
+      this.lockedPos = { tx: this.tx, ty: this.ty, scale: this.scale };
+      this.freeRoam = true;
       // Fire callback immediately when state changes — before compute/fly so it
       // always fires even if layout or animation setup hits an edge-case path.
-      this.onReadingModeChange?.(true);
+      this.onFreeRoamChange?.(true);
+    } else {
+      this.freeRoam = false;
+      this.onFreeRoamChange?.(false);
+      // Viewport may have changed while roaming — recompute before flying back
       this.computeReaderLayout();
       this.refreshZoneTargets();
-      // Return to last reading position; fall back to top zone on first open
-      if (this.lastReadingPos) {
-        this.flyToRaw(this.lastReadingPos.tx, this.lastReadingPos.ty, this.lastReadingPos.scale);
+      // Return to exactly where free roam was unlocked; top zone on first lock
+      if (this.lockedPos) {
+        this.flyToRaw(this.lockedPos.tx, this.lockedPos.ty, this.lockedPos.scale);
       } else {
         this.goToZone('top');
       }
-    } else {
-      // Snapshot current position so re-enabling returns here
-      this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
-      this.readingMode = false;
-      this.onReadingModeChange?.(false);
     }
   }
 
-  toggleReadingMode(): void { this.setReadingMode(!this.readingMode); }
+  toggleFreeRoam(): void { this.setFreeRoam(!this.freeRoam); }
 
   // MARGIN-REF-SPEC — jumpToArtifact (with preJumpState snapshot)
   jumpToArtifact(slug: string): void {
@@ -445,12 +443,15 @@ export class CanvasEngine {
       tx: this.tx,
       ty: this.ty,
       scale: this.scale,
-      readingMode: this.readingMode,
+      freeRoam: this.freeRoam,
     };
 
-    // Exit reading mode so user sees the canvas
-    this.readingMode = false;
-    this.onReadingModeChange?.(false);
+    // A jump is a temporary unlock — remember the locked spot so a later lock returns to it
+    if (!this.freeRoam) {
+      this.lockedPos = { tx: this.tx, ty: this.ty, scale: this.scale };
+    }
+    this.freeRoam = true;
+    this.onFreeRoamChange?.(true);
 
     // Compute artifact center in canvas coords
     const targetCX = el.offsetLeft + el.offsetWidth / 2;
@@ -481,15 +482,15 @@ export class CanvasEngine {
     const snapshot = this.preJumpState;
     this.preJumpState = null;
 
-    this.readingMode = snapshot.readingMode;
-    if (snapshot.readingMode) {
-      // Persist the restored position so future re-enables return here, not to top
-      this.lastReadingPos = { tx: snapshot.tx, ty: snapshot.ty, scale: snapshot.scale };
+    this.freeRoam = snapshot.freeRoam;
+    if (!snapshot.freeRoam) {
+      // Returning to the locked view — that position becomes the new lock anchor
+      this.lockedPos = { tx: snapshot.tx, ty: snapshot.ty, scale: snapshot.scale };
     }
 
     // Fly back to exact prior camera position
     this.flyToRaw(snapshot.tx, snapshot.ty, snapshot.scale, 600);
-    this.onReadingModeChange?.(this.readingMode);
+    this.onFreeRoamChange?.(this.freeRoam);
   }
 
   private returnPillTimer = 0;
@@ -513,17 +514,14 @@ export class CanvasEngine {
   // §3.5 — Inertia
   private inertiaTick = (): void => {
     if (!this.decelerating) return;
-    // Reading mode: zero out horizontal velocity so inertia can't drift X
-    if (this.mode === 'case' && this.readingMode) this.vx = 0;
+    // Locked view: zero out horizontal velocity so inertia can't drift X
+    if (this.mode === 'case' && !this.freeRoam) this.vx = 0;
     this.tx += this.vx; this.ty += this.vy;
     this.vx *= 0.92; this.vy *= 0.92;
     this.apply();
     if (Math.hypot(this.vx, this.vy) > 0.3) requestAnimationFrame(this.inertiaTick);
     else {
       this.decelerating = false;
-      if (this.mode === 'case' && !this.readingMode && !this.hasHorizontallyPanned) {
-        this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
-      }
       this.deactivateWillChange();
     }
   };
@@ -666,6 +664,10 @@ export class CanvasEngine {
 
   // ── Event binding ────────────────────────────────────
   private bindEvents(): void {
+    // Native HTML5 drag (images, links) hijacks the pointer mid-pan — suppress it.
+    // CSS -webkit-user-drag covers Chrome/Safari; this covers Firefox.
+    this.wrap.addEventListener('dragstart', (e) => e.preventDefault());
+
     // Mobile: blur focused element on touchend so buttons don't stay in pressed state
     document.addEventListener('touchend', () => {
       const el = document.activeElement;
@@ -680,22 +682,8 @@ export class CanvasEngine {
       if (e.ctrlKey || e.metaKey) {
         this.zoomAt(Math.pow(0.9985, e.deltaY), e.clientX, e.clientY);
       } else {
-        // Reading mode: block horizontal wheel/trackpad scroll
-        if (!(this.mode === 'case' && this.readingMode)) this.tx -= e.deltaX;
-        if (this.mode === 'case' && !this.readingMode) {
-          if (!this.hasHorizontallyPanned && Math.abs(e.deltaX) > 8) {
-            this.hasHorizontallyPanned = true;
-          }
-          // Debounced update: track vertical-only wheel scroll position
-          if (!this.hasHorizontallyPanned) {
-            clearTimeout(this.readingPosTimer);
-            this.readingPosTimer = window.setTimeout(() => {
-              if (!this.hasHorizontallyPanned) {
-                this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
-              }
-            }, 200);
-          }
-        }
+        // Locked view: horizontal wheel/trackpad scroll is ignored
+        if (this.freeRoam || this.mode !== 'case') this.tx -= e.deltaX;
         this.ty -= e.deltaY;
         this.scheduleApply();
       }
@@ -707,11 +695,13 @@ export class CanvasEngine {
       if (this.touchState) return;
       const forcePan = e.button === 1 || this.spaceHeld;
       if (!forcePan) {
+        // Only real form controls block a pan start. Links, polaroids, printouts and
+        // images pan freely — §3.17 click-vs-drag suppression protects their clicks.
         let target = e.target as HTMLElement;
         while (target && target !== this.wrap) {
-          if (target.tagName === 'A' || target.classList.contains('polaroid') ||
-            target.classList.contains('printout') || target.classList.contains('email') ||
-            target.tagName === 'BUTTON') return;
+          const tag = target.tagName;
+          if (tag === 'BUTTON' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' ||
+            target.hasAttribute?.('data-no-pan')) return;
           target = target.parentElement as HTMLElement;
         }
         if (e.button !== 0 && e.button !== undefined) return;
@@ -729,17 +719,13 @@ export class CanvasEngine {
 
     this.wrap.addEventListener('pointermove', (e: PointerEvent) => {
       if (!this.isPanning || this.touchState) return;
-      if (this.mode === 'case' && this.readingMode) {
-        // Reading mode: vertical-only pan — horizontal axis locked
+      if (this.mode === 'case' && !this.freeRoam) {
+        // Locked view: vertical-only pan — horizontal axis locked
         this.tx = this.panStartTX;
         this.ty = this.panStartTY + (e.clientY - this.panStartY);
       } else {
         this.tx = this.panStartTX + (e.clientX - this.panStartX);
         this.ty = this.panStartTY + (e.clientY - this.panStartY);
-        // Track whether horizontal movement has occurred since reading mode was last exited
-        if (this.mode === 'case' && !this.hasHorizontallyPanned) {
-          if (Math.abs(e.clientX - this.panStartX) > 12) this.hasHorizontallyPanned = true;
-        }
       }
       const now = performance.now(); const dt = now - this.lastMoveTime;
       if (dt >= 8) {
@@ -772,9 +758,6 @@ export class CanvasEngine {
         this.decelerating = true;
         requestAnimationFrame(this.inertiaTick);
       } else {
-        if (this.mode === 'case' && !this.readingMode && !this.hasHorizontallyPanned) {
-          this.lastReadingPos = { tx: this.tx, ty: this.ty, scale: this.scale };
-        }
         this.deactivateWillChange();
       }
     });
@@ -812,13 +795,18 @@ export class CanvasEngine {
         case 'ArrowRight': this.tx -= 80; this.apply(); e.preventDefault(); break;
         case 'ArrowUp': this.ty += 80; this.apply(); e.preventDefault(); break;
         case 'ArrowDown': this.ty -= 80; this.apply(); e.preventDefault(); break;
+        case 'l': case 'L':
+          if (this.mode === 'case') { this.toggleFreeRoam(); e.preventDefault(); }
+          break;
+        case 'Escape':
         case 'r': case 'R':
+          // Lock and return — Escape is the natural key, R kept for muscle memory
           if (this.mode === 'case') {
             if (this.preJumpState) {
               this.restoreFromJump();
               this.hideReturnPill();
-            } else {
-              this.setReadingMode(true);
+            } else if (this.freeRoam) {
+              this.setFreeRoam(false);
             }
             e.preventDefault();
           }
@@ -850,10 +838,10 @@ export class CanvasEngine {
         const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
         const newScale = clamp(this.touchState.startScale * (dist / this.touchState.startDist), this.minScale, this.maxScale);
         const cw = innerWidth / 2, ch = innerHeight / 2;
-        // Reading mode: anchor pinch zoom to viewport center (= reading column center)
+        // Locked view: anchor pinch zoom to viewport center (= reading column center)
         // so the column never shifts sideways during pinch — matches zoomAt() behaviour
-        const anchorX = (this.mode === 'case' && this.readingMode) ? cw : this.touchState.cx;
-        const anchorY = (this.mode === 'case' && this.readingMode) ? ch : this.touchState.cy;
+        const anchorX = (this.mode === 'case' && !this.freeRoam) ? cw : this.touchState.cx;
+        const anchorY = (this.mode === 'case' && !this.freeRoam) ? ch : this.touchState.cy;
         const cx = (anchorX - cw - this.touchState.startTX) / this.touchState.startScale;
         const cy = (anchorY - ch - this.touchState.startTY) / this.touchState.startScale;
         this.tx = anchorX - cw - cx * newScale;
@@ -891,5 +879,5 @@ export class CanvasEngine {
   reset(): void { this.mode === 'workbench' ? this.resetView() : this.goToZone('top'); }
   rebuild(): void { this.buildMinimap(); }
   dismissHelp(): void { this.helpSeen = true; sessionStorage.setItem('sivanesh.helpSeen', '1'); }
-  getReadingMode(): boolean { return this.readingMode; }
+  getFreeRoam(): boolean { return this.freeRoam; }
 }

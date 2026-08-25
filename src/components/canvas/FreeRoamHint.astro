@@ -1,10 +1,10 @@
 ---
 ---
-<div class="reading-hint">Reading mode — unlock to explore</div>
+<div class="roam-hint">Locked view — unlock to free roam</div>
 
 <style>
   /* §6.6 */
-  .reading-hint{
+  .roam-hint{
     position:fixed;
     /* left/bottom overridden by JS to anchor above reader button */
     bottom:80px;left:50%;
@@ -19,7 +19,7 @@
     border-radius:2px;
   }
   /* Downward arrow — JS sets --arrow-x to compensate if hint is clamped */
-  .reading-hint::after{
+  .roam-hint::after{
     content:'';
     position:absolute;
     top:100%;left:var(--arrow-x,50%);
@@ -27,5 +27,5 @@
     border:5px solid transparent;
     border-top-color:rgba(26,26,28,.92);
   }
-  :global(.reading-hint.on){opacity:.95}
+  :global(.roam-hint.on){opacity:.95}
 </style>
