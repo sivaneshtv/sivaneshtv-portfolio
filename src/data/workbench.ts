@@ -4,7 +4,8 @@
  */
 
 export const zones = {
-  hello:   { cx: 2313, cy: 1910, scale: 0.90 },
+  // Framed on the masthead's ink, not its 900px box — margins come out even at every width
+  hello:   { cx: 2401, cy: 1793, scale: 0.88 },
   about:   { cx: 900,  cy: 2135, scale: 0.65 },
   work:    { cx: 3870, cy: 2065, scale: 0.72 }, // cy raised so label sits ~100px below topbar on large screens
   howwork: { cx: 1700, cy: 3465, scale: 0.84 },
@@ -14,7 +15,8 @@ export const zones = {
 // Mobile zone overrides — absolute cx/cy/scale for ≤520 px screens.
 // cx/cy are canvas coords; scale is the literal zoom (no multiplier applied).
 export const mobileZones = {
-  hello:   { cx: 2313, cy: 1910, scale: 0.40 },
+  // Phone landing frames the masthead text only; the photo sits one drag to the left
+  hello:   { cx: 2536, cy: 1897, scale: 0.38 },
   about:   { cx: 900,  cy: 2135, scale: 0.45 },
   work:    { cx: 3920, cy: 2180, scale: 0.45 }, // cy raised so cluster sits higher on phone screen
   howwork: { cx: 1600, cy: 3465, scale: 0.44 },
