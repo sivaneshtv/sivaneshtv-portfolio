@@ -31,7 +31,11 @@ const style = pos ? `left:${pos.x}px;top:${pos.y}px` : '';
   .mh-title{
     font-family:var(--fs);font-weight:700;font-size:96px;line-height:.95;letter-spacing:-.035em;
     color:var(--ink);margin-bottom:24px;
+    /* Breaks come from the <br>s only — never let a line reflow onto a fourth row */
+    white-space:nowrap;
   }
+  /* Colour-only highlight — same display face and weight as the rest of the title */
+  .mh-title :global(.hl){color:var(--marker-red)}
   .mh-title :global(em){
     font-style:italic;font-family:var(--fh);font-weight:700;font-size:1.05em;
     color:var(--marker-red);display:inline-block;transform:translateY(6px);
