@@ -49,7 +49,7 @@ export const zoneLabels = [
 // §7.2 — Masthead (position baked into CSS: left:2100, top:1600, rotate(-1deg))
 export const masthead = {
   eyebrow: 'hey, I\'m —',
-  title: 'Sivanesh <em>TV</em>,<br>a designer<br>who <span class="strike">talks</span> <em>ships.</em>',
+  title: 'Sivanesh <em>TV</em>,<br>product designer for<br><em>high-stakes systems.</em>',
   sub: 'Product design for <em>critical operations</em> — safety-critical systems, fleet tools, interfaces where a wrong tap costs more than time. Based in Chennai · open to briefs.',
 };
 
