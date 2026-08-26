@@ -149,7 +149,7 @@ export const contactZone = {
   card: {
     x: 3800, y: 3420,
     title: 'if this <em>clicked</em> — say hi.',
-    body: 'Taking briefs in Q2 \'26. Short contracts, design lead roles, advisory, pair-thinking sessions. Drop a line — I read everything.',
+    body: 'Taking briefs in Q3 \'26. Short contracts, design lead roles, advisory, pair-thinking sessions. Drop a line — I read everything.',
     email: 'hello@sivanesh.tv',
     emailHref: 'mailto:sssiva.1999@gmail.com',
     socials: [
@@ -161,6 +161,6 @@ export const contactZone = {
   availSticky: {
     x: 4380, y: 3520, rotation: -3, width: 220,
     eyebrow: '— availability —',
-    body: 'Open to <em>Q2 \'26</em> briefs. Chennai-based, work across IST hours.',
+    body: 'Open to <em>Q3 \'26</em> briefs. Chennai-based, work across IST hours.',
   },
 };

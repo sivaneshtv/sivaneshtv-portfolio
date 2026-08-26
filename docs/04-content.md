@@ -201,14 +201,14 @@ The About zone uses a title heading in the same style (see below) rather than a 
 ### Contact card (~x=3900, y=3420)
 
 🔒 **H3:** `if this <em>clicked</em> — say hi.`
-🔒 **Body:** `Taking briefs in Q2 '26. Short contracts, design lead roles, advisory, pair-thinking sessions. Drop a line — I read everything.`
+🔒 **Body:** `Taking briefs in Q3 '26. Short contracts, design lead roles, advisory, pair-thinking sessions. Drop a line — I read everything.`
 🔒 **Email:** `hello@sivanesh.tv` (or whichever address Sivanesh uses)
 🔒 **Socials:** LinkedIn ↗ · Read.cv ↗ · Twitter ↗ (with the right URLs)
 
 ### Availability sticky (yellow, ~x=4480, y=3520)
 
 🔒 **Eyebrow:** `— availability —`
-🔒 **Body:** `Open to <em>Q2 '26</em> briefs. Pune-based, work across IST hours.`
+🔒 **Body:** `Open to <em>Q3 '26</em> briefs. Pune-based, work across IST hours.`
 
 ### Arrow from zone label to card
 
