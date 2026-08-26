@@ -4,8 +4,8 @@
  */
 
 export const zones = {
-  // Framed on the masthead's ink, not its 900px box — margins come out even at every width
-  hello:   { cx: 2434, cy: 1761, scale: 0.84 },
+  // Framed on the measured ink of photo + masthead, so margins come out even at every width
+  hello:   { cx: 2327, cy: 1744, scale: 0.90 },
   about:   { cx: 900,  cy: 2135, scale: 0.65 },
   work:    { cx: 3870, cy: 2065, scale: 0.72 }, // cy raised so label sits ~100px below topbar on large screens
   howwork: { cx: 1700, cy: 3465, scale: 0.84 },
@@ -15,8 +15,8 @@ export const zones = {
 // Mobile zone overrides — absolute cx/cy/scale for ≤520 px screens.
 // cx/cy are canvas coords; scale is the literal zoom (no multiplier applied).
 export const mobileZones = {
-  // Phone landing frames the masthead text only; the photo sits one drag to the left
-  hello:   { cx: 2572, cy: 1821, scale: 0.35 },
+  // Phone landing frames photo + masthead together — the picture is part of the hello
+  hello:   { cx: 2327, cy: 1812, scale: 0.335 },
   about:   { cx: 900,  cy: 2135, scale: 0.45 },
   work:    { cx: 3920, cy: 2180, scale: 0.45 }, // cy raised so cluster sits higher on phone screen
   howwork: { cx: 1600, cy: 3465, scale: 0.44 },
@@ -51,7 +51,7 @@ export const zoneLabels = [
 // §7.2 — Masthead (position baked into CSS: left:2100, top:1600, rotate(-1deg))
 export const masthead = {
   eyebrow: 'hey, I\'m —',
-  title: 'Sivanesh TV,<br>a product designer<br>for <span class="hl">high</span>-stakes interfaces.',
+  title: 'Sivanesh T V,<br>a product designer for<br><span class="hl">high</span> stakes interfaces.',
   sub: 'Product design for <em>critical operations</em> — safety-critical software, fleet tools, systems where a wrong tap costs more than time. Based in Chennai · open to briefs.',
 };
 
