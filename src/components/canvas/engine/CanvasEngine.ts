@@ -571,7 +571,18 @@ export class CanvasEngine {
     this.jumpPin = null;
   }
 
-  /** Hand the camera to the visitor: stop any animation still driving it. */
+  /**
+   * True while a deliberate camera move is running — a return, a jump, a zone flight.
+   * These are commitments: they were asked for by name and they land where they said,
+   * so dragging or scrolling the canvas mid-flight is ignored rather than allowed to
+   * strand the camera somewhere nobody chose. Controls that name a NEW destination
+   * (another margin-ref, the minimap, Home, Fit) retarget the flight instead.
+   */
+  private get flying(): boolean {
+    return this.flightAnim !== null;
+  }
+
+  /** Drop an in-progress flight because a new destination was named. */
   private cancelFlight(): void {
     if (this.flightAnim) { cancelAnimationFrame(this.flightAnim); this.flightAnim = null; }
     this.flightEnd = null;
@@ -589,7 +600,7 @@ export class CanvasEngine {
 
   // §3.5 — Inertia
   private inertiaTick = (): void => {
-    if (!this.decelerating) return;
+    if (!this.decelerating || this.flying) return;
     // Locked view: zero out horizontal velocity so inertia can't drift X
     if (this.cameraLocked) this.vx = 0;
     this.tx += this.vx; this.ty += this.vy;
@@ -764,8 +775,8 @@ export class CanvasEngine {
     // §3.8 — Wheel
     this.wrap.addEventListener('wheel', (e: WheelEvent) => {
       e.preventDefault();
+      if (this.flying) return;
       this.stopJumpPin();
-      this.cancelFlight();
       this.activateWillChange();
       this.deactivateWillChange(300);
       if (e.ctrlKey || e.metaKey) {
@@ -795,8 +806,8 @@ export class CanvasEngine {
         }
         if (e.button !== 0 && e.button !== undefined) return;
       } else { e.preventDefault(); }
+      if (this.flying) return;
       this.stopJumpPin();
-      this.cancelFlight();
       this.isPanning = true; this.decelerating = false;
       this.activateWillChange();
       this.vx = 0; this.vy = 0;
@@ -893,19 +904,27 @@ export class CanvasEngine {
         case '0': case 'h': case 'H':
           this.goToZone(this.mode === 'case' ? 'top' : 'hello'); e.preventDefault(); break;
         case 'f': case 'F': this.fitView(); e.preventDefault(); break;
-        case '+': case '=': this.zoomAt(1.25, innerWidth / 2, innerHeight / 2); e.preventDefault(); break;
-        case '-': case '_': this.zoomAt(0.8, innerWidth / 2, innerHeight / 2); e.preventDefault(); break;
+        case '+': case '=':
+          if (!this.flying) this.zoomAt(1.25, innerWidth / 2, innerHeight / 2);
+          e.preventDefault(); break;
+        case '-': case '_':
+          if (!this.flying) this.zoomAt(0.8, innerWidth / 2, innerHeight / 2);
+          e.preventDefault(); break;
         // Horizontal arrows are ignored while locked — the same answer a horizontal
         // drag or wheel gets. A key should never reach past a constraint the pointer
         // respects.
         case 'ArrowLeft':
-          if (!this.cameraLocked) { this.tx += 80; this.apply(); }
+          if (!this.cameraLocked && !this.flying) { this.tx += 80; this.apply(); }
           e.preventDefault(); break;
         case 'ArrowRight':
-          if (!this.cameraLocked) { this.tx -= 80; this.apply(); }
+          if (!this.cameraLocked && !this.flying) { this.tx -= 80; this.apply(); }
           e.preventDefault(); break;
-        case 'ArrowUp': this.ty += 80; this.apply(); e.preventDefault(); break;
-        case 'ArrowDown': this.ty -= 80; this.apply(); e.preventDefault(); break;
+        case 'ArrowUp':
+          if (!this.flying) { this.ty += 80; this.apply(); }
+          e.preventDefault(); break;
+        case 'ArrowDown':
+          if (!this.flying) { this.ty -= 80; this.apply(); }
+          e.preventDefault(); break;
         case 'l': case 'L':
           if (this.mode === 'case') { this.toggleFreeRoam(); e.preventDefault(); }
           break;
@@ -922,6 +941,7 @@ export class CanvasEngine {
 
     // §3.9 — Touch
     this.wrap.addEventListener('touchstart', (e) => {
+      if (this.flying) return;
       if (e.touches.length === 2) {
         e.preventDefault(); // stop iOS native pinch-zoom from firing alongside our handler
         // Cancel any active pointer pan so it doesn't fight with pinch
@@ -970,6 +990,7 @@ export class CanvasEngine {
     // §3.11 — Minimap click
     this.minimap.addEventListener('click', (e) => {
       this.takeTheWheel();
+      this.cancelFlight();   // a named destination replaces the one in progress
       const rect = this.minimap.getBoundingClientRect();
       const mx = e.clientX - rect.left - 4; const my = e.clientY - rect.top - 4;
       const mw = this.minimap.clientWidth - 8; const mh = this.minimap.clientHeight - 8;

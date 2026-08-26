@@ -677,6 +677,30 @@ private get cameraLocked(): boolean {
 }
 ```
 
+### A flight is a commitment
+
+When the visitor names a destination — Back to reading, the padlock, a margin-ref, a zone,
+Home, Fit — the camera goes there and lands there. Dragging, scrolling, pinching or nudging
+the canvas mid-flight is **ignored**, not honoured:
+
+```typescript
+private get flying(): boolean { return this.flightAnim !== null; }
+// pointerdown / wheel / touchstart / arrows / zoom keys all bail on `flying`
+```
+
+Two earlier behaviours were both wrong, in opposite directions:
+
+- Originally nothing cancelled a flight, so a drag and the flight wrote the camera on the
+  same frames — visible jitter, then a snap when the stale `panStartTX` took over.
+- Then input cancelled the flight outright, which stranded the camera mid-glide while the
+  state had already announced `reading`. Worse: the interface said one thing, the camera
+  showed another.
+
+What stays live during a flight: **anything that names a new destination.** Clicking another
+margin-ref, the minimap, or a case-study link retargets rather than fights — `pointerdown` is
+skipped but the click itself is untouched, so links keep working while the board is inert.
+Inertia is suppressed the same way, so a fling cannot outlive the flight that replaced it.
+
 ### One return anchor
 
 `lockedPos` is captured on the way out of reading and left alone until the visitor is back.
