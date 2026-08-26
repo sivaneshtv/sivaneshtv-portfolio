@@ -689,6 +689,29 @@ then "Lock & return" appearing in its place). That removed the exit while the vi
 still away and swapped the button's identity under their cursor. Do not reintroduce a timeout
 here.
 
+### The lock binds every input, not just the pointer
+
+A constraint the pointer respects but the keyboard walks straight through is not a constraint.
+Three controls used to reach past the reading lock — horizontal arrows moved X by 80px a press,
+`F` flew to a 0.22 whole-board view, and a minimap click jumped anywhere — all while the state
+still said `reading` and the padlock still showed closed. Every input is now answerable to the
+same rule:
+
+| Input | While `reading` |
+|---|---|
+| `←` `→`, horizontal drag, horizontal wheel | ignored — X belongs to the column |
+| `↑` `↓`, vertical drag/wheel, space-drag | move down the column |
+| `+` `−` | zoom, anchored to viewport centre so the column never drifts |
+| `H` `0` | back to the top of the column |
+| `F`, minimap click | **take the wheel** → promote to `roam`, padlock lights, pill appears |
+| `L` | unlock deliberately |
+| `Esc` `R` | back to reading |
+
+`F` and the minimap are the interesting case: they cannot honour a lock whose whole point is
+staying on the column, so rather than silently breaking it they unlock honestly — which also
+means the visitor gets a way back instead of being stranded off-column with a padlock still
+claiming to be closed.
+
 `backToReading()` is the single exit behind the pill, the padlock, `Esc` and `R`: it restores
 the exact camera the visitor left the reading at, whether they got away by jumping or by
 unlocking. `syncViewUI(state)` is the single place that renders state onto the padlock and the

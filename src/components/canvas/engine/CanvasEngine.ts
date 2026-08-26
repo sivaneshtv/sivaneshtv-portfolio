@@ -319,6 +319,8 @@ export class CanvasEngine {
   }
 
   private fitView(): void {
+    // Fitting the whole board is the opposite of reading one column — take the wheel
+    this.takeTheWheel();
     // Always do a true fit — Home (btnReset) handles the hello-zone redirect.
     const s = Math.min(innerWidth / this.CANVAS_W, innerHeight / this.CANVAS_H) * 0.92;
     this.flyTo(this.CANVAS_W / 2, this.CANVAS_H / 2, clamp(s, this.minScale, this.maxScale));
@@ -484,6 +486,19 @@ export class CanvasEngine {
    * the state becomes an honest free roam and the padlock finally flips. The return
    * anchor is untouched, so the way back still leads to the reading.
    */
+  /**
+   * For deliberate go-elsewhere controls (Fit, the minimap): they cannot honour a
+   * lock whose whole point is staying on the column, so they unlock properly —
+   * padlock lights, pill appears — instead of leaving the camera off-column while
+   * the interface still claims to be locked. lockedPos captures the reading spot,
+   * so the way back is one click.
+   */
+  private takeTheWheel(): void {
+    if (this.mode !== 'case' || this.freeRoam) return;
+    if (this.aside) { this.promoteAside(); return; }
+    this.setFreeRoam(true);
+  }
+
   private promoteAside(): void {
     if (!this.aside) return;
     this.stopJumpPin();
@@ -950,8 +965,15 @@ export class CanvasEngine {
         case 'f': case 'F': this.fitView(); e.preventDefault(); break;
         case '+': case '=': this.zoomAt(1.25, innerWidth / 2, innerHeight / 2); e.preventDefault(); break;
         case '-': case '_': this.zoomAt(0.8, innerWidth / 2, innerHeight / 2); e.preventDefault(); break;
-        case 'ArrowLeft': this.tx += 80; this.apply(); e.preventDefault(); break;
-        case 'ArrowRight': this.tx -= 80; this.apply(); e.preventDefault(); break;
+        // Horizontal arrows are ignored while locked — the same answer a horizontal
+        // drag or wheel gets. A key should never reach past a constraint the pointer
+        // respects.
+        case 'ArrowLeft':
+          if (!this.cameraLocked) { this.tx += 80; this.apply(); }
+          e.preventDefault(); break;
+        case 'ArrowRight':
+          if (!this.cameraLocked) { this.tx -= 80; this.apply(); }
+          e.preventDefault(); break;
         case 'ArrowUp': this.ty += 80; this.apply(); e.preventDefault(); break;
         case 'ArrowDown': this.ty -= 80; this.apply(); e.preventDefault(); break;
         case 'l': case 'L':
@@ -1017,6 +1039,7 @@ export class CanvasEngine {
 
     // §3.11 — Minimap click
     this.minimap.addEventListener('click', (e) => {
+      this.takeTheWheel();
       const rect = this.minimap.getBoundingClientRect();
       const mx = e.clientX - rect.left - 4; const my = e.clientY - rect.top - 4;
       const mw = this.minimap.clientWidth - 8; const mh = this.minimap.clientHeight - 8;
