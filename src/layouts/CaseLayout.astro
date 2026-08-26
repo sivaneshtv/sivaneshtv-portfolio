@@ -62,18 +62,11 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
   <!-- Free-roam hint -->
   <FreeRoamHint />
 
-  <!-- Return pill (margin-ref jump feedback) -->
-  <div class="return-pill" id="returnPill" role="status" aria-live="polite">
-    <button class="return-pill-btn" id="returnPillBtn">Return to study</button>
-    <button class="return-pill-close" id="returnPillClose" aria-label="Dismiss">×</button>
-  </div>
-  <!-- Hidden span for engine to write label into (used by data-label toast logic) -->
-  <span id="returnPillArtifact" hidden></span>
-
-  <!-- Free-roam pill — the way back while the canvas is unlocked (mobile escape hatch) -->
-  <div class="return-pill roam-pill" id="roamPill" role="status" aria-live="polite">
-    <span class="roam-pill-label">Free roam</span>
-    <button class="return-pill-btn" id="roamPillBtn">Lock &amp; return</button>
+  <!-- The single way back. Same words whether the page drove the camera away
+       (margin-ref jump) or the visitor unlocked the board themselves, and it stays
+       for exactly as long as they are away from the reading. -->
+  <div class="back-pill" id="backPill">
+    <button class="back-pill-btn" id="backPillBtn">← Back to reading</button>
   </div>
 </BaseLayout>
 
@@ -134,8 +127,8 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
     *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
   }
 
-  /* Return pill */
-  .return-pill{
+  /* Back-to-reading pill */
+  .back-pill{
     position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(8px);z-index:40;
     will-change:transform;backface-visibility:hidden;-webkit-backface-visibility:hidden;
     display:flex;align-items:center;gap:8px;
@@ -147,28 +140,20 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
     opacity:0;pointer-events:none;
     transition:opacity .3s ease,transform .3s ease;
   }
-  .return-pill.on{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
-  .roam-pill{padding:8px 8px 8px 14px}
-  .roam-pill-label{color:rgba(245,237,224,.72)}
-  .return-pill-btn{
+  .back-pill.on{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+  .back-pill-btn{
     font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     color:#fff;background:var(--red);border:none;padding:7px 12px;cursor:pointer;transition:background .2s;
   }
-  @media(hover:hover){.return-pill-btn:hover{background:#b82b22}}
-  .return-pill-btn:active{background:#b82b22}
-  .return-pill-close{
-    display:flex;align-items:center;justify-content:center;
-    background:transparent;
-    border:1px solid rgba(245,237,224,.2);color:rgba(245,237,224,.7);
-    font-family:var(--fm);font-size:10px;letter-spacing:.14em;
-    padding:7px 12px;
-    cursor:pointer;transition:border-color .2s,color .2s;
-  }
-  @media(hover:hover){.return-pill-close:hover{border-color:rgba(245,237,224,.5);color:#f5ede0}}
-  .return-pill-close:active{border-color:rgba(245,237,224,.5);color:#f5ede0}
+  @media(hover:hover){.back-pill-btn:hover{background:#b82b22}}
+  .back-pill-btn:active{background:#b82b22}
   @media(max-width:640px){
-    .return-pill{bottom:72px;padding:6px 8px 6px 12px;gap:8px;font-size:9px}
-    .return-pill-btn{padding:6px 10px;font-size:9px}
+    .back-pill{bottom:72px;padding:6px;font-size:9px}
+    /* This pill is the primary exit on touch — keep it a comfortable 44px target */
+    .back-pill-btn{
+      display:flex;align-items:center;justify-content:center;
+      min-height:44px;padding:0 20px;font-size:9px;
+    }
   }
 </style>
 
@@ -197,24 +182,26 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
     canvasWidth: 5000,
     canvasHeight: 6800,
     mode: 'case',
-    onFreeRoamChange: (on) => syncLockUI(on),
+    onViewStateChange: (state) => syncViewUI(state),
   });
 
-  // Case pages boot locked — the reader viewport is the page, free roam is opt-in
+  // Case pages boot in the reading state — the reader viewport is the page
   const lockBtn = document.getElementById('btnLock');
-  const roamPill = document.getElementById('roamPill');
+  const backPill = document.getElementById('backPill');
 
-  // Single source of truth for every lock affordance: button, pill, a11y state
-  function syncLockUI(unlocked: boolean) {
+  // One place decides every affordance, so they can never disagree:
+  //   padlock — is the board unlocked? Only the visitor's own action flips it, so an
+  //             aside leaves it alone: the page moved the camera, they did not.
+  //   pill    — am I away from the reading? Shown in both aside and roam, identical
+  //             wording, no timeout. It is the exit, and an exit never expires.
+  function syncViewUI(state: 'reading' | 'aside' | 'roam') {
+    const unlocked = state === 'roam';
     lockBtn?.classList.toggle('active', unlocked);
     lockBtn?.setAttribute('aria-pressed', String(unlocked));
-    lockBtn?.setAttribute('aria-label', unlocked ? 'Lock view and return' : 'Unlock free roam');
-    // Both pills occupy the same slot above the toolbar. The return pill owns it
-    // during a margin-ref jump; the roam pill takes over once it's gone.
-    const returnPillOn = document.getElementById('returnPill')?.classList.contains('on');
-    roamPill?.classList.toggle('on', unlocked && !returnPillOn);
+    lockBtn?.setAttribute('aria-label', unlocked ? 'Back to reading' : 'Unlock free roam');
+    backPill?.classList.toggle('on', state !== 'reading');
   }
-  syncLockUI(false);
+  syncViewUI('reading');
 
   (window as any).__canvasEngine = engine;
 
@@ -222,7 +209,7 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
   document.getElementById('btnZoomOut')?.addEventListener('click', () => engine.zoomOut());
   document.getElementById('btnFit')?.addEventListener('click', () => engine.fit());
   lockBtn?.addEventListener('click', () => engine.toggleFreeRoam());
-  document.getElementById('roamPillBtn')?.addEventListener('click', () => engine.setFreeRoam(false));
+  document.getElementById('backPillBtn')?.addEventListener('click', () => engine.backToReading());
 
   // Margin-ref click → jumpToArtifact (MARGIN-REF-SPEC.md §4)
   document.querySelectorAll<HTMLElement>('.r-margin-ref[data-jump]').forEach(link => {
@@ -232,18 +219,6 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
       if (!slug) return;
       engine.jumpToArtifact(slug);
     });
-  });
-
-  // Return pill buttons
-  document.getElementById('returnPillBtn')?.addEventListener('click', () => {
-    engine.restoreFromJump();
-    engine.hideReturnPill();
-  });
-
-  document.getElementById('returnPillClose')?.addEventListener('click', () => {
-    // Does NOT clear preJumpState — Escape/R still work as silent fallbacks.
-    // hideReturnPill re-syncs, handing the way back to the roam pill.
-    engine.hideReturnPill();
   });
 
   // Free-roam hint — anchored above the lock button, centered on mobile

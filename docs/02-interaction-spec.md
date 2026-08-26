@@ -655,20 +655,44 @@ function setFreeRoam(on: boolean): void {
 
 Nothing auto-unlocks. A drag inside the locked view pans vertically and stays locked — the visitor unlocks through the padlock button, the `L` key, or a margin-ref jump (which is a temporary unlock with its own return pill, see MARGIN-REF-SPEC).
 
-### Affordances
+### Three states, not two
 
-| Surface | Locked | Free roam |
-|---|---|---|
-| Toolbar button `#btnLock` | closed padlock, `aria-pressed="false"` | open padlock, `.active`, `aria-pressed="true"` |
-| Roam pill `#roamPill` | hidden | "Free roam · Lock & return" — the touch escape hatch |
-| Hint `.roam-hint` | "Locked view — unlock to free roam" on first load | — |
+A margin-ref jump and a deliberate unlock are different intents, and collapsing them into one
+"free roam" flag made the interface lie: the padlock flipped on the visitor's behalf for
+something they never asked for.
 
-Every affordance is driven from one `onFreeRoamChange` callback, so button, pill and a11y state can never disagree.
+| State | Entered by | Camera | Padlock | Pill |
+|---|---|---|---|---|
+| `reading` | default | locked to the column | closed | hidden |
+| `aside` | a margin-ref jump — *the page* drove | free (parked on an artifact) | **unchanged** — they unlocked nothing | "← Back to reading" |
+| `roam` | padlock, `L`, or moving the board during an aside | free | open, `.active` | "← Back to reading" |
 
-Both pills occupy the same slot above the toolbar, so they are mutually exclusive by
-construction: `syncLockUI()` shows the roam pill only when unlocked **and** the return pill is
-not on. The engine re-fires the callback whenever the return pill appears or hides (including
-its 10s timeout), so the roam pill takes the slot back and the canvas is never a dead end.
+An aside **promotes to roam** the moment the visitor pans, zooms or scrolls: that is them
+taking the wheel, so the padlock flips then — and only then. `lockedPos` is untouched by the
+promotion, so the way back still leads to the reading, not to wherever the jump parked them.
+
+```typescript
+private get cameraLocked(): boolean {
+  return this.mode === 'case' && !this.freeRoam && !this.aside;
+}
+```
+
+### One exit, and it never expires
+
+**A hint may time out; an exit may not.** The first-load hint (`.roam-hint`) is advice you can
+ignore, so it fades after 9s. The pill is the visible way back out of a state the page put the
+visitor in — so there is exactly one pill, it says the same words in `aside` and in `roam`, it
+carries across the promotion unchanged, and it stays until it is used.
+
+The earlier design had two pills sharing one slot ("Return to study" that expired after 10s,
+then "Lock & return" appearing in its place). That removed the exit while the visitor was
+still away and swapped the button's identity under their cursor. Do not reintroduce a timeout
+here.
+
+`backToReading()` is the single exit behind the pill, the padlock, `Esc` and `R`: it restores
+the exact camera the visitor left the reading at, whether they got away by jumping or by
+unlocking. `syncViewUI(state)` is the single place that renders state onto the padlock and the
+pill, so they cannot disagree.
 
 ### Computing the reading scale (responsive)
 
@@ -746,8 +770,8 @@ Use `sessionStorage` not `localStorage` so returning-after-weeks visitors get a 
 | Key | Action |
 |---|---|
 | `F` | Fit entire canvas to viewport (compute scale and center) |
-| `L` | Toggle free roam (case studies) |
-| `Esc` / `R` | Lock and return to where free roam was unlocked |
+| `L` | Unlock free roam, or go back to reading (case studies) |
+| `Esc` / `R` | Back to reading — exact camera restore, from an aside or a roam |
 | `0` | Reset to default view (home/zone:hello) |
 | `Escape` | Dismiss help overlay if open; else lock and return |
 | `Space` (hold) | Pan-anywhere mode (cursor becomes grab) |

@@ -10,6 +10,17 @@ function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
+/**
+ * Case-study view states.
+ *   reading — the default: camera locked to the reader column.
+ *   aside   — the page drove the camera to an artifact (margin-ref jump). It owes
+ *             the visitor a return, and the padlock stays as it was: they did not
+ *             unlock anything.
+ *   roam    — the visitor took the wheel (padlock, L, or moving the board during an
+ *             aside). Free camera; the way back is still one click.
+ */
+export type ViewState = 'reading' | 'aside' | 'roam';
+
 export interface Zone { cx: number; cy: number; scale: number }
 export interface ZoneBounds { x1: number; y1: number; x2: number; y2: number }
 
@@ -28,7 +39,7 @@ export interface CanvasEngineConfig {
   canvasHeight: number;
   mode: 'workbench' | 'case';
   onZoneChange?: (zone: string | null) => void;
-  onFreeRoamChange?: (on: boolean) => void;
+  onViewStateChange?: (state: ViewState) => void;
 }
 
 export class CanvasEngine {
@@ -97,6 +108,8 @@ export class CanvasEngine {
   // Locked (freeRoam === false) is the default: the reader viewport IS the page.
   // Unlocking hands over the whole canvas; locking flies back to the unlock point.
   private freeRoam = false;
+  /** True between a margin-ref jump and the visitor either returning or taking over. */
+  private aside = false;
   private readerWidth = 1080;
   private readerLeft = 1960;
   private readingScale = 0.55;
@@ -120,7 +133,7 @@ export class CanvasEngine {
       this.canvas.style.willChange = 'auto';
     }, delay);
   }
-  private onFreeRoamChange: ((on: boolean) => void) | null = null;
+  private onViewStateChange: ((state: ViewState) => void) | null = null;
 
   constructor(config: CanvasEngineConfig) {
     this.canvas = config.canvasEl;
@@ -136,7 +149,7 @@ export class CanvasEngine {
     this.CANVAS_H = config.canvasHeight;
     this.mode = config.mode;
     this.onZoneChange = config.onZoneChange ?? null;
-    this.onFreeRoamChange = config.onFreeRoamChange ?? null;
+    this.onViewStateChange = config.onViewStateChange ?? null;
     this.helpSeen = sessionStorage.getItem('sivanesh.helpSeen') === '1';
 
     // Case pages boot locked (freeRoam === false) — no flag to set.
@@ -188,8 +201,8 @@ export class CanvasEngine {
     const cw = innerWidth / 2; const ch = innerHeight / 2;
     // Locked view: anchor zoom to viewport center so the reading column
     // never shifts left/right — zoom always feels "in place"
-    const anchorX = (this.mode === 'case' && !this.freeRoam) ? cw : screenX;
-    const anchorY = (this.mode === 'case' && !this.freeRoam) ? ch : screenY;
+    const anchorX = this.cameraLocked ? cw : screenX;
+    const anchorY = this.cameraLocked ? ch : screenY;
     const canvasX = (anchorX - cw - this.tx) / this.scale;
     const canvasY = (anchorY - ch - this.ty) / this.scale;
     this.tx = anchorX - cw - canvasX * newScale;
@@ -206,7 +219,7 @@ export class CanvasEngine {
     const startTX = this.tx; const startTY = this.ty; const startScale = this.scale;
 
     let yBias = 0;
-    if (this.mode === 'case' && !this.freeRoam) {
+    if (this.cameraLocked) {
       if (innerWidth <= 420)       yBias = innerHeight * 0.18;
       else if (innerWidth <= 640)  yBias = innerHeight * 0.14;
       else if (innerWidth <= 1100) yBias = innerHeight * 0.08;
@@ -411,31 +424,74 @@ export class CanvasEngine {
     });
   }
 
-  // Free-roam helpers — locked is the default state on case pages
+  /** Reading is the only state whose camera is constrained to the column. */
+  private get cameraLocked(): boolean {
+    return this.mode === 'case' && !this.freeRoam && !this.aside;
+  }
+
+  getViewState(): ViewState {
+    if (this.freeRoam) return 'roam';
+    if (this.aside) return 'aside';
+    return 'reading';
+  }
+
+  private emitViewState(): void {
+    this.onViewStateChange?.(this.getViewState());
+  }
+
   setFreeRoam(on: boolean): void {
     if (on) {
-      // Snapshot the locked camera BEFORE anything moves — locking flies back here
+      // Unlocking out of an aside is a promotion, not a fresh unlock: the return
+      // anchor must stay the reading spot, not wherever the jump parked us.
+      if (this.aside) { this.promoteAside(); return; }
+      // Snapshot the reading camera BEFORE anything moves — returning flies back here
       this.lockedPos = { tx: this.tx, ty: this.ty, scale: this.scale };
       this.freeRoam = true;
-      // Fire callback immediately when state changes — before compute/fly so it
-      // always fires even if layout or animation setup hits an edge-case path.
-      this.onFreeRoamChange?.(true);
+      // Fire immediately, before compute/fly, so the UI can never miss a transition
+      this.emitViewState();
     } else {
-      this.freeRoam = false;
-      this.onFreeRoamChange?.(false);
-      // Viewport may have changed while roaming — recompute before flying back
-      this.computeReaderLayout();
-      this.refreshZoneTargets();
-      // Return to exactly where free roam was unlocked; top zone on first lock
-      if (this.lockedPos) {
-        this.flyToRaw(this.lockedPos.tx, this.lockedPos.ty, this.lockedPos.scale);
-      } else {
-        this.goToZone('top');
-      }
+      this.backToReading();
     }
   }
 
-  toggleFreeRoam(): void { this.setFreeRoam(!this.freeRoam); }
+  toggleFreeRoam(): void { this.setFreeRoam(this.getViewState() === 'reading'); }
+
+  /**
+   * The single exit, shared by the pill, the padlock, Escape and R. Returns to the
+   * exact camera the visitor left the reading at — whether they got away via a
+   * margin-ref jump or by unlocking the board themselves.
+   */
+  backToReading(): void {
+    this.stopJumpPin();
+    if (this.preJumpState) { this.restoreFromJump(); return; }
+    if (this.getViewState() === 'reading') return;
+
+    this.freeRoam = false;
+    this.aside = false;
+    this.emitViewState();
+    // Viewport may have changed while roaming — recompute before flying back
+    this.computeReaderLayout();
+    this.refreshZoneTargets();
+    if (this.lockedPos) {
+      this.flyToRaw(this.lockedPos.tx, this.lockedPos.ty, this.lockedPos.scale);
+    } else {
+      this.goToZone('top');
+    }
+  }
+
+  /**
+   * The visitor moved the board during an aside — that is them taking the wheel, so
+   * the state becomes an honest free roam and the padlock finally flips. The return
+   * anchor is untouched, so the way back still leads to the reading.
+   */
+  private promoteAside(): void {
+    if (!this.aside) return;
+    this.stopJumpPin();
+    this.aside = false;
+    this.freeRoam = true;
+    this.preJumpState = null;   // the exact-restore snapshot is superseded by lockedPos
+    this.emitViewState();
+  }
 
   // MARGIN-REF-SPEC — jumpToArtifact (with preJumpState snapshot)
   jumpToArtifact(slug: string): void {
@@ -459,12 +515,13 @@ export class CanvasEngine {
       freeRoam: this.freeRoam,
     };
 
-    // A jump is a temporary unlock — remember the locked spot so a later lock returns to it
+    // A jump is a detour the page drove, not an unlock the visitor asked for.
+    // Remember the reading spot so the way back always leads there.
     if (!this.freeRoam) {
       this.lockedPos = { tx: this.tx, ty: this.ty, scale: this.scale };
     }
-    this.freeRoam = true;
-    this.onFreeRoamChange?.(true);
+    this.aside = true;
+    this.emitViewState();
 
     // Compute artifact center in canvas coords
     const targetCX = el.offsetLeft + el.offsetWidth / 2;
@@ -483,10 +540,6 @@ export class CanvasEngine {
     // Pulse the artifact
     el.classList.add('artifact-pulse');
     setTimeout(() => el.classList.remove('artifact-pulse'), 1400);
-
-    // Show return pill
-    const label = el.dataset.label || slug;
-    this.showReturnPill(label);
 
     // Reader images finish loading after the flight begins, pushing sections (and
     // the artifact with them) down the canvas. Track the artifact until it settles,
@@ -527,38 +580,16 @@ export class CanvasEngine {
     const snapshot = this.preJumpState;
     this.preJumpState = null;
 
+    this.aside = false;
     this.freeRoam = snapshot.freeRoam;
     if (!snapshot.freeRoam) {
-      // Returning to the locked view — that position becomes the new lock anchor
+      // Returning to the reading — that position becomes the new return anchor
       this.lockedPos = { tx: snapshot.tx, ty: snapshot.ty, scale: snapshot.scale };
     }
 
     // Fly back to exact prior camera position
     this.flyToRaw(snapshot.tx, snapshot.ty, snapshot.scale, 600);
-    this.onFreeRoamChange?.(this.freeRoam);
-  }
-
-  private returnPillTimer = 0;
-
-  private showReturnPill(label: string): void {
-    const pill = document.getElementById('returnPill');
-    const labelEl = document.getElementById('returnPillArtifact');
-    if (!pill || !labelEl) return;
-    labelEl.textContent = label;
-    pill.classList.add('on');
-    // Both pills live at the same spot — re-sync so the roam pill yields to this one
-    this.onFreeRoamChange?.(this.freeRoam);
-    clearTimeout(this.returnPillTimer);
-    this.returnPillTimer = window.setTimeout(() => this.hideReturnPill(), 10000);
-  }
-
-  hideReturnPill(): void {
-    const pill = document.getElementById('returnPill');
-    if (pill) pill.classList.remove('on');
-    clearTimeout(this.returnPillTimer);
-    // The pill times out after 10s. If the canvas is still unlocked, hand the way
-    // back to the free-roam pill so the visitor is never left without one.
-    if (this.freeRoam) this.onFreeRoamChange?.(true);
+    this.emitViewState();
   }
 
   private capturePointer(): void {
@@ -575,7 +606,7 @@ export class CanvasEngine {
   private inertiaTick = (): void => {
     if (!this.decelerating) return;
     // Locked view: zero out horizontal velocity so inertia can't drift X
-    if (this.mode === 'case' && !this.freeRoam) this.vx = 0;
+    if (this.cameraLocked) this.vx = 0;
     this.tx += this.vx; this.ty += this.vy;
     this.vx *= 0.92; this.vy *= 0.92;
     this.apply();
@@ -750,13 +781,14 @@ export class CanvasEngine {
     this.wrap.addEventListener('wheel', (e: WheelEvent) => {
       e.preventDefault();
       this.stopJumpPin();
+      this.promoteAside();
       this.activateWillChange();
       this.deactivateWillChange(300);
       if (e.ctrlKey || e.metaKey) {
         this.zoomAt(Math.pow(0.9985, e.deltaY), e.clientX, e.clientY);
       } else {
         // Locked view: horizontal wheel/trackpad scroll is ignored
-        if (this.freeRoam || this.mode !== 'case') this.tx -= e.deltaX;
+        if (!this.cameraLocked) this.tx -= e.deltaX;
         this.ty -= e.deltaY;
         this.scheduleApply();
       }
@@ -803,8 +835,10 @@ export class CanvasEngine {
       if (!this.pointerCaptured &&
         Math.hypot(e.clientX - this.panStartX, e.clientY - this.panStartY) > CanvasEngine.DRAG_THRESHOLD) {
         this.capturePointer();
+        // Moving the board during an aside IS taking the wheel
+        this.promoteAside();
       }
-      if (this.mode === 'case' && !this.freeRoam) {
+      if (this.cameraLocked) {
         // Locked view: vertical-only pan — horizontal axis locked
         this.tx = this.panStartTX;
         this.ty = this.panStartTY + (e.clientY - this.panStartY);
@@ -887,14 +921,9 @@ export class CanvasEngine {
           break;
         case 'Escape':
         case 'r': case 'R':
-          // Lock and return — Escape is the natural key, R kept for muscle memory
-          if (this.mode === 'case') {
-            if (this.preJumpState) {
-              this.restoreFromJump();
-              this.hideReturnPill();
-            } else if (this.freeRoam) {
-              this.setFreeRoam(false);
-            }
+          // Back to reading — Escape is the natural key, R kept for muscle memory
+          if (this.mode === 'case' && this.getViewState() !== 'reading') {
+            this.backToReading();
             e.preventDefault();
           }
           break;
@@ -927,8 +956,8 @@ export class CanvasEngine {
         const cw = innerWidth / 2, ch = innerHeight / 2;
         // Locked view: anchor pinch zoom to viewport center (= reading column center)
         // so the column never shifts sideways during pinch — matches zoomAt() behaviour
-        const anchorX = (this.mode === 'case' && !this.freeRoam) ? cw : this.touchState.cx;
-        const anchorY = (this.mode === 'case' && !this.freeRoam) ? ch : this.touchState.cy;
+        const anchorX = this.cameraLocked ? cw : this.touchState.cx;
+        const anchorY = this.cameraLocked ? ch : this.touchState.cy;
         const cx = (anchorX - cw - this.touchState.startTX) / this.touchState.startScale;
         const cy = (anchorY - ch - this.touchState.startTY) / this.touchState.startScale;
         this.tx = anchorX - cw - cx * newScale;
@@ -967,4 +996,5 @@ export class CanvasEngine {
   rebuild(): void { this.buildMinimap(); }
   dismissHelp(): void { this.helpSeen = true; sessionStorage.setItem('sivanesh.helpSeen', '1'); }
   getFreeRoam(): boolean { return this.freeRoam; }
+  isAway(): boolean { return this.getViewState() !== 'reading'; }
 }
