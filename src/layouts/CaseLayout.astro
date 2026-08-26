@@ -193,11 +193,11 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
   const backPill = document.getElementById('backPill');
 
   // One place decides every affordance, so they can never disagree:
-  //   padlock — is the board unlocked? Only the visitor's own action flips it, so an
-  //             aside leaves it alone: the page moved the camera, they did not.
-  //   pill    — am I away from the reading? Shown in both aside and roam, identical
-  //             wording, no timeout. It is the exit, and an exit never expires.
-  function syncViewUI(state: 'reading' | 'aside' | 'roam') {
+  //   padlock — is the board free to move? It answers that honestly the moment it
+  //             becomes true, including when a margin-ref does the unlocking.
+  //   pill    — the way back to the reading. Same wording however you got out, no
+  //             timeout. It is the exit, and an exit never expires.
+  function syncViewUI(state: 'reading' | 'roam') {
     const unlocked = state === 'roam';
     lockBtn?.classList.toggle('active', unlocked);
     lockBtn?.setAttribute('aria-pressed', String(unlocked));

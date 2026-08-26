@@ -655,39 +655,40 @@ function setFreeRoam(on: boolean): void {
 
 Nothing auto-unlocks. A drag inside the locked view pans vertically and stays locked — the visitor unlocks through the padlock button, the `L` key, or a margin-ref jump (which is a temporary unlock with its own return pill, see MARGIN-REF-SPEC).
 
-### Three states, not two
-
-A margin-ref jump and a deliberate unlock are different intents, and collapsing them into one
-"free roam" flag made the interface lie: the padlock flipped on the visitor's behalf for
-something they never asked for.
+### Two states, and nothing changes on its own
 
 | State | Entered by | Camera | Padlock | Pill |
 |---|---|---|---|---|
 | `reading` | default | locked to the column | closed | hidden |
-| `aside` | a margin-ref jump — *the page* drove | free (parked on an artifact) | **unchanged** — they unlocked nothing | "← Back to reading" |
-| `roam` | padlock, `L`, or moving the board during an aside | free | open, `.active` | "← Back to reading" |
+| `roam` | padlock, `L`, `F`, the minimap, **or following a margin-ref** | free | open, `.active` | "← Back to reading" |
 
-An aside **promotes to roam** the moment the visitor pans, zooms or scrolls: that is them
-taking the wheel, so the padlock flips then — and only then. `lockedPos` is untouched by the
-promotion, so the way back still leads to the reading, not to wherever the jump parked them.
+Following a margin-ref unlocks **up front**. An earlier design kept the padlock closed
+during a jump on the theory that the visitor had not unlocked anything — but the board *is*
+free while parked on an artifact (drag it and it moves), so the padlock was lying, and it
+then flipped silently the first time they dragged. One action now produces one visible state
+change, and nothing changes state afterwards until the visitor acts.
+
+The alternative — making a jump genuinely locked — was rejected: flying someone to an
+artifact and then refusing to let them look around it is worse than either option.
 
 ```typescript
 private get cameraLocked(): boolean {
-  return this.mode === 'case' && !this.freeRoam && !this.aside;
+  return this.mode === 'case' && !this.freeRoam;
 }
 ```
 
-### One exit, and it never expires
+### One return anchor
 
-**A hint may time out; an exit may not.** The first-load hint (`.roam-hint`) is advice you can
-ignore, so it fades after 9s. The pill is the visible way back out of a state the page put the
-visitor in — so there is exactly one pill, it says the same words in `aside` and in `roam`, it
-carries across the promotion unchanged, and it stays until it is used.
+`lockedPos` is captured on the way out of reading and left alone until the visitor is back.
+A second jump while already roaming must not move it — the way back is the reading, never the
+previous artifact. There is no separate pre-jump snapshot; that was a second anchor competing
+with this one, and it lost the reading position whenever a jump interrupted a jump.
 
-The earlier design had two pills sharing one slot ("Return to study" that expired after 10s,
-then "Lock & return" appearing in its place). That removed the exit while the visitor was
-still away and swapped the button's identity under their cursor. Do not reintroduce a timeout
-here.
+Anchors are captured through `cameraAnchor()`, which returns the **destination** of an active
+flight rather than the live `tx/ty`. Mid-flight those are a transient animation frame:
+interrupting a return by clicking another margin-ref used to anchor there, and the visitor
+came back to a meaningless spot 656px off the column. User input (pointerdown, wheel) cancels
+any flight outright rather than fighting it for the camera.
 
 ### The lock binds every input, not just the pointer
 

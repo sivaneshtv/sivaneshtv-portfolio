@@ -13,13 +13,12 @@ function easeInOutCubic(t: number): number {
 /**
  * Case-study view states.
  *   reading — the default: camera locked to the reader column.
- *   aside   — the page drove the camera to an artifact (margin-ref jump). It owes
- *             the visitor a return, and the padlock stays as it was: they did not
- *             unlock anything.
- *   roam    — the visitor took the wheel (padlock, L, or moving the board during an
- *             aside). Free camera; the way back is still one click.
+ *   roam    — the board is free. Entered deliberately (padlock, L) or by following a
+ *             margin-ref, which unlocks up front rather than pretending to be locked
+ *             while the camera flies somewhere the lock forbids. Either way the way
+ *             back is one click, and nothing changes state on its own after that.
  */
-export type ViewState = 'reading' | 'aside' | 'roam';
+export type ViewState = 'reading' | 'roam';
 
 export interface Zone { cx: number; cy: number; scale: number }
 export interface ZoneBounds { x1: number; y1: number; x2: number; y2: number }
@@ -69,6 +68,8 @@ export class CanvasEngine {
   private isPanning = false;
   private spaceHeld = false;
   private flightAnim: number | null = null;
+  /** Where the active flight is heading. Mid-flight, this is the camera that matters. */
+  private flightEnd: { tx: number; ty: number; scale: number } | null = null;
   private currentZone: string | null = null;
 
   // rAF-throttled apply state
@@ -108,12 +109,9 @@ export class CanvasEngine {
   // Locked (freeRoam === false) is the default: the reader viewport IS the page.
   // Unlocking hands over the whole canvas; locking flies back to the unlock point.
   private freeRoam = false;
-  /** True between a margin-ref jump and the visitor either returning or taking over. */
-  private aside = false;
   private readerWidth = 1080;
   private readerLeft = 1960;
   private readingScale = 0.55;
-  private preJumpState: { tx: number; ty: number; scale: number; freeRoam: boolean } | null = null;
   /** Camera captured the moment free roam was unlocked — locking returns here. */
   private lockedPos: { tx: number; ty: number; scale: number } | null = null;
   /** Keeps a jump on target while reader images finish loading and shift the layout. */
@@ -230,6 +228,7 @@ export class CanvasEngine {
 
     const endTX = -targetCX * targetScale;
     const endTY = -targetCY * targetScale + yBias;
+    this.flightEnd = { tx: endTX, ty: endTY, scale: targetScale };
     const t0 = performance.now();
     const step = (now: number) => {
       const t = Math.min((now - t0) / duration, 1);
@@ -239,7 +238,7 @@ export class CanvasEngine {
       this.scale = startScale + (targetScale - startScale) * e;
       this.apply();
       if (t < 1) this.flightAnim = requestAnimationFrame(step);
-      else { this.flightAnim = null; this.deactivateWillChange(); }
+      else { this.flightAnim = null; this.flightEnd = null; this.deactivateWillChange(); }
     };
     this.flightAnim = requestAnimationFrame(step);
   }
@@ -248,6 +247,7 @@ export class CanvasEngine {
   private flyToRaw(endTX: number, endTY: number, endScale: number, duration = 600): void {
     if (this.flightAnim) cancelAnimationFrame(this.flightAnim);
     this.decelerating = false;
+    this.flightEnd = { tx: endTX, ty: endTY, scale: endScale };
     this.activateWillChange();
     const startTX = this.tx; const startTY = this.ty; const startScale = this.scale;
     const t0 = performance.now();
@@ -259,7 +259,7 @@ export class CanvasEngine {
       this.scale = startScale + (endScale - startScale) * e;
       this.apply();
       if (t < 1) this.flightAnim = requestAnimationFrame(step);
-      else { this.flightAnim = null; this.deactivateWillChange(); }
+      else { this.flightAnim = null; this.flightEnd = null; this.deactivateWillChange(); }
     };
     this.flightAnim = requestAnimationFrame(step);
   }
@@ -426,15 +426,27 @@ export class CanvasEngine {
     });
   }
 
-  /** Reading is the only state whose camera is constrained to the column. */
+  /**
+   * The camera worth remembering. Mid-flight the live tx/ty are a transient frame of
+   * an animation — anchoring to one strands the visitor at a meaningless spot when
+   * they interrupt a return by following another margin-ref. The destination is the
+   * position they were actually going to.
+   *
+   * There is exactly one return anchor (`lockedPos`), captured on the way out of
+   * reading and untouched until they are back. A second jump while already roaming
+   * must not move it: the way back is the reading, never the previous artifact.
+   */
+  private cameraAnchor(): { tx: number; ty: number; scale: number } {
+    return this.flightEnd ?? { tx: this.tx, ty: this.ty, scale: this.scale };
+  }
+
+  /** Reading is the state whose camera is constrained to the column. */
   private get cameraLocked(): boolean {
-    return this.mode === 'case' && !this.freeRoam && !this.aside;
+    return this.mode === 'case' && !this.freeRoam;
   }
 
   getViewState(): ViewState {
-    if (this.freeRoam) return 'roam';
-    if (this.aside) return 'aside';
-    return 'reading';
+    return this.freeRoam ? 'roam' : 'reading';
   }
 
   private emitViewState(): void {
@@ -443,11 +455,9 @@ export class CanvasEngine {
 
   setFreeRoam(on: boolean): void {
     if (on) {
-      // Unlocking out of an aside is a promotion, not a fresh unlock: the return
-      // anchor must stay the reading spot, not wherever the jump parked us.
-      if (this.aside) { this.promoteAside(); return; }
+      if (this.freeRoam) return;
       // Snapshot the reading camera BEFORE anything moves — returning flies back here
-      this.lockedPos = { tx: this.tx, ty: this.ty, scale: this.scale };
+      this.lockedPos = this.cameraAnchor();
       this.freeRoam = true;
       // Fire immediately, before compute/fly, so the UI can never miss a transition
       this.emitViewState();
@@ -465,11 +475,9 @@ export class CanvasEngine {
    */
   backToReading(): void {
     this.stopJumpPin();
-    if (this.preJumpState) { this.restoreFromJump(); return; }
     if (this.getViewState() === 'reading') return;
 
     this.freeRoam = false;
-    this.aside = false;
     this.emitViewState();
     // Viewport may have changed while roaming — recompute before flying back
     this.computeReaderLayout();
@@ -482,33 +490,18 @@ export class CanvasEngine {
   }
 
   /**
-   * For deliberate go-elsewhere controls (Fit, the minimap): they cannot honour a
-   * lock whose whole point is staying on the column, so they unlock properly —
-   * padlock lights, pill appears — instead of leaving the camera off-column while
-   * the interface still claims to be locked. lockedPos captures the reading spot,
-   * so the way back is one click.
+   * Anything that takes the camera off the column — Fit, the minimap, a margin-ref
+   * jump — unlocks first. A control cannot honour a lock whose whole point is
+   * staying on the column, so it says so instead of moving the camera while the
+   * padlock still claims to be closed. lockedPos captures the reading spot, so the
+   * way back is one click.
    */
   private takeTheWheel(): void {
-    if (this.mode !== 'case' || this.freeRoam) return;
-    if (this.aside) { this.promoteAside(); return; }
+    if (this.mode !== 'case') return;
     this.setFreeRoam(true);
   }
 
-  /**
-   * The visitor moved the board during an aside — that is them taking the wheel, so
-   * the state becomes an honest free roam and the padlock finally flips. The return
-   * anchor is untouched, so the way back still leads to the reading.
-   */
-  private promoteAside(): void {
-    if (!this.aside) return;
-    this.stopJumpPin();
-    this.aside = false;
-    this.freeRoam = true;
-    this.preJumpState = null;   // the exact-restore snapshot is superseded by lockedPos
-    this.emitViewState();
-  }
-
-  // MARGIN-REF-SPEC — jumpToArtifact (with preJumpState snapshot)
+  // MARGIN-REF-SPEC — jumpToArtifact
   jumpToArtifact(slug: string): void {
     const el = document.getElementById(`obj-${slug}`);
     if (!el) {
@@ -522,21 +515,11 @@ export class CanvasEngine {
     this.computeReaderLayout();
     this.refreshZoneTargets();
 
-    // Snapshot current camera state BEFORE jumping
-    this.preJumpState = {
-      tx: this.tx,
-      ty: this.ty,
-      scale: this.scale,
-      freeRoam: this.freeRoam,
-    };
-
-    // A jump is a detour the page drove, not an unlock the visitor asked for.
-    // Remember the reading spot so the way back always leads there.
-    if (!this.freeRoam) {
-      this.lockedPos = { tx: this.tx, ty: this.ty, scale: this.scale };
-    }
-    this.aside = true;
-    this.emitViewState();
+    // Following a margin-ref frees the board: the camera is about to go somewhere
+    // the lock forbids, so the padlock says unlocked from this moment rather than
+    // flipping later, silently, the first time the visitor drags. takeTheWheel
+    // captures the reading spot on the way, so the pill leads back to it.
+    this.takeTheWheel();
 
     // Compute artifact center in canvas coords
     const targetCX = el.offsetLeft + el.offsetWidth / 2;
@@ -588,23 +571,10 @@ export class CanvasEngine {
     this.jumpPin = null;
   }
 
-  // Restore camera to pre-jump position
-  restoreFromJump(): void {
-    this.stopJumpPin();
-    if (!this.preJumpState) return;
-    const snapshot = this.preJumpState;
-    this.preJumpState = null;
-
-    this.aside = false;
-    this.freeRoam = snapshot.freeRoam;
-    if (!snapshot.freeRoam) {
-      // Returning to the reading — that position becomes the new return anchor
-      this.lockedPos = { tx: snapshot.tx, ty: snapshot.ty, scale: snapshot.scale };
-    }
-
-    // Fly back to exact prior camera position
-    this.flyToRaw(snapshot.tx, snapshot.ty, snapshot.scale, 600);
-    this.emitViewState();
+  /** Hand the camera to the visitor: stop any animation still driving it. */
+  private cancelFlight(): void {
+    if (this.flightAnim) { cancelAnimationFrame(this.flightAnim); this.flightAnim = null; }
+    this.flightEnd = null;
   }
 
   private capturePointer(): void {
@@ -759,7 +729,6 @@ export class CanvasEngine {
         this.computeReaderLayout();
         this.refreshZoneTargets();
       }
-      this.preJumpState = null;
       this.mmW = this.minimap.clientWidth - 8;
       this.mmH = this.minimap.clientHeight - 8;
       this.apply();
@@ -796,7 +765,7 @@ export class CanvasEngine {
     this.wrap.addEventListener('wheel', (e: WheelEvent) => {
       e.preventDefault();
       this.stopJumpPin();
-      this.promoteAside();
+      this.cancelFlight();
       this.activateWillChange();
       this.deactivateWillChange(300);
       if (e.ctrlKey || e.metaKey) {
@@ -827,6 +796,7 @@ export class CanvasEngine {
         if (e.button !== 0 && e.button !== undefined) return;
       } else { e.preventDefault(); }
       this.stopJumpPin();
+      this.cancelFlight();
       this.isPanning = true; this.decelerating = false;
       this.activateWillChange();
       this.vx = 0; this.vy = 0;
@@ -850,8 +820,6 @@ export class CanvasEngine {
       if (!this.pointerCaptured &&
         Math.hypot(e.clientX - this.panStartX, e.clientY - this.panStartY) > CanvasEngine.DRAG_THRESHOLD) {
         this.capturePointer();
-        // Moving the board during an aside IS taking the wheel
-        this.promoteAside();
       }
       if (this.cameraLocked) {
         // Locked view: vertical-only pan — horizontal axis locked
@@ -1019,5 +987,4 @@ export class CanvasEngine {
   rebuild(): void { this.buildMinimap(); }
   dismissHelp(): void { this.helpSeen = true; sessionStorage.setItem('sivanesh.helpSeen', '1'); }
   getFreeRoam(): boolean { return this.freeRoam; }
-  isAway(): boolean { return this.getViewState() !== 'reading'; }
 }
