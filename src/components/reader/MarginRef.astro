@@ -2,13 +2,7 @@
 interface Props { href?: string; jump?: string }
 const { href, jump } = Astro.props;
 ---
-<a
-  class="r-margin-ref"
-  href={href || undefined}
-  data-jump={jump || undefined}
-  role={jump ? 'button' : undefined}
-  tabindex={jump ? 0 : undefined}
->
+<a class="r-margin-ref" href={href || undefined} data-jump={jump || undefined}>
   <slot />
 </a>
 
@@ -22,8 +16,4 @@ const { href, jump } = Astro.props;
     transition:color .25s;text-decoration:none;
   }
   .r-margin-ref:hover{color:var(--ink)}
-  /* A jump ref is an <a> with no href — it needs a visible focus ring of its own */
-  .r-margin-ref:focus-visible{
-    outline:2px solid var(--red);outline-offset:4px;color:var(--ink);
-  }
 </style>

@@ -482,11 +482,6 @@ export class CanvasEngine {
   }
 
   /**
-   * The visitor moved the board during an aside — that is them taking the wheel, so
-   * the state becomes an honest free roam and the padlock finally flips. The return
-   * anchor is untouched, so the way back still leads to the reading.
-   */
-  /**
    * For deliberate go-elsewhere controls (Fit, the minimap): they cannot honour a
    * lock whose whole point is staying on the column, so they unlock properly —
    * padlock lights, pill appears — instead of leaving the camera off-column while
@@ -499,6 +494,11 @@ export class CanvasEngine {
     this.setFreeRoam(true);
   }
 
+  /**
+   * The visitor moved the board during an aside — that is them taking the wheel, so
+   * the state becomes an honest free roam and the padlock finally flips. The return
+   * anchor is untouched, so the way back still leads to the reading.
+   */
   private promoteAside(): void {
     if (!this.aside) return;
     this.stopJumpPin();
@@ -605,38 +605,6 @@ export class CanvasEngine {
     // Fly back to exact prior camera position
     this.flyToRaw(snapshot.tx, snapshot.ty, snapshot.scale, 600);
     this.emitViewState();
-  }
-
-  /** Absolute canvas coordinates of an element, across nested offset parents. */
-  private canvasCoords(el: HTMLElement): { x: number; y: number } {
-    let x = 0, y = 0;
-    let node: HTMLElement | null = el;
-    while (node && node !== this.canvas) {
-      x += node.offsetLeft;
-      y += node.offsetTop;
-      node = node.offsetParent as HTMLElement | null;
-    }
-    return { x, y };
-  }
-
-  /** Bring a newly focused canvas element into view, honouring the current lock. */
-  private revealFocused(el: HTMLElement | null): void {
-    if (!el || !this.canvas.contains(el)) return;
-    // A flight is already taking the camera somewhere deliberate (a jump, or the
-    // return that just restored focus). Revealing on top of it would hijack that
-    // destination — the flight lands where the element will be visible anyway.
-    if (this.flightAnim !== null) return;
-    const r = el.getBoundingClientRect();
-    const margin = 80;
-    const visible = r.top >= margin && r.bottom <= innerHeight - margin &&
-      r.left >= margin && r.right <= innerWidth - margin;
-    if (visible) return;
-
-    const { x, y } = this.canvasCoords(el);
-    const cy = (y + el.offsetHeight / 2) * this.scale;
-    const cx = (x + el.offsetWidth / 2) * this.scale;
-    // Reading keeps the column centred, so only the vertical axis may move
-    this.flyToRaw(this.cameraLocked ? this.tx : -cx, -cy, this.scale, 400);
   }
 
   private capturePointer(): void {
@@ -816,13 +784,7 @@ export class CanvasEngine {
       if (this.wrap.scrollLeft !== 0) this.wrap.scrollLeft = 0;
     };
     this.wrap.addEventListener('scroll', pinScroll, { passive: true });
-    this.wrap.addEventListener('focusin', (e) => {
-      pinScroll();
-      // Blocking the browser's scroll-into-view would strand keyboard users on
-      // elements the camera isn't showing. On a canvas, revealing means moving
-      // the camera — this is the equivalent of the scroll we just refused.
-      this.revealFocused(e.target as HTMLElement);
-    });
+    this.wrap.addEventListener('focusin', pinScroll);
 
     // Mobile: blur focused element on touchend so buttons don't stay in pressed state
     document.addEventListener('touchend', () => {
