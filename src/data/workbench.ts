@@ -5,7 +5,7 @@
 
 export const zones = {
   // Framed on the measured ink of photo + masthead, so margins come out even at every width
-  hello:   { cx: 2327, cy: 1744, scale: 0.90 },
+  hello:   { cx: 2327, cy: 1757, scale: 0.90 },
   about:   { cx: 900,  cy: 2135, scale: 0.65 },
   work:    { cx: 3870, cy: 2065, scale: 0.72 }, // cy raised so label sits ~100px below topbar on large screens
   howwork: { cx: 1700, cy: 3465, scale: 0.84 },
@@ -16,7 +16,7 @@ export const zones = {
 // cx/cy are canvas coords; scale is the literal zoom (no multiplier applied).
 export const mobileZones = {
   // Phone landing frames photo + masthead together — the picture is part of the hello
-  hello:   { cx: 2327, cy: 1812, scale: 0.335 },
+  hello:   { cx: 2327, cy: 1824, scale: 0.335 },
   about:   { cx: 900,  cy: 2135, scale: 0.45 },
   work:    { cx: 3920, cy: 2180, scale: 0.45 }, // cy raised so cluster sits higher on phone screen
   howwork: { cx: 1600, cy: 3465, scale: 0.44 },
