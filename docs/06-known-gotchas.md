@@ -1001,3 +1001,44 @@ artifact must end up dead centre:
 ```js
 (el.offsetTop + el.offsetHeight / 2) - (-matrix.f / matrix.a)   // → 0
 ```
+
+---
+
+## G15 · Focusable canvas elements need the camera, not a scroll
+
+### Symptom
+Tab moves focus to a margin-ref that is nowhere on screen. The focus ring is real, Enter
+works, but the visitor sees nothing move until they activate something blind.
+
+### Root cause
+G13 pins `.canvas-wrap` scroll at 0, which is correct — but that pin also cancels the
+browser's scroll-into-view for focused elements. On a normal page the browser reveals the
+focus; here it cannot, because position comes from `transform`, not scroll.
+
+### Fix
+Reveal it the canvas way: on `focusin`, if the focused element is inside the canvas and not
+comfortably in view, fly the camera to it. Reading keeps its X pinned, so only Y moves.
+
+```typescript
+this.wrap.addEventListener('focusin', (e) => {
+  pinScroll();
+  this.revealFocused(e.target as HTMLElement);
+});
+```
+
+Two details that matter:
+
+- **Use absolute canvas coordinates.** `offsetTop` is relative to the offset parent, and
+  reader children nest inside `#reader`. Walk the offset-parent chain up to the canvas.
+- **Yield to an active flight.** `revealFocused` must bail while `flightAnim !== null`.
+  Returning from a jump restores focus to the origin link, which fires `focusin` *during*
+  the return flight — reveal then hijacks the destination and the reader lands hundreds of
+  px off centre. The flight already ends with the element in view.
+
+### Test
+`document.hasFocus()` must be true or no focus events fire at all — click the page first,
+then Tab. The focused ref should end up on screen with the reader still centred:
+
+```js
+readerCentred === 0 && focusedRefOnScreen === true
+```

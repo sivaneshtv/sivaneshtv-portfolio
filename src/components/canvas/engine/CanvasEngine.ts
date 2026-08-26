@@ -592,6 +592,38 @@ export class CanvasEngine {
     this.emitViewState();
   }
 
+  /** Absolute canvas coordinates of an element, across nested offset parents. */
+  private canvasCoords(el: HTMLElement): { x: number; y: number } {
+    let x = 0, y = 0;
+    let node: HTMLElement | null = el;
+    while (node && node !== this.canvas) {
+      x += node.offsetLeft;
+      y += node.offsetTop;
+      node = node.offsetParent as HTMLElement | null;
+    }
+    return { x, y };
+  }
+
+  /** Bring a newly focused canvas element into view, honouring the current lock. */
+  private revealFocused(el: HTMLElement | null): void {
+    if (!el || !this.canvas.contains(el)) return;
+    // A flight is already taking the camera somewhere deliberate (a jump, or the
+    // return that just restored focus). Revealing on top of it would hijack that
+    // destination — the flight lands where the element will be visible anyway.
+    if (this.flightAnim !== null) return;
+    const r = el.getBoundingClientRect();
+    const margin = 80;
+    const visible = r.top >= margin && r.bottom <= innerHeight - margin &&
+      r.left >= margin && r.right <= innerWidth - margin;
+    if (visible) return;
+
+    const { x, y } = this.canvasCoords(el);
+    const cy = (y + el.offsetHeight / 2) * this.scale;
+    const cx = (x + el.offsetWidth / 2) * this.scale;
+    // Reading keeps the column centred, so only the vertical axis may move
+    this.flyToRaw(this.cameraLocked ? this.tx : -cx, -cy, this.scale, 400);
+  }
+
   private capturePointer(): void {
     if (this.activePointerId === null || this.pointerCaptured) return;
     try { this.wrap.setPointerCapture(this.activePointerId); this.pointerCaptured = true; } catch { /* pointer already gone */ }
@@ -769,7 +801,13 @@ export class CanvasEngine {
       if (this.wrap.scrollLeft !== 0) this.wrap.scrollLeft = 0;
     };
     this.wrap.addEventListener('scroll', pinScroll, { passive: true });
-    this.wrap.addEventListener('focusin', pinScroll);
+    this.wrap.addEventListener('focusin', (e) => {
+      pinScroll();
+      // Blocking the browser's scroll-into-view would strand keyboard users on
+      // elements the camera isn't showing. On a canvas, revealing means moving
+      // the camera — this is the equivalent of the scroll we just refused.
+      this.revealFocused(e.target as HTMLElement);
+    });
 
     // Mobile: blur focused element on touchend so buttons don't stay in pressed state
     document.addEventListener('touchend', () => {

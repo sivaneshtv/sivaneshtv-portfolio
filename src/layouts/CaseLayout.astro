@@ -137,10 +137,14 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
     font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     white-space:nowrap;
     box-shadow:0 8px 24px rgba(40,35,25,.3);
-    opacity:0;pointer-events:none;
-    transition:opacity .3s ease,transform .3s ease;
+    opacity:0;pointer-events:none;visibility:hidden;
+    transition:opacity .3s ease,transform .3s ease,visibility 0s linear .3s;
   }
-  .back-pill.on{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+  .back-pill.on{
+    opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);
+    visibility:visible;transition-delay:0s;
+  }
+  .back-pill-btn:focus-visible{outline:2px solid #f5ede0;outline-offset:2px}
   .back-pill-btn{
     font-family:var(--fm);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
     color:#fff;background:var(--red);border:none;padding:7px 12px;cursor:pointer;transition:background .2s;
@@ -188,6 +192,8 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
   // Case pages boot in the reading state — the reader viewport is the page
   const lockBtn = document.getElementById('btnLock');
   const backPill = document.getElementById('backPill');
+  /** The margin-ref that started the current detour, so focus can go home. */
+  let jumpOrigin: HTMLElement | null = null;
 
   // One place decides every affordance, so they can never disagree:
   //   padlock — is the board unlocked? Only the visitor's own action flips it, so an
@@ -200,6 +206,23 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
     lockBtn?.setAttribute('aria-pressed', String(unlocked));
     lockBtn?.setAttribute('aria-label', unlocked ? 'Back to reading' : 'Unlock free roam');
     backPill?.classList.toggle('on', state !== 'reading');
+    if (state === 'reading') restoreFocusAfterReturn();
+  }
+
+  // Focus follows the camera. The jump moved it to the way back; returning gives it
+  // to the link that started the detour, so Tab resumes where the visitor left off.
+  // Driven by the state change, so it holds for every exit — pill, padlock, Esc, R —
+  // and not just the one the pill happens to call.
+  function restoreFocusAfterReturn() {
+    const origin = jumpOrigin;
+    jumpOrigin = null;
+    if (!origin) return;
+    // Only reclaim focus if it is still ours to move: on the pill we are hiding, or
+    // dropped to <body> because that pill vanished underneath it.
+    const active = document.activeElement;
+    const ours = !active || active === document.body || backPill?.contains(active);
+    if (!ours) return;
+    requestAnimationFrame(() => origin.focus({ preventScroll: true }));
   }
   syncViewUI('reading');
 
@@ -211,13 +234,26 @@ const { title, caseNum, caseName, backHref = '/#work', description, ogImage, jso
   lockBtn?.addEventListener('click', () => engine.toggleFreeRoam());
   document.getElementById('backPillBtn')?.addEventListener('click', () => engine.backToReading());
 
-  // Margin-ref click → jumpToArtifact (MARGIN-REF-SPEC.md §4)
+  // Margin-ref activation → jumpToArtifact (MARGIN-REF-SPEC.md §4).
+  // These are <a> elements with no href, so they carry role="button" + tabindex="0"
+  // and need Enter/Space wired by hand — a plain anchor gets that for free, a
+  // scripted one does not.
   document.querySelectorAll<HTMLElement>('.r-margin-ref[data-jump]').forEach(link => {
-    link.addEventListener('click', (e) => {
+    const activate = (e: Event) => {
       e.preventDefault();
       const slug = link.dataset.jump;
       if (!slug) return;
+      jumpOrigin = link;
       engine.jumpToArtifact(slug);
+      // The page just moved the camera away from what the visitor was reading.
+      // Move focus with it, onto the way back, so a keyboard user is not left
+      // tabbing through a document they can no longer see.
+      requestAnimationFrame(() => document.getElementById('backPillBtn')?.focus());
+    };
+
+    link.addEventListener('click', activate);
+    link.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') activate(e);
     });
   });
 
