@@ -26,15 +26,15 @@ const style = [
   /* §4.7 — portfolio-workbench.html lines 327–351 */
   .photo{
     position:absolute;
-    width:220px;height:220px;
-    padding:12px;background:#fbfaf4;
+    width:200px;height:200px;
+    padding:11px;background:#fbfaf4;
     box-shadow:
       2px 3px 0 rgba(40,35,25,.05),
       4px 8px 18px rgba(40,35,25,.22);
   }
   .photo::before{
     content:"";position:absolute;top:-12px;left:50%;transform:translateX(-50%) rotate(-3deg);
-    width:96px;height:24px;background:var(--tape);opacity:.85;
+    width:88px;height:23px;background:var(--tape);opacity:.85;
     box-shadow:0 2px 4px rgba(40,35,25,.12);
   }
   .photo-inner{
@@ -45,7 +45,7 @@ const style = [
   }
   .photo-inner :global(img){width:100%;height:100%;object-fit:cover}
   .photo-caption{
-    position:absolute;bottom:-32px;left:0;right:0;text-align:center;
+    position:absolute;bottom:-31px;left:0;right:0;text-align:center;
     font-family:var(--fh);font-weight:500;font-size:19px;color:var(--ink-2);
     transform:rotate(1deg);
   }
